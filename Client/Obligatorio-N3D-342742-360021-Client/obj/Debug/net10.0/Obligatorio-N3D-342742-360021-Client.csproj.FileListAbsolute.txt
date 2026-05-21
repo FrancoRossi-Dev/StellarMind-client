@@ -1,0 +1,9 @@
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.AssemblyInfoInputs.cache
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.AssemblyInfo.cs
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.csproj.CoreCompileInputs.cache
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.MvcApplicationPartsAssemblyInfo.cache
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.RazorAssemblyInfo.cache
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.RazorAssemblyInfo.cs
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\Obligatorio-N3D-342742-360021-Client.sourcelink.json

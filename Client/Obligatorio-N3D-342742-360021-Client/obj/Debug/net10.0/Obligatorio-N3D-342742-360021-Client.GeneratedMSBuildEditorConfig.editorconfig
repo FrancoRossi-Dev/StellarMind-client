@@ -12,41 +12,41 @@ build_property.EntryPointFilePath =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Obligatorio_N3D_342742_360021_Client
 build_property.RootNamespace = Obligatorio_N3D_342742_360021_Client
-build_property.ProjectDir = C:\ORT\p3\asdf\Client\Obligatorio-N3D-342742-360021-Client\
+build_property.ProjectDir = C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\ORT\p3\asdf\Client\Obligatorio-N3D-342742-360021-Client
+build_property.MSBuildProjectDirectory = C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Index.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Privacy.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/Error.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/_ViewImports.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/_ViewStart.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ORT/p3/asdf/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/_Layout.cshtml]
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-y6br6x4owb

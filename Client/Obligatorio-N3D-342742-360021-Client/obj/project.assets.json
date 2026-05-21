@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\ORT\\p3\\asdf\\Client\\Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj",
+      "projectUniqueName": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj",
       "projectName": "Obligatorio-N3D-342742-360021-Client",
-      "projectPath": "C:\\ORT\\p3\\asdf\\Client\\Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj",
+      "projectPath": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj",
       "packagesPath": "C:\\Users\\franc\\.nuget\\packages\\",
-      "outputPath": "C:\\ORT\\p3\\asdf\\Client\\Obligatorio-N3D-342742-360021-Client\\obj\\",
+      "outputPath": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

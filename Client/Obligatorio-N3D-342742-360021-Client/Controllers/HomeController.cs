@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021.Models;
 using System.Diagnostics;
 
-namespace Obligatorio_N3D_342742_360021_Client.Controllers
+namespace Obligatorio_N3D_342742_360021.Controllers
 {
     public class HomeController : Controller
     {
