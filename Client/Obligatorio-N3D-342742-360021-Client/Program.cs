@@ -1,52 +1,17 @@
-using Libreria.Infraestuctura.AccesoDatos.EF;
-using StellarMinds.AplicationLogic.UseCases.Equipments;
-using StellarMinds.AplicationLogic.UseCases.Users;
-using StellarMinds.BusinessLogic.Entities.Equipment;
-using StellarMinds.Infraestructure.EntityFramework;
-using StellarMinds.Infraestructure.Repositories;
-using StellarMinds.Shared.DTO.Users;
-using StellarMinds.Shared.IRepositories;
-using StellarMinds.Shared.IUseCases.Equipments;
-using StellarMinds.Shared.IUseCases.Users;
-using StellarMinds.Shared.ViewModels;
+using Client.Services.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Agregar soporte de memoria caché
-builder.Services.AddDistributedMemoryCache();
+// Definine el cliente HTTP para consumir la API
+builder.Services.AddHttpClient("Api", c => c.BaseAddress = new Uri("https://localhost:7077/"));
+// Definine el cliente HTTP para consumir la Map de Google
+// builder.Services.AddHttpClient("GoogleMaps", c => c.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/"));
 
-// Agregar el servicio de Session
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-builder.Services.AddHttpContextAccessor();
-
-// Repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
-builder.Services.AddScoped<ICelestialObjectsRepository, CelestialObjectsRepository>();
-
-// UseCases - Users
-builder.Services.AddScoped<ICURegisterUser<RegisterUserDTO>, RegisterUser>();
-builder.Services.AddScoped<ICULoginUser<LogInUserVM>, LoginUser>();
-builder.Services.AddScoped<ICUListAllUsers<UserVM>, ListUsers>();
-builder.Services.AddScoped<ICUDeleteUser, DeleteUser>();
-
-// UseCases - Equipments
-builder.Services.AddScoped<IUCRegisterEquipment<Equipment>, RegisterEquipments>();
-builder.Services.AddScoped<IUCGetEquipments<Equipment>, GetEquipments>();
-
-// Stellar context
-builder.Services.AddDbContext<StellarContext>();
-
-// seed
-builder.Services.AddScoped<SeedData>();
+// Registrar auxiliar http (síncrono simple)
+builder.Services.AddScoped<AuxiliarClienteHttp>();
 
 var app = builder.Build();
 
@@ -58,18 +23,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-if (!app.Environment.IsProduction())
-{
-    var seeder = app.Services.CreateScope().ServiceProvider.GetRequiredService<SeedData>();
-    seeder.Run();
-}
-
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseStaticFiles();
-
-// Agregar el middleware de Session 
-app.UseSession();
 
 app.UseAuthorization();
 
@@ -77,7 +32,8 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=user}/{action=Login}/{id?}")
+    pattern: "{controller=Users}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();

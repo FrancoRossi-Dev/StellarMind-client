@@ -1,7 +1,16 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +18,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 150,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-22T01:05:05.136Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Controllers\\UsersController.cs",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAqwDgAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-22T00:35:20.803Z",
+              "EditorCaption": ""
             }
           ]
         }
