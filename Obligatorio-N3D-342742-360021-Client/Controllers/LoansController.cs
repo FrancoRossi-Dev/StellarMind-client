@@ -1,9 +1,11 @@
 using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
 using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021_Client.Filters;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
+    [LoggedUserFilter]
     public class LoansController(AuxiliarClienteHttp _auxiliarHttp) : Controller
     {
         public IActionResult Index()
@@ -18,7 +20,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al obtener los préstamos.";
+                ViewBag.msg = "The loan list seems to be orbiting somewhere else. Try again.";
                 return View(new List<LoanVM>());
             }
         }
@@ -45,7 +47,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al solicitar el préstamo.";
+                ViewBag.msg = "The request got lost in the void. Please try again.";
                 return View();
             }
         }
@@ -60,7 +62,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al aprobar el préstamo.";
+                ViewBag.msg = "Couldn't approve that loan. Something drifted off course.";
                 return RedirectToAction("Index");
             }
         }
@@ -75,7 +77,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al rechazar el préstamo.";
+                ViewBag.msg = "Couldn't reject that loan. Something went sideways out there.";
                 return RedirectToAction("Index");
             }
         }
@@ -90,7 +92,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al registrar la devolución.";
+                ViewBag.msg = "The return couldn't be logged. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }
@@ -105,7 +107,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al cancelar el préstamo.";
+                ViewBag.msg = "Couldn't cancel that loan. Try again in a moment.";
                 return RedirectToAction("Index");
             }
         }
@@ -120,7 +122,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al eliminar la solicitud de préstamo.";
+                ViewBag.msg = "The request couldn't be removed. Something got in the way.";
                 return RedirectToAction("Index");
             }
         }

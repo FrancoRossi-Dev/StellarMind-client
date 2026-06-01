@@ -1,9 +1,11 @@
 using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
 using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021_Client.Filters;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
+    [LoggedUserFilter]
     public class EquipmentController(AuxiliarClienteHttp _auxiliarHttp) : Controller
     {
         public IActionResult Index()
@@ -18,7 +20,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al obtener el equipamiento.";
+                ViewBag.msg = "The equipment list drifted off. Give it another moment.";
                 return View(new List<EquipmentVM>());
             }
         }
@@ -50,7 +52,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al crear el equipamiento.";
+                ViewBag.msg = "Something got lost in transit. The item couldn't be added.";
                 return View();
             }
         }
@@ -83,7 +85,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al actualizar el equipamiento.";
+                ViewBag.msg = "The update got lost out there. Please try again.";
                 return View();
             }
         }
@@ -98,7 +100,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al eliminar el equipamiento.";
+                ViewBag.msg = "Couldn't remove that item. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }

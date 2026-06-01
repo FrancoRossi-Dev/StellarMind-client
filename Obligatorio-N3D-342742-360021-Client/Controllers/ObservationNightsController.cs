@@ -1,9 +1,11 @@
 using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
 using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021_Client.Filters;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
+    [LoggedUserFilter]
     public class ObservationNightsController(AuxiliarClienteHttp _auxiliarHttp) : Controller
     {
         public IActionResult Index()
@@ -18,7 +20,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al obtener las noches de observación.";
+                ViewBag.msg = "Couldn't load the observation nights. The skies seem cloudy right now.";
                 return View(new List<ObservationNightVM>());
             }
         }
@@ -35,7 +37,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al obtener la noche de observación.";
+                ViewBag.msg = "Couldn't find that night. It may have drifted off the map.";
                 return RedirectToAction("Index");
             }
         }
@@ -53,7 +55,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al obtener las noches del usuario.";
+                ViewBag.msg = "Couldn't load this member's nights — try again in a moment.";
                 return View("Index", new List<ObservationNightVM>());
             }
         }
@@ -81,7 +83,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al crear la noche de observación.";
+                ViewBag.msg = "Couldn't log that night. Something got in the way.";
                 return View();
             }
         }
@@ -98,7 +100,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al obtener la noche de observación.";
+                ViewBag.msg = "Couldn't load that session. Something drifted off.";
                 return RedirectToAction("Index");
             }
         }
@@ -121,7 +123,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al actualizar la noche de observación.";
+                ViewBag.msg = "The update got lost somewhere. Please try again.";
                 return View();
             }
         }
@@ -136,7 +138,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Error al eliminar la noche de observación.";
+                ViewBag.msg = "Couldn't remove that night. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }
