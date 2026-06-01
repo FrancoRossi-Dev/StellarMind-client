@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\views\\users\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\views\\users\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -15,16 +19,12 @@
       "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\controllers\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\controllers\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\models\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|solutionrelative:obligatorio-n3d-342742-360021-client\\models\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6432F522-C3AD-B1C2-A4EC-CF8367D5ADF4}|Obligatorio-N3D-342742-360021-Client\\Obligatorio-N3D-342742-360021-Client.csproj|c:\\ort\\p3\\obligatorio-n3d-342742-360021-client\\client\\obligatorio-n3d-342742-360021-client\\models\\loggeduserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 150,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
@@ -59,8 +59,7 @@
               "ViewState": "AgIAAEMAAAAAAAAAAAAuwIoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-22T00:35:20.803Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -68,29 +67,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
-              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
-              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
-              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-31T21:31:00.248Z",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Program.cs",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Program.cs",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Program.cs",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Program.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACYAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-31T20:58:47.833Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "UserVM.cs",
-              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
-              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
-              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
-              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-31T21:25:18.62Z",
+              "DocumentIndex": 1,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-22T01:05:05.136Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "LoginResponseDto.cs",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Models\\LoginResponseDto.cs",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Models\\LoginResponseDto.cs",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Models\\LoginResponseDto.cs",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Models\\LoginResponseDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-31T21:11:27.573Z"
             },
             {
               "$type": "Document",
@@ -102,38 +113,35 @@
               "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Models\\LogInUserDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-31T21:25:16.231Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-31T21:25:16.231Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "LoginResponseDto.cs",
-              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Controllers\\LoginResponseDto.cs",
-              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Controllers\\LoginResponseDto.cs",
-              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Controllers\\LoginResponseDto.cs",
-              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Controllers\\LoginResponseDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAASAAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "UserVM.cs",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Models\\UserVM.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-31T21:11:27.573Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-31T21:25:18.62Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Program.cs",
-              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Program.cs",
-              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Program.cs",
-              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-31T20:58:47.833Z",
-              "EditorCaption": ""
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
+              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
+              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
+              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Index.cshtml",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-31T21:31:00.248Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Login.cshtml",
               "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Login.cshtml",
               "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Login.cshtml",
@@ -141,21 +149,7 @@
               "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Login.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-31T20:55:48.325Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Create.cshtml",
-              "DocumentMoniker": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
-              "RelativeDocumentMoniker": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
-              "ToolTip": "C:\\ORT\\p3\\Obligatorio-N3D-342742-360021-Client\\Client\\Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
-              "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Views\\Users\\Create.cshtml",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-22T01:05:05.136Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-31T20:55:48.325Z"
             },
             {
               "$type": "Document",
@@ -167,8 +161,7 @@
               "RelativeToolTip": "Obligatorio-N3D-342742-360021-Client\\Models\\LoggedUserDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-31T21:25:11.744Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-31T21:25:11.744Z"
             }
           ]
         }
