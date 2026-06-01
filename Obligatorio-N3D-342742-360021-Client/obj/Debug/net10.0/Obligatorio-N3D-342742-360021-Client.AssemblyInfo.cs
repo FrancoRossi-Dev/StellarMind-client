@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Obligatorio-N3D-342742-360021-Client")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93edbfa62b33fb2c07e54212c4faae3870c118ec")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+772072ac704c42f315796ffc506196a6fab6ee91")]
 [assembly: System.Reflection.AssemblyProductAttribute("Obligatorio-N3D-342742-360021-Client")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Obligatorio-N3D-342742-360021-Client")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

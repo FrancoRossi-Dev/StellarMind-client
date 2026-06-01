@@ -1,18 +1,11 @@
-﻿using Client.Services.Http;
+﻿using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
 using Obligatorio_N3D_342742_360021_Client.Models;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
-    public class UsersController : Controller
+    public class UsersController(AuxiliarClienteHttp _auxiliarHttp) : Controller
     {
-        private readonly AuxiliarClienteHttp _auxiliarHttp;
-
-        public UsersController(AuxiliarClienteHttp auxiliarHttp)
-        {
-            _auxiliarHttp = auxiliarHttp;
-        }
-
         public IActionResult Index()
         {
             try
@@ -94,6 +87,52 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 ViewBag.msg = "Error deleting user.";
                 return View();
+            }
+        }
+
+        [HttpGet("Login")]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost("Login")]
+        public IActionResult Login(LogInUserDto dto)
+        {
+            try
+            {
+                LoginResponseDto? payload = _auxiliarHttp.EnviarYDeserializar<LoginResponseDto>("api/v1/auth/login", "POST", dto);
+                string? token = payload.Token;
+                LoggedUserDTO? user = payload.User;
+
+                HttpContext.Session.SetInt32("UserId", user.UserId);
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetString("UserRole", user.UserRole);
+                HttpContext.Session.SetString("Email", user.Email);
+
+                HttpContext.Session.SetString("Token", token);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.message = ex.Message;
+                return (View());
+            }
+        }
+
+        public IActionResult Logout()
+        {
+            try
+            {
+                _auxiliarHttp.EnviarSolicitud("api/v1/auth/logout", "POST", null);
+                // TODO: Clear any client-side session or authentication tokens if necessary
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.message = ex.Message;
+                return (View());
             }
         }
     }

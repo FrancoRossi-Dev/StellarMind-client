@@ -1,4 +1,4 @@
-using Client.Services.Http;
+using Obligatorio_N3D_342742_360021_Client.Services.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +10,17 @@ builder.Services.AddHttpClient("Api", c => c.BaseAddress = new Uri("https://loca
 // Definine el cliente HTTP para consumir la Map de Google
 // builder.Services.AddHttpClient("GoogleMaps", c => c.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/"));
 
+// Agregar el servicio de Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Registrar auxiliar http (síncrono simple)
 builder.Services.AddScoped<AuxiliarClienteHttp>();
+
 
 var app = builder.Build();
 
@@ -30,9 +39,12 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Agregar el middleware de Session 
+app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Users}/{action=Index}/{id?}")
+    pattern: "{controller=Users}/{action=Login}")
     .WithStaticAssets();
 
 

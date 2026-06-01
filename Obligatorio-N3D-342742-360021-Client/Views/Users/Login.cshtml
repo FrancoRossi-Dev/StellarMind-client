@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-card__glow" aria-hidden="true"></div>
+
+        <div class="login-card__header">
+            <h1 class="login-card__title">StellarMinds</h1>
+            <p class="login-card__subtitle">Sign in to your account</p>
+        </div>
+
+        @if (ViewBag.message != null)
+        {
+            <div class="login-error" role="alert">
+                <span aria-hidden="true">⚠</span>
+                @ViewBag.message
+            </div>
+        }
+
+        <form asp-controller="Users" asp-action="Login" method="post" class="login-form">
+            <div class="login-form__field">
+                <label for="username" class="login-form__label">Username</label>
+                <input type="text"
+                       class="login-form__input"
+                       id="username"
+                       name="username"
+                       autocomplete="username"
+                       required />
+            </div>
+            <div class="login-form__field">
+                <label for="password" class="login-form__label">Password</label>
+                <input type="password"
+                       class="login-form__input"
+                       id="password"
+                       name="password"
+                       autocomplete="current-password"
+                       required />
+            </div>
+            <button type="submit" class="login-form__submit">Sign in</button>
+        </form>
+    </div>
+</div>

@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace Client.Services.Http
+namespace Obligatorio_N3D_342742_360021_Client.Services.Http
 {
     public class AuxiliarClienteHttp
     {

@@ -1,0 +1,360 @@
+/* ============================================================================
+   StellarMinds — Design Tokens
+   Two-layer token system for the MVC client.
+
+   LAYER 1 · PRIMITIVES  (--p-*)
+     Raw, theme-agnostic values. Color ramps, spacing, type, radii, shadow,
+     motion. Never reference these directly in component CSS.
+
+   LAYER 2 · SEMANTIC    (role-named: --color-*, --space-*, --text-*, …)
+     Aliases that map primitives to a *purpose*. Components consume ONLY these.
+     Re-theming = remap this layer; primitives stay frozen.
+
+   Load order: this file first, then components.css, then page CSS.
+   ============================================================================ */
+
+/* ============================================================================
+   LAYER 1 — PRIMITIVES
+   ============================================================================ */
+:root {
+
+  /* ---- Color · Ink (deep night-sky neutrals, cool navy) ------------------ */
+  --p-ink-950: #0B1020;   /* app background        */
+  --p-ink-900: #131A2E;   /* cards, panels         */
+  --p-ink-850: #1B2440;   /* raised / hover        */
+  --p-ink-800: #212C49;   /* soft hairline         */
+  --p-ink-700: #2A3554;   /* border / divider      */
+  --p-ink-600: #3B4870;
+  --p-ink-500: #6B7799;   /* muted text            */
+  --p-ink-400: #838FAD;
+  --p-ink-300: #9AA6C4;   /* secondary text        */
+  --p-ink-200: #C2CADF;
+  --p-ink-100: #E6EAF5;   /* primary text          */
+  --p-ink-50:  #F4F6FB;
+
+  /* ---- Color · Blue (starlight accent) ----------------------------------- */
+  --p-blue-200: #B6C4FF;
+  --p-blue-300: #87A2FF;  /* accent hover          */
+  --p-blue-400: #6C8CFF;  /* accent base           */
+  --p-blue-500: #5571E0;
+  --p-blue-600: #4259C4;
+
+  /* ---- Color · Green (success / available / IDEAL) ----------------------- */
+  --p-green-400: #5FD1A6;
+  --p-green-500: #3FBF8F;
+  --p-green-600: #2F9B73;
+
+  /* ---- Color · Amber (caution / ADECUADO) -------------------------------- */
+  --p-amber-400: #F0C75F;
+  --p-amber-500: #E9B949;
+  --p-amber-600: #C99A2F;
+
+  /* ---- Color · Red (danger / overdue / NO RECOMENDABLE) ------------------ */
+  --p-red-400: #F57888;
+  --p-red-500: #F2566A;
+  --p-red-600: #D63D52;
+
+  /* ---- Color · Cyan (neutral info / in-loan) ----------------------------- */
+  --p-cyan-400: #6FD2E8;
+  --p-cyan-500: #4FC4E0;
+  --p-cyan-600: #2FA6C4;
+
+  /* ---- Color · Nebula (decorative flourish only) ------------------------- */
+  --p-violet-500: #7C5CFF;
+  --p-teal-500:   #2DD4BF;
+
+  /* ---- Color · Pure ------------------------------------------------------ */
+  --p-white: #FFFFFF;
+  --p-black: #05080F;     /* near-black for shadows, never a surface */
+
+  /* ---- Alpha tints (built from ramp hues via color-mix) ------------------ */
+  --p-blue-a12:  color-mix(in srgb, var(--p-blue-400) 12%, transparent);
+  --p-blue-a20:  color-mix(in srgb, var(--p-blue-400) 20%, transparent);
+  --p-blue-a35:  color-mix(in srgb, var(--p-blue-400) 35%, transparent);
+  --p-green-a12: color-mix(in srgb, var(--p-green-500) 12%, transparent);
+  --p-green-a35: color-mix(in srgb, var(--p-green-500) 35%, transparent);
+  --p-amber-a12: color-mix(in srgb, var(--p-amber-500) 12%, transparent);
+  --p-amber-a35: color-mix(in srgb, var(--p-amber-500) 35%, transparent);
+  --p-red-a12:   color-mix(in srgb, var(--p-red-500) 12%, transparent);
+  --p-red-a35:   color-mix(in srgb, var(--p-red-500) 35%, transparent);
+  --p-cyan-a12:  color-mix(in srgb, var(--p-cyan-500) 12%, transparent);
+  --p-cyan-a35:  color-mix(in srgb, var(--p-cyan-500) 35%, transparent);
+
+  /* ---- Spacing · 8px grid (4px tight cluster) ---------------------------- */
+  --p-space-0:  0;
+  --p-space-1:  4px;
+  --p-space-2:  8px;
+  --p-space-3:  12px;
+  --p-space-4:  16px;
+  --p-space-5:  20px;
+  --p-space-6:  24px;
+  --p-space-8:  32px;
+  --p-space-10: 40px;
+  --p-space-12: 48px;
+  --p-space-16: 64px;
+
+  /* ---- Type · Families --------------------------------------------------- */
+  --p-font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --p-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ---- Type · Size scale ------------------------------------------------- */
+  --p-text-11: 11px;   /* micro labels (uppercase) */
+  --p-text-12: 12px;   /* captions, chips          */
+  --p-text-13: 13px;   /* dense table body         */
+  --p-text-14: 14px;   /* base body                */
+  --p-text-16: 16px;   /* topbar / lead            */
+  --p-text-18: 18px;
+  --p-text-22: 22px;   /* page title               */
+  --p-text-26: 26px;   /* stat figure              */
+  --p-text-32: 32px;
+
+  /* ---- Type · Weight ----------------------------------------------------- */
+  --p-weight-regular:  400;
+  --p-weight-medium:   500;
+  --p-weight-semibold: 600;
+  --p-weight-bold:     700;
+  --p-weight-heavy:    800;
+
+  /* ---- Type · Line height ------------------------------------------------ */
+  --p-leading-tight:  1.2;
+  --p-leading-snug:   1.4;
+  --p-leading-normal: 1.5;
+  --p-leading-relaxed: 1.6;
+
+  /* ---- Type · Tracking --------------------------------------------------- */
+  --p-tracking-tight: -0.02em;   /* headings        */
+  --p-tracking-snug:  -0.01em;
+  --p-tracking-wide:   0.05em;   /* small caps      */
+  --p-tracking-wider:  0.07em;
+
+  /* ---- Radius ------------------------------------------------------------ */
+  --p-radius-sm:   6px;
+  --p-radius-md:   8px;    /* inputs, buttons */
+  --p-radius-lg:   12px;   /* cards           */
+  --p-radius-full: 999px;  /* chips, avatars  */
+
+  /* ---- Border width ------------------------------------------------------ */
+  --p-border-hair: 1px;
+  --p-border-thick: 2px;
+  --p-border-accent: 3px;  /* toast left rule, focus emphasis */
+
+  /* ---- Elevation (subtle; dark-first, low glare) ------------------------- */
+  --p-shadow-none: none;
+  --p-shadow-card:
+    0 1px 0 rgba(255,255,255,0.02) inset,
+    0 8px 24px -16px rgba(0,0,0,0.8);
+  --p-shadow-pop:  0 16px 40px -12px rgba(0,0,0,0.7);
+  --p-shadow-modal: 0 30px 70px -20px rgba(0,0,0,0.8);
+
+  /* ---- Motion ------------------------------------------------------------ */
+  --p-duration-fast:  120ms;
+  --p-duration-base:  200ms;
+  --p-duration-slow:  280ms;
+  --p-ease-standard:  cubic-bezier(.2, .8, .2, 1);
+  --p-ease-out:       ease;
+
+  /* ---- Z-index ----------------------------------------------------------- */
+  --p-z-base:    0;
+  --p-z-sticky:  20;
+  --p-z-topbar:  40;
+  --p-z-modal:   150;
+  --p-z-toast:   200;
+
+  /* ---- Layout ------------------------------------------------------------ */
+  --p-content-max: 1200px;
+  --p-sidebar-w:   248px;
+  --p-topbar-h:    60px;
+}
+
+/* ============================================================================
+   LAYER 2 — SEMANTIC TOKENS  (dark theme = default)
+   Components reference ONLY these.
+   ============================================================================ */
+:root {
+
+  /* ---- Background & surface ---------------------------------------------- */
+  --color-bg:            var(--p-ink-950);
+  --color-surface:       var(--p-ink-900);
+  --color-surface-raised: var(--p-ink-850);
+  --color-surface-sunken: var(--p-ink-950);  /* inputs, track wells */
+  --color-overlay:       rgba(5, 8, 18, 0.66);
+
+  /* ---- Border ------------------------------------------------------------ */
+  --color-border:        var(--p-ink-700);
+  --color-border-soft:   var(--p-ink-800);
+  --color-border-strong: var(--p-ink-600);
+
+  /* ---- Text -------------------------------------------------------------- */
+  --color-text:           var(--p-ink-100);
+  --color-text-secondary: var(--p-ink-300);
+  --color-text-muted:     var(--p-ink-500);
+  --color-text-on-accent: #0A0F1F;            /* dark ink on the bright accent */
+
+  /* ---- Accent (primary action, link, focus) ----------------------------- */
+  --color-accent:        var(--p-blue-400);
+  --color-accent-hover:  var(--p-blue-300);
+  --color-accent-soft:   var(--p-blue-a12);   /* selected rows, tints */
+  --color-accent-border: var(--p-blue-a35);
+
+  /* ---- Focus ring -------------------------------------------------------- */
+  --color-focus-ring:    var(--p-blue-400);
+  --focus-ring:          0 0 0 3px var(--p-blue-a20);
+
+  /* ---- Status · Success (available / IDEAL / returned-ok) ---------------- */
+  --color-success:        var(--p-green-500);
+  --color-success-soft:   var(--p-green-a12);
+  --color-success-border: var(--p-green-a35);
+
+  /* ---- Status · Warning (ADECUADO / caution) ----------------------------- */
+  --color-warning:        var(--p-amber-500);
+  --color-warning-soft:   var(--p-amber-a12);
+  --color-warning-border: var(--p-amber-a35);
+
+  /* ---- Status · Danger (overdue / unavailable / NO RECOMENDABLE) --------- */
+  --color-danger:        var(--p-red-500);
+  --color-danger-soft:   var(--p-red-a12);
+  --color-danger-border: var(--p-red-a35);
+
+  /* ---- Status · Info (in-loan / neutral) --------------------------------- */
+  --color-info:        var(--p-cyan-500);
+  --color-info-soft:   var(--p-cyan-a12);
+  --color-info-border: var(--p-cyan-a35);
+
+  /* ---- Decorative flourish (login / empty-state only) -------------------- */
+  --color-nebula-1: var(--p-violet-500);
+  --color-nebula-2: var(--p-teal-500);
+
+  /* ---- Typography roles -------------------------------------------------- */
+  --font-ui:   var(--p-font-sans);
+  --font-mono: var(--p-font-mono);
+
+  --text-body:       var(--p-text-14);
+  --text-body-dense: var(--p-text-13);
+  --text-caption:    var(--p-text-12);
+  --text-label:      var(--p-text-11);
+  --text-lead:       var(--p-text-16);
+  --text-title:      var(--p-text-22);
+  --text-stat:       var(--p-text-26);
+
+  --weight-body:    var(--p-weight-regular);
+  --weight-label:   var(--p-weight-semibold);
+  --weight-heading: var(--p-weight-semibold);
+  --weight-strong:  var(--p-weight-bold);
+
+  --leading-body:    var(--p-leading-normal);
+  --leading-heading: var(--p-leading-tight);
+  --tracking-heading: var(--p-tracking-tight);
+  --tracking-label:   var(--p-tracking-wide);
+
+  /* ---- Spacing roles ----------------------------------------------------- */
+  --space-card-pad:    var(--p-space-5);   /* 20px card interior      */
+  --space-section-gap: var(--p-space-5);
+  --space-field-gap:   var(--p-space-4);   /* between form fields     */
+  --space-inline:      var(--p-space-2);   /* icon↔label, chip gaps   */
+  --space-cluster:     var(--p-space-1);   /* tight 4px clusters      */
+  --space-page-pad:    var(--p-space-6);   /* 24px content padding    */
+  --space-cell-y:      var(--p-space-3);   /* table row vertical pad  */
+  --space-cell-x:      var(--p-space-4);
+
+  /* ---- Shape roles ------------------------------------------------------- */
+  --radius-card:  var(--p-radius-lg);
+  --radius-input: var(--p-radius-md);
+  --radius-chip:  var(--p-radius-full);
+  --radius-pill:  var(--p-radius-full);
+
+  /* ---- Elevation roles --------------------------------------------------- */
+  --shadow-card:  var(--p-shadow-card);
+  --shadow-pop:   var(--p-shadow-pop);
+  --shadow-modal: var(--p-shadow-modal);
+
+  /* ---- Motion roles ------------------------------------------------------ */
+  --motion-hover:  var(--p-duration-fast) var(--p-ease-out);
+  --motion-enter:  var(--p-duration-base) var(--p-ease-standard);
+  --motion-screen: var(--p-duration-slow) var(--p-ease-out);
+
+  /* ---- Layout roles ------------------------------------------------------ */
+  --layout-content-max: var(--p-content-max);
+  --layout-sidebar-w:   var(--p-sidebar-w);
+  --layout-topbar-h:    var(--p-topbar-h);
+
+  /* ---- Z-index roles ----------------------------------------------------- */
+  --z-sticky: var(--p-z-sticky);
+  --z-topbar: var(--p-z-topbar);
+  --z-modal:  var(--p-z-modal);
+  --z-toast:  var(--p-z-toast);
+}
+
+/* ============================================================================
+   SEMANTIC REMAP — Light theme (optional; dark is the product default).
+   Only the semantic layer changes. Primitives are untouched.
+   Apply with <html data-theme="light"> or <body data-theme="light">.
+   ============================================================================ */
+[data-theme="light"] {
+  --color-bg:            var(--p-ink-50);
+  --color-surface:       var(--p-white);
+  --color-surface-raised: #EDF0F8;
+  --color-surface-sunken: #EDF0F8;
+  --color-overlay:       rgba(11, 16, 32, 0.40);
+
+  --color-border:        #D3DAEA;
+  --color-border-soft:   #E3E8F3;
+  --color-border-strong: #B9C2D8;
+
+  --color-text:           var(--p-ink-950);
+  --color-text-secondary: #45506E;
+  --color-text-muted:     #6B7799;
+  --color-text-on-accent: var(--p-white);
+
+  --color-accent:        var(--p-blue-500);
+  --color-accent-hover:  var(--p-blue-600);
+  --color-accent-soft:   var(--p-blue-a12);
+  --color-accent-border: var(--p-blue-a35);
+
+  /* status hues stay; soft tints read fine on light surfaces */
+  --color-success: var(--p-green-600);
+  --color-warning: var(--p-amber-600);
+  --color-danger:  var(--p-red-600);
+  --color-info:    var(--p-cyan-600);
+
+  --shadow-card:  0 1px 2px rgba(16, 24, 48, 0.06), 0 8px 24px -16px rgba(16, 24, 48, 0.25);
+  --shadow-pop:   0 16px 40px -12px rgba(16, 24, 48, 0.20);
+  --shadow-modal: 0 30px 70px -20px rgba(16, 24, 48, 0.30);
+}
+
+/* ============================================================================
+   COMPAT ALIASES
+   Bridge to the variable names used in the existing prototype (styles.css).
+   Lets current markup keep working while you migrate components onto the
+   semantic layer. Safe to delete once migration is complete.
+   ============================================================================ */
+:root {
+  --bg-base:        var(--color-bg);
+  --bg-surface:     var(--color-surface);
+  --bg-surface-2:   var(--color-surface-raised);
+  --border:         var(--color-border);
+  --border-soft:    var(--color-border-soft);
+
+  --text-primary:   var(--color-text);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted:     var(--color-text-muted);
+
+  --accent:         var(--color-accent);
+  --accent-hover:   var(--color-accent-hover);
+  --accent-soft:    var(--color-accent-soft);
+  --accent-line:    var(--color-accent-border);
+
+  --success:        var(--color-success);
+  --warning:        var(--color-warning);
+  --danger:         var(--color-danger);
+  --info:           var(--color-info);
+  --success-soft:   var(--color-success-soft);
+  --warning-soft:   var(--color-warning-soft);
+  --danger-soft:    var(--color-danger-soft);
+  --info-soft:      var(--color-info-soft);
+
+  --nebula-1:       var(--color-nebula-1);
+  --nebula-2:       var(--color-nebula-2);
+
+  --font-ui:   var(--p-font-sans);
+  --font-mono: var(--p-font-mono);
+}

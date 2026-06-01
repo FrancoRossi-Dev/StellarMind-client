@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Obligatorio_N3D_342742_360021.Filters
+namespace Obligatorio_N3D_342742_360021_Client.Filters
 {
     public class UserHasAccessFilter : ActionFilterAttribute
     {
