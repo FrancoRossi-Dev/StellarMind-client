@@ -1,7 +1,7 @@
-using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
-using Obligatorio_N3D_342742_360021_Client.Models;
 using Obligatorio_N3D_342742_360021_Client.Filters;
+using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021_Client.Services.Http;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
@@ -152,7 +152,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 HttpContext.Session.SetString("UserRole", user.UserRole);
                 HttpContext.Session.SetString("Email", user.Email);
                 HttpContext.Session.SetString("Token", payload.Token!);
-
+                Console.WriteLine("Login successful. User: " + user.Username + ", Role: " + user.UserRole + ", Token: " + payload.Token);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

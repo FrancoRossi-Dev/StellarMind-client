@@ -218,6 +218,28 @@ a:hover { color: var(--color-accent-hover); }
 .input::placeholder,
 .textarea::placeholder { color: var(--color-text-muted); }
 
+.input-wrap {
+  position: relative;
+}
+.input-wrap .input {
+  padding-right: 2.75rem;
+}
+.input-wrap__toggle {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  line-height: 1;
+  font-size: 1rem;
+  transition: color var(--motion-hover);
+}
+.input-wrap__toggle:hover { color: var(--color-text); }
+
 .input:focus,
 .select:focus,
 .textarea:focus {
