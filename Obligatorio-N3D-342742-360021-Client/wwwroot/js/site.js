@@ -1,4 +1,12 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
+// Submit loading state — primary buttons only (skips danger/delete buttons)
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('form').forEach(function (form) {
+        form.addEventListener('submit', function () {
+            var btn = form.querySelector('button[type="submit"].btn--primary');
+            if (btn && !btn.disabled) {
+                btn.disabled = true;
+                btn.insertAdjacentHTML('beforeend', '<span class="btn-spinner"> …</span>');
+            }
+        });
+    });
+});

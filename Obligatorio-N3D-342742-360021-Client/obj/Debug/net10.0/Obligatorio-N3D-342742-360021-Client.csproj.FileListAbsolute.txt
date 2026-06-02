@@ -23,7 +23,6 @@ C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\scopedcss\bundle\Obligatorio-N3D-342742-360021-Client.styles.css
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\scopedcss\projectbundle\Obligatorio-N3D-342742-360021-Client.bundle.scp.css
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\3bao20sk1l-{0}-61n19gt1b8-61n19gt1b8.gz
-C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\75jd9kc066-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\2e63l071fs-{0}-bqjiyaj88i-bqjiyaj88i.gz
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\3qtlcudxf5-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\fhmoty6l8w-{0}-erw9l3u2r3-erw9l3u2r3.gz
@@ -95,10 +94,11 @@ C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\ref\Obligatorio-N3D-342742-360021-Client.dll
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\ihc6lrpphu-{0}-v1w832r4zr-v1w832r4zr.gz
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\scopedcss\Views\Users\Login.cshtml.rz.scp.css
-C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\31gs6wutql-{0}-h25h5hjr81-h25h5hjr81.gz
-C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\hmqep44mx4-{0}-h25h5hjr81-h25h5hjr81.gz
-C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\bin\Debug\net10.0\libman.json
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\9xe5wsplav-{0}-4mg30kdybn-4mg30kdybn.gz
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\2fr562djo5-{0}-lz7zjhnguu-lz7zjhnguu.gz
-C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\3ofqrgpy9o-{0}-l7wnxqhzwn-l7wnxqhzwn.gz
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\3ofqrgpy9o-{0}-nk27qjscuo-nk27qjscuo.gz
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\31gs6wutql-{0}-323vvzuwur-323vvzuwur.gz
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\hmqep44mx4-{0}-323vvzuwur-323vvzuwur.gz
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\75jd9kc066-{0}-nygdvvfrab-nygdvvfrab.gz
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

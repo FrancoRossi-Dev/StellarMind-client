@@ -53,6 +53,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud("api/v1/Users/create", "POST", user);
+                TempData["Success"] = "Member added to the observatory.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -102,6 +103,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     return View(user);
                 }
                 _auxiliarHttp.EnviarSolicitud($"api/v1/Users/update/{id}", "POST", user);
+                TempData["Success"] = "Member details updated successfully.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -124,6 +126,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     return RedirectToAction("Index");
                 }
                 _auxiliarHttp.EnviarSolicitud($"api/v1/Users/delete/{id}", "POST", null);
+                TempData["Success"] = "Member removed from the roster.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -152,8 +155,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 HttpContext.Session.SetString("UserRole", user.UserRole);
                 HttpContext.Session.SetString("Email", user.Email);
                 HttpContext.Session.SetString("Token", payload.Token!);
-                Console.WriteLine("Login successful. User: " + user.Username + ", Role: " + user.UserRole + ", Token: " + payload.Token);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {

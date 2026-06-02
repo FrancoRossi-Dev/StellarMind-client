@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "New Loan Request";
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">New Loan Request</h1>
+        <p class="page-head__sub">Submit an equipment loan request on behalf of a member</p>
+    </div>
+    <a class="btn btn--ghost" asp-controller="Loans" asp-action="Index">← Back</a>
+</div>
+
+<div class="card" style="max-width: 520px;">
+    <div class="card__body">
+        <form method="post" asp-controller="Loans" asp-action="Create" class="form-stack">
+
+            <div class="field">
+                <label class="field__label" for="memberId">Member ID</label>
+                <input id="memberId" name="memberId" type="number" class="input" min="1" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="equipmentId">Equipment ID</label>
+                <input id="equipmentId" name="equipmentId" type="number" class="input" min="1" required />
+                <span class="field__hint">Availability will be verified before submission (RF04)</span>
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="requestDate">Request Date</label>
+                <input id="requestDate" name="requestDate" type="datetime-local" class="input" required />
+            </div>
+
+            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
+                <button type="submit" class="btn btn--primary">Submit request</button>
+                <a class="btn btn--ghost" asp-controller="Loans" asp-action="Index">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
