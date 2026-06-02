@@ -43,6 +43,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     RequestDate = requestDate
                 };
                 _auxiliarHttp.EnviarSolicitud("api/v1/loans/createLoan", "POST", dto);
+                TempData["Success"] = "Loan request submitted.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -58,6 +59,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loans/approve/{id}", "PUT");
+                TempData["Success"] = "Loan request approved.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -73,6 +75,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loans/reject/{id}", "PUT");
+                TempData["Success"] = "Loan request rejected.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -88,6 +91,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loans/return/{id}", "POST");
+                TempData["Success"] = "Loan marked as returned.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -103,6 +107,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loans/cancel/{id}", "POST");
+                TempData["Success"] = "Loan canceled.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -112,12 +117,20 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
         }
 
+        [HttpGet("Loans/MyLoans")]
+        [AccessFilter("Member")]
+        public IActionResult MyLoans()
+        {
+            return View();
+        }
+
         [HttpPost("Loans/Delete/{id}")]
         public IActionResult Delete(int id)
         {
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loans/deleteLoanRequest/{id}", "DELETE");
+                TempData["Success"] = "Loan request removed.";
                 return RedirectToAction("Index");
             }
             catch (Exception)

@@ -23,12 +23,64 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Equipment/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXF1aXBtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Equipment/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXF1aXBtZW50XEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Equipment/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXF1aXBtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/ByTelescope.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxCeVRlbGVzY29wZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/LoanAudit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxMb2FuQXVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Home/Ranking.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSYW5raW5nLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Loans/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Loans/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Loans/MyLoans.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcTXlMb2Fucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/ObservationNights/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JzZXJ2YXRpb25OaWdodHNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/ObservationNights/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JzZXJ2YXRpb25OaWdodHNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/ObservationNights/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JzZXJ2YXRpb25OaWdodHNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/ObservationNights/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JzZXJ2YXRpb25OaWdodHNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/ORT/p3/Obligatorio-N3D-342742-360021-Client/Client/Obligatorio-N3D-342742-360021-Client/Views/Shared/Error.cshtml]

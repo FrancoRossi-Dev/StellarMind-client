@@ -1,8 +1,85 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Dashboard";
+    string? role     = Context.Session.GetString("UserRole");
+    string? username = Context.Session.GetString("Username");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Dashboard</h1>
+        <p class="page-head__sub">Welcome back, @username — what would you like to explore?</p>
+    </div>
+</div>
+
+<div class="dash-grid">
+
+    @if (role == "Admin")
+    {
+        <a class="dash-card" asp-controller="Users" asp-action="Index">
+            <span class="dash-card__icon">👥</span>
+            <div>
+                <div class="dash-card__title">Members</div>
+                <div class="dash-card__sub">View and manage member accounts</div>
+            </div>
+        </a>
+        <a class="dash-card" asp-controller="Equipment" asp-action="Index">
+            <span class="dash-card__icon">🔭</span>
+            <div>
+                <div class="dash-card__title">Equipment</div>
+                <div class="dash-card__sub">Manage telescopes, cameras, mounts and eyepieces</div>
+            </div>
+        </a>
+        <a class="dash-card dash-card--muted" asp-controller="Home" asp-action="ByTelescope">
+            <span class="dash-card__icon">📋</span>
+            <div>
+                <div class="dash-card__title">Members by Telescope</div>
+                <div class="dash-card__sub">Distinct borrowers per telescope, sorted by name</div>
+            </div>
+        </a>
+        <a class="dash-card dash-card--muted" asp-controller="Home" asp-action="LoanAudit">
+            <span class="dash-card__icon">🔍</span>
+            <div>
+                <div class="dash-card__title">Loan Audit</div>
+                <div class="dash-card__sub">Review loan activity filterable by coordinator</div>
+            </div>
+        </a>
+    }
+
+    @if (role == "Coordinator")
+    {
+        <a class="dash-card" asp-controller="Loans" asp-action="Index">
+            <span class="dash-card__icon">📦</span>
+            <div>
+                <div class="dash-card__title">Loan Requests</div>
+                <div class="dash-card__sub">Review pending requests and process returns</div>
+            </div>
+        </a>
+    }
+
+    @if (role == "Member")
+    {
+        <a class="dash-card" asp-controller="ObservationNights" asp-action="Index">
+            <span class="dash-card__icon">🌙</span>
+            <div>
+                <div class="dash-card__title">Observation Nights</div>
+                <div class="dash-card__sub">Log and review your observation sessions</div>
+            </div>
+        </a>
+        <a class="dash-card dash-card--muted" asp-controller="Loans" asp-action="MyLoans">
+            <span class="dash-card__icon">📦</span>
+            <div>
+                <div class="dash-card__title">My Loans</div>
+                <div class="dash-card__sub">Track your equipment loans by month</div>
+            </div>
+        </a>
+    }
+
+    <a class="dash-card" asp-controller="Home" asp-action="Ranking">
+        <span class="dash-card__icon">★</span>
+        <div>
+            <div class="dash-card__title">Celestial Ranking</div>
+            <div class="dash-card__sub">Most observed objects across the club</div>
+        </div>
+    </a>
+
 </div>

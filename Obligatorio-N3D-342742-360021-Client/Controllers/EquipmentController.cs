@@ -8,7 +8,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
     [LoggedUserFilter]
     public class EquipmentController(AuxiliarClienteHttp _auxiliarHttp) : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string? type)
         {
             try
             {
@@ -16,6 +16,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     .EnviarYDeserializar<List<EquipmentVM>>("api/v1/equipment", "GET")
                     ?? new List<EquipmentVM>();
 
+                if (!string.IsNullOrWhiteSpace(type) && type != "All")
+                    equipment = equipment.Where(e => e.EquipmentType == type).ToList();
+
+                ViewBag.Type = type ?? "All";
                 return View(equipment);
             }
             catch (Exception)
@@ -48,6 +52,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     SensorType = sensorType
                 };
                 _auxiliarHttp.EnviarSolicitud("api/v1/equipment", "POST", dto);
+                TempData["Success"] = "Item added to the inventory.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -81,6 +86,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     SensorType = sensorType
                 };
                 _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "PUT", dto);
+                TempData["Success"] = "Equipment updated successfully.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -96,6 +102,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "DELETE");
+                TempData["Success"] = "Item removed from inventory.";
                 return RedirectToAction("Index");
             }
             catch (Exception)

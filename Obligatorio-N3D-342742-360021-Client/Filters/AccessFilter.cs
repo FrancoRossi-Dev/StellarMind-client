@@ -30,7 +30,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Filters
 
             if (!userRoles.Any(r => allowedRoles.Contains(r)))
             {
-                context.Result = new RedirectResult("~/usuario/notauthorized");
+                context.Result = new RedirectToActionResult("Index", "Home", null);
                 return;
             }
 

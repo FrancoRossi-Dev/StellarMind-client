@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Log Observation Night";
+    int? userId = Context.Session.GetInt32("UserId");
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Log Observation Night</h1>
+        <p class="page-head__sub">Record a new observation session and request an AI sky evaluation</p>
+    </div>
+    <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
+</div>
+
+<div class="card" style="max-width: 560px;">
+    <div class="card__body">
+        <form method="post" asp-controller="ObservationNights" asp-action="Create" class="form-stack">
+
+            <input type="hidden" name="userId" value="@userId" />
+
+            <div class="field">
+                <label class="field__label" for="date">Date &amp; Time</label>
+                <input id="date" name="date" type="datetime-local" class="input" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="location">Location</label>
+                <input id="location" name="location" type="text" class="input"
+                       placeholder="e.g. Cerro Catedral Observatory" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="notes">Notes</label>
+                <textarea id="notes" name="notes" class="textarea" rows="4"
+                          placeholder="Objects observed, conditions, equipment used…"></textarea>
+            </div>
+
+            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
+                <button type="submit" class="btn btn--primary">Log session</button>
+                <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>

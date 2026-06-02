@@ -79,6 +79,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     Notes = notes
                 };
                 _auxiliarHttp.EnviarSolicitud("api/v1/observationnights", "POST", dto);
+                TempData["Success"] = "Observation night logged successfully.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -119,6 +120,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     Notes = notes
                 };
                 _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "PUT", dto);
+                TempData["Success"] = "Observation session updated.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -134,6 +136,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "DELETE");
+                TempData["Success"] = "Observation night removed.";
                 return RedirectToAction("Index");
             }
             catch (Exception)

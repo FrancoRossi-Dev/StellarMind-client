@@ -1,0 +1,97 @@
+@model Obligatorio_N3D_342742_360021_Client.Models.EquipmentVM
+
+@{
+    ViewData["Title"] = "Edit Equipment";
+    string typeVal    = Model?.EquipmentType ?? "";
+    string mountVal   = Model?.MountType ?? "";
+    string sensorVal  = Model?.SensorType ?? "";
+    string focalVal   = Model?.FocalLenght?.ToString() ?? "";
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Edit Equipment</h1>
+        <p class="page-head__sub">Update item details in the inventory</p>
+    </div>
+    <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index">← Back</a>
+</div>
+
+<div class="card" style="max-width: 600px;">
+    <div class="card__body">
+        <form method="post" asp-controller="Equipment" asp-action="Edit" asp-route-id="@Model?.Id" class="form-stack">
+
+            <div class="field">
+                <label class="field__label" for="name">Name</label>
+                <input id="name" name="name" type="text" class="input" value="@Model?.Name" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="equipmentType">Type</label>
+                <select id="equipmentType" name="equipmentType" class="select" required onchange="updateFields(this.value)">
+                    <option value="Telescope">Telescope</option>
+                    <option value="Mount">Mount</option>
+                    <option value="Camera">Camera</option>
+                    <option value="Eyepiece">Eyepiece</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="description">Description</label>
+                <textarea id="description" name="description" class="textarea">@Model?.Description</textarea>
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="quantity">Quantity</label>
+                <input id="quantity" name="quantity" type="number" class="input" min="1" value="@Model?.Quantity" required />
+            </div>
+
+            <div class="field" id="field-focalLenght" style="display:none;">
+                <label class="field__label" for="focalLenght">Focal Length (mm)</label>
+                <input id="focalLenght" name="focalLenght" type="number" step="any" class="input" value="@focalVal" />
+            </div>
+
+            <div class="field" id="field-mountType" style="display:none;">
+                <label class="field__label" for="mountType">Mount Type</label>
+                <select id="mountType" name="mountType" class="select">
+                    <option value="">— Select —</option>
+                    <option value="Ecuatorial">Ecuatorial</option>
+                    <option value="AltAzimutal">AltAzimutal</option>
+                    <option value="Híbrida">Híbrida</option>
+                </select>
+            </div>
+
+            <div class="field" id="field-sensorType" style="display:none;">
+                <label class="field__label" for="sensorType">Sensor Type</label>
+                <select id="sensorType" name="sensorType" class="select">
+                    <option value="">— Select —</option>
+                    <option value="CMOS">CMOS</option>
+                    <option value="CCD">CCD</option>
+                </select>
+            </div>
+
+            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
+                <button type="submit" class="btn btn--primary">Save changes</button>
+                <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function updateFields(type) {
+    document.getElementById('field-focalLenght').style.display = (type === 'Telescope' || type === 'Eyepiece') ? '' : 'none';
+    document.getElementById('field-mountType').style.display   = (type === 'Mount')     ? '' : 'none';
+    document.getElementById('field-sensorType').style.display  = (type === 'Camera')    ? '' : 'none';
+}
+
+// Restore all values from server — avoids the selected="True"/"False" Razor boolean bug
+(function () {
+    document.getElementById('equipmentType').value = '@Html.Raw(typeVal)';
+    document.getElementById('mountType').value     = '@Html.Raw(mountVal)';
+    document.getElementById('sensorType').value    = '@Html.Raw(sensorVal)';
+    updateFields('@Html.Raw(typeVal)');
+})();
+</script>
+}

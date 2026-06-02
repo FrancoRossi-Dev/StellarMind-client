@@ -13,55 +13,156 @@
 </head>
 <body>
 @{
-    bool hideTopbar = ViewData["HideTopbar"] as bool? == true;
+    bool hideShell  = ViewData["HideTopbar"] as bool? == true;
     string? sessionUsername = Context.Session.GetString("Username");
-    string? sessionRole = Context.Session.GetString("UserRole");
-    bool loggedIn = !string.IsNullOrEmpty(sessionUsername);
+    string? sessionRole     = Context.Session.GetString("UserRole");
+    string? currentCtrl     = ViewContext.RouteData.Values["controller"]?.ToString();
+    string? currentAction   = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string NavClass(string ctrl, string? action = null) {
+        bool match = string.Equals(currentCtrl, ctrl, StringComparison.OrdinalIgnoreCase)
+            && (action == null || string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase));
+        return match ? "nav-item active" : "nav-item";
+    }
 
     string roleChipClass = sessionRole switch {
         "Admin"       => "chip chip--accent",
         "Coordinator" => "chip chip--info",
         _             => "chip chip--plain"
     };
-}
-@if (!hideTopbar)
-{
-    <header class="topbar">
-        <a class="topbar__brand" asp-controller="Users" asp-action="Index">
-            <span class="topbar__brand-icon">✦</span>
-            StellarMinds
-        </a>
-        <span class="topbar__spacer"></span>
-        @if (loggedIn)
-        {
-            <div class="topbar__actions">
-                <div class="topbar__user-info">
-                    <span>@sessionUsername</span>
-                    <span class="@roleChipClass">@sessionRole</span>
-                </div>
-                <a class="btn btn--ghost btn--sm" asp-controller="Users" asp-action="Logout">Sign out</a>
-            </div>
-        }
-    </header>
 
-    <div class="page-body">
-        @RenderBody()
-    </div>
+    string Initials(string? n) {
+        if (string.IsNullOrWhiteSpace(n)) return "?";
+        var p = n.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return (p.Length >= 2 ? $"{p[0][0]}{p[^1][0]}" : p[0][0].ToString()).ToUpper();
+    }
 }
-else
+
+@if (hideShell)
 {
     @RenderBody()
 }
+else
+{
+    <div class="shell">
+
+        <aside class="sidebar">
+
+            <div class="sidebar__header">
+                <span class="sidebar__brand-icon">✦</span>
+                <span class="sidebar__brand-name">StellarMinds</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(sessionUsername))
+            {
+                <div class="sidebar__user">
+                    <span class="avatar">@Initials(sessionUsername)</span>
+                    <div class="sidebar__user-info">
+                        <div class="sidebar__user-name">@sessionUsername</div>
+                        <span class="@roleChipClass">@sessionRole</span>
+                    </div>
+                </div>
+            }
+
+            <nav class="sidebar__nav" aria-label="Main navigation">
+
+                <a class="@NavClass("Home", "Index")" asp-controller="Home" asp-action="Index">
+                    <span class="nav-item__icon">⊞</span>
+                    Dashboard
+                </a>
+
+                @if (sessionRole == "Admin")
+                {
+                    <p class="nav-section-label">Management</p>
+                    <a class="@NavClass("Users")" asp-controller="Users" asp-action="Index">
+                        <span class="nav-item__icon">👥</span>
+                        Members
+                    </a>
+                    <a class="@NavClass("Equipment")" asp-controller="Equipment" asp-action="Index">
+                        <span class="nav-item__icon">🔭</span>
+                        Equipment
+                    </a>
+                }
+
+                @if (sessionRole == "Coordinator")
+                {
+                    <p class="nav-section-label">Coordinator</p>
+                    <a class="@NavClass("Loans")" asp-controller="Loans" asp-action="Index">
+                        <span class="nav-item__icon">📦</span>
+                        Loan Requests
+                    </a>
+                }
+
+                @if (sessionRole == "Member")
+                {
+                    <p class="nav-section-label">My Space</p>
+                    <a class="@NavClass("ObservationNights")" asp-controller="ObservationNights" asp-action="Index">
+                        <span class="nav-item__icon">🌙</span>
+                        Observation Nights
+                    </a>
+                    <a class="@NavClass("Loans", "MyLoans")" asp-controller="Loans" asp-action="MyLoans">
+                        <span class="nav-item__icon">📦</span>
+                        My Loans
+                    </a>
+                }
+
+                <p class="nav-section-label">Reports</p>
+                <a class="@NavClass("Home", "Ranking")" asp-controller="Home" asp-action="Ranking">
+                    <span class="nav-item__icon">★</span>
+                    Celestial Ranking
+                </a>
+
+                @if (sessionRole == "Admin")
+                {
+                    <a class="@NavClass("Home", "ByTelescope")" asp-controller="Home" asp-action="ByTelescope">
+                        <span class="nav-item__icon">📋</span>
+                        Members by Telescope
+                    </a>
+                    <a class="@NavClass("Home", "LoanAudit")" asp-controller="Home" asp-action="LoanAudit">
+                        <span class="nav-item__icon">🔍</span>
+                        Loan Audit
+                    </a>
+                }
+
+            </nav>
+
+            <div class="sidebar__footer">
+                <a class="nav-item nav-item--signout" asp-controller="Users" asp-action="Logout">
+                    <span class="nav-item__icon">↩</span>
+                    Sign out
+                </a>
+            </div>
+
+        </aside>
+
+        <main class="shell__main">
+            <div class="shell__content">
+                @RenderBody()
+            </div>
+        </main>
+
+    </div>
+}
 
 <script src="~/js/toast.js" asp-append-version="true"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
 @{
-    string? _toastMsg = ViewBag.message as string ?? ViewBag.msg as string;
+    string? _errorMsg   = ViewBag.message as string ?? ViewBag.msg as string;
+    string? _successMsg = TempData["Success"] as string;
 }
-@if (!string.IsNullOrEmpty(_toastMsg))
+@if (!string.IsNullOrEmpty(_errorMsg))
 {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            Toast.show(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(_toastMsg)), 'error');
+            Toast.show(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(_errorMsg)), 'error');
+        });
+    </script>
+}
+@if (!string.IsNullOrEmpty(_successMsg))
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Toast.show(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(_successMsg)), 'success');
         });
     </script>
 }

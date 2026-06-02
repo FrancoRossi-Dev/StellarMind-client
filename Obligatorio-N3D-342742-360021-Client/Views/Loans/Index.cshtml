@@ -1,0 +1,106 @@
+@model List<Obligatorio_N3D_342742_360021_Client.Models.LoanVM>
+
+@{
+    ViewData["Title"] = "Loan Requests";
+    bool isCoord = Context.Session.GetString("UserRole") == "Coordinator";
+
+    string ReqChipClass(int s) => s switch {
+        0 => "chip chip--warning",
+        1 => "chip chip--success",
+        2 => "chip chip--danger",
+        3 => "chip chip--plain",
+        _ => "chip chip--plain"
+    };
+    string ReqLabel(int s) => s switch {
+        0 => "Pending",
+        1 => "Approved",
+        2 => "Rejected",
+        3 => "Canceled",
+        _ => "Unknown"
+    };
+    string LoanLabel(int s) => s switch {
+        0 => "Loaned",
+        1 => "Canceled",
+        2 => "Returned",
+        _ => "—"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Loan Requests</h1>
+        <p class="page-head__sub">Pending equipment requests awaiting coordinator action</p>
+    </div>
+    @if (isCoord)
+    {
+        <a class="btn btn--primary" asp-controller="Loans" asp-action="Create">+ New request</a>
+    }
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon">📦</div>
+            <p class="empty__title">No pending requests</p>
+            <p class="empty__body">All loan requests have been processed — the queue is clear.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Member ID</th>
+                    <th>Equipment ID</th>
+                    <th>Requested</th>
+                    <th>Status</th>
+                    <th>Loan</th>
+                    @if (isCoord)
+                    {
+                        <th style="text-align:right;">Actions</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loan in Model)
+                {
+                    <tr>
+                        <td style="color: var(--color-text-muted);">#@loan.Id</td>
+                        <td>@loan.MemberId</td>
+                        <td>@loan.EquipmentId</td>
+                        <td style="color: var(--color-text-secondary);">@loan.RequestDate</td>
+                        <td><span class="@ReqChipClass(loan.RequestStatus)">@ReqLabel(loan.RequestStatus)</span></td>
+                        <td style="color: var(--color-text-secondary);">@LoanLabel(loan.LoanStatus)</td>
+                        @if (isCoord)
+                        {
+                            <td>
+                                <div class="tbl__actions">
+                                    @if (loan.RequestStatus == 0)
+                                    {
+                                        <form method="post" asp-controller="Loans" asp-action="Approve" asp-route-id="@loan.Id">
+                                            <button type="submit" class="btn btn--secondary btn--sm">Approve</button>
+                                        </form>
+                                        <form method="post" asp-controller="Loans" asp-action="Reject" asp-route-id="@loan.Id">
+                                            <button type="submit" class="btn btn--danger btn--sm">Reject</button>
+                                        </form>
+                                    }
+                                    @if (loan.LoanStatus == 0)
+                                    {
+                                        <form method="post" asp-controller="Loans" asp-action="Return" asp-route-id="@loan.Id"
+                                              onsubmit="return confirm('Mark this loan as returned?');">
+                                            <button type="submit" class="btn btn--secondary btn--sm">Return</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

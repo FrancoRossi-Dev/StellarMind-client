@@ -1,0 +1,45 @@
+@model Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM
+
+@{
+    ViewData["Title"] = "Edit Observation Night";
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Edit Observation Night</h1>
+        <p class="page-head__sub">Update the details of this observation session</p>
+    </div>
+    <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
+</div>
+
+<div class="card" style="max-width: 560px;">
+    <div class="card__body">
+        <form method="post" asp-controller="ObservationNights" asp-action="Edit" asp-route-id="@Model?.Id" class="form-stack">
+
+            <input type="hidden" name="userId" value="@Model?.UserId" />
+
+            <div class="field">
+                <label class="field__label" for="date">Date &amp; Time</label>
+                <input id="date" name="date" type="datetime-local" class="input"
+                       value="@Model?.Date" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="location">Location</label>
+                <input id="location" name="location" type="text" class="input"
+                       value="@Model?.Location" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="notes">Notes</label>
+                <textarea id="notes" name="notes" class="textarea" rows="4">@Model?.Notes</textarea>
+            </div>
+
+            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
+                <button type="submit" class="btn btn--primary">Save changes</button>
+                <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>

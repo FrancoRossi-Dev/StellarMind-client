@@ -1,0 +1,109 @@
+@model List<Obligatorio_N3D_342742_360021_Client.Models.EquipmentVM>
+
+@{
+    ViewData["Title"] = "Equipment";
+    bool isAdmin      = Context.Session.GetString("UserRole") == "Admin";
+    string currentType = ViewBag.Type as string ?? "All";
+
+    string TabClass(string tab) =>
+        string.Equals(tab, currentType, StringComparison.OrdinalIgnoreCase)
+            ? "seg-filter__btn active"
+            : "seg-filter__btn";
+
+    string TypeChipClass(string? type) => type switch {
+        "Telescope" => "chip chip--accent",
+        "Camera"    => "chip chip--info",
+        "Mount"     => "chip chip--warning",
+        "Eyepiece"  => "chip chip--plain",
+        _           => "chip chip--plain"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Equipment</h1>
+        <p class="page-head__sub">Telescopes, mounts, cameras and eyepieces available for loan</p>
+    </div>
+    @if (isAdmin)
+    {
+        <a class="btn btn--primary" asp-controller="Equipment" asp-action="Create">+ New item</a>
+    }
+</div>
+
+<div style="margin-bottom: var(--p-space-4);">
+    <div class="seg-filter">
+        <a href="?type=All"       class="@TabClass("All")">All</a>
+        <a href="?type=Telescope" class="@TabClass("Telescope")">Telescope</a>
+        <a href="?type=Mount"     class="@TabClass("Mount")">Mount</a>
+        <a href="?type=Camera"    class="@TabClass("Camera")">Camera</a>
+        <a href="?type=Eyepiece"  class="@TabClass("Eyepiece")">Eyepiece</a>
+    </div>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon">🔭</div>
+            <p class="empty__title">No equipment found</p>
+            <p class="empty__body">
+                @if (currentType != "All")
+                {
+                    <text>No @currentType items in the inventory.</text>
+                }
+                else
+                {
+                    <text>The observatory inventory is empty. Add items to get started.</text>
+                }
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th style="text-align:right;">Qty</th>
+                    @if (isAdmin)
+                    {
+                        <th style="text-align:right;">Actions</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="tbl__name">@item.Name</td>
+                        <td><span class="@TypeChipClass(item.EquipmentType)">@item.EquipmentType</span></td>
+                        <td style="color: var(--color-text-secondary);">@item.Description</td>
+                        <td style="text-align:right; font-variant-numeric: tabular-nums;">@item.Quantity</td>
+                        @if (isAdmin)
+                        {
+                            <td>
+                                <div class="tbl__actions">
+                                    <a class="btn btn--secondary btn--sm"
+                                       asp-controller="Equipment"
+                                       asp-action="Edit"
+                                       asp-route-id="@item.Id">Edit</a>
+                                    <form method="post"
+                                          asp-controller="Equipment"
+                                          asp-action="Delete"
+                                          asp-route-id="@item.Id"
+                                          onsubmit="return confirm('Remove @item.Name from inventory?');">
+                                        <button type="submit" class="btn btn--danger btn--sm">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
