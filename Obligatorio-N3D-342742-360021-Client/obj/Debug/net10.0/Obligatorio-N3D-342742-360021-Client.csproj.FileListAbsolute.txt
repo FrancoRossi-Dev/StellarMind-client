@@ -101,4 +101,4 @@ C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\bin\Debug\net10.0\libman.json
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\9xe5wsplav-{0}-4mg30kdybn-4mg30kdybn.gz
 C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\2fr562djo5-{0}-lz7zjhnguu-lz7zjhnguu.gz
-C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\3ofqrgpy9o-{0}-lrf3b37vfw-lrf3b37vfw.gz
+C:\ORT\p3\Obligatorio-N3D-342742-360021-Client\Client\Obligatorio-N3D-342742-360021-Client\obj\Debug\net10.0\compressed\3ofqrgpy9o-{0}-l7wnxqhzwn-l7wnxqhzwn.gz

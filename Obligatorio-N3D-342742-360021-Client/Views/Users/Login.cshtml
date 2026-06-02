@@ -29,12 +29,25 @@
             </div>
             <div class="field">
                 <label asp-for="password" class="field__label">Password</label>
-                <input asp-for="password"
-                       type="password"
-                       class="input"
-                       autocomplete="current-password"
-                       placeholder="••••••••"
-                       required />
+                <div class="input-wrap">
+                    <input asp-for="password"
+                           id="passwordInput"
+                           type="password"
+                           class="input"
+                           autocomplete="current-password"
+                           placeholder="••••••••"
+                           required />
+                    <button type="button"
+                            class="input-wrap__toggle"
+                            aria-label="Show password"
+                            onclick="(function(btn){
+                                var inp = document.getElementById('passwordInput');
+                                var showing = inp.type === 'text';
+                                inp.type = showing ? 'password' : 'text';
+                                btn.querySelector('i').className = showing ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+                                btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                            })(this)"><i class="fa-regular fa-eye"></i></button>
+                </div>
             </div>
             <button type="submit" class="btn btn--primary btn--full" style="margin-top: 0.5rem;">
                 Sign in
