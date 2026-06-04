@@ -12,35 +12,58 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                var loans = _auxiliarHttp
-                    .EnviarYDeserializar<List<LoanVM>>("api/v1/loans/pendingRequests", "GET")
-                    ?? new List<LoanVM>();
+                var requests = _auxiliarHttp
+                    .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loans/pendingRequests", "GET")
+                    ?? new List<PendingLoanRequestVM>();
 
-                return View(loans);
+                return View(requests);
             }
             catch (Exception)
             {
                 ViewBag.msg = "The loan list seems to be orbiting somewhere else. Try again.";
-                return View(new List<LoanVM>());
+                return View(new List<PendingLoanRequestVM>());
             }
         }
 
         [HttpGet("Loans/Create")]
-        public IActionResult Create()
+        public IActionResult Create(int? nightId = null)
         {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            var nights = new List<ObservationNightVM>();
+            if (userId.HasValue)
+            {
+                try
+                {
+                    nights = _auxiliarHttp
+                        .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/users/nights/{userId}", "GET")
+                        ?? new List<ObservationNightVM>();
+                }
+                catch { }
+            }
+            ViewBag.Nights = nights;
+            ViewBag.SelectedNightId = nightId;
             return View();
         }
 
         [HttpPost("Loans/Create")]
-        public IActionResult Create(int memberId, int equipmentId, string requestDate)
+        public IActionResult Create(int userId, string date, int celestialObjectId, string details,
+                                    int telescopeId, int mountId, int eyepieceId, int cameraId)
         {
             try
             {
-                var dto = new CreateLoanDto
+                var dto = new CreateLoanRequestDto
                 {
-                    MemberId = memberId,
-                    EquipmentId = equipmentId,
-                    RequestDate = requestDate
+                    UserId = userId,
+                    TelescopeId = telescopeId,
+                    MountId = mountId,
+                    EyepieceId = eyepieceId,
+                    CameraId = cameraId,
+                    ObservationNight = new LoanObservationNightDto
+                    {
+                        Date = date,
+                        CelestialObjectId = celestialObjectId,
+                        Details = details
+                    }
                 };
                 _auxiliarHttp.EnviarSolicitud("api/v1/loans/createLoan", "POST", dto);
                 TempData["Success"] = "Loan request submitted.";

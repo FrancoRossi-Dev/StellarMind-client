@@ -1,29 +1,13 @@
-@model List<Obligatorio_N3D_342742_360021_Client.Models.LoanVM>
+@model List<Obligatorio_N3D_342742_360021_Client.Models.PendingLoanRequestVM>
 
 @{
     ViewData["Title"] = "Loan Requests";
     bool isCoord = Context.Session.GetString("UserRole") == "Coordinator";
 
-    string ReqChipClass(int s) => s switch {
-        0 => "chip chip--warning",
-        1 => "chip chip--success",
-        2 => "chip chip--danger",
-        3 => "chip chip--plain",
-        _ => "chip chip--plain"
-    };
-    string ReqLabel(int s) => s switch {
-        0 => "Pending",
-        1 => "Approved",
-        2 => "Rejected",
-        3 => "Canceled",
-        _ => "Unknown"
-    };
-    string LoanLabel(int s) => s switch {
-        0 => "Loaned",
-        1 => "Canceled",
-        2 => "Returned",
-        _ => "—"
-    };
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
+    }
 }
 
 <div class="page-head">
@@ -31,17 +15,13 @@
         <h1 class="page-head__title">Loan Requests</h1>
         <p class="page-head__sub">Pending equipment requests awaiting coordinator action</p>
     </div>
-    @if (isCoord)
-    {
-        <a class="btn btn--primary" asp-controller="Loans" asp-action="Create">+ New request</a>
-    }
 </div>
 
 @if (Model == null || !Model.Any())
 {
     <div class="card">
         <div class="empty">
-            <div class="empty__icon">📦</div>
+            <div class="empty__icon"><i class="fa-solid fa-inbox"></i></div>
             <p class="empty__title">No pending requests</p>
             <p class="empty__body">All loan requests have been processed — the queue is clear.</p>
         </div>
@@ -54,11 +34,9 @@ else
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Member ID</th>
-                    <th>Equipment ID</th>
-                    <th>Requested</th>
-                    <th>Status</th>
-                    <th>Loan</th>
+                    <th>Member</th>
+                    <th>Observation Night</th>
+                    <th>Telescope</th>
                     @if (isCoord)
                     {
                         <th style="text-align:right;">Actions</th>
@@ -66,35 +44,38 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var loan in Model)
+                @foreach (var req in Model)
                 {
                     <tr>
-                        <td style="color: var(--color-text-muted);">#@loan.Id</td>
-                        <td>@loan.MemberId</td>
-                        <td>@loan.EquipmentId</td>
-                        <td style="color: var(--color-text-secondary);">@loan.RequestDate</td>
-                        <td><span class="@ReqChipClass(loan.RequestStatus)">@ReqLabel(loan.RequestStatus)</span></td>
-                        <td style="color: var(--color-text-secondary);">@LoanLabel(loan.LoanStatus)</td>
+                        <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@req.RequestId</td>
+                        <td>
+                            <div class="tbl__name">@(req.RequestingUser?.fullName ?? "—")</div>
+                            <div class="tbl__sub">@@@(req.RequestingUser?.username ?? "")</div>
+                        </td>
+                        <td>
+                            <div>@FmtDate(req.ObservationNight?.Date)</div>
+                            <div class="tbl__sub">@(req.ObservationNight?.CelestialObject?.Name ?? "—")</div>
+                        </td>
+                        <td style="color: var(--color-text-secondary);">
+                            @if (req.EquipmentSet?.Telescope != null)
+                            {
+                                <span>@req.EquipmentSet.Telescope.Brand @req.EquipmentSet.Telescope.Model</span>
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
+                        </td>
                         @if (isCoord)
                         {
                             <td>
                                 <div class="tbl__actions">
-                                    @if (loan.RequestStatus == 0)
-                                    {
-                                        <form method="post" asp-controller="Loans" asp-action="Approve" asp-route-id="@loan.Id">
-                                            <button type="submit" class="btn btn--secondary btn--sm">Approve</button>
-                                        </form>
-                                        <form method="post" asp-controller="Loans" asp-action="Reject" asp-route-id="@loan.Id">
-                                            <button type="submit" class="btn btn--danger btn--sm">Reject</button>
-                                        </form>
-                                    }
-                                    @if (loan.LoanStatus == 0)
-                                    {
-                                        <form method="post" asp-controller="Loans" asp-action="Return" asp-route-id="@loan.Id"
-                                              onsubmit="return confirm('Mark this loan as returned?');">
-                                            <button type="submit" class="btn btn--secondary btn--sm">Return</button>
-                                        </form>
-                                    }
+                                    <form method="post" asp-controller="Loans" asp-action="Approve" asp-route-id="@req.RequestId">
+                                        <button type="submit" class="btn btn--secondary btn--sm">Approve</button>
+                                    </form>
+                                    <form method="post" asp-controller="Loans" asp-action="Reject" asp-route-id="@req.RequestId">
+                                        <button type="submit" class="btn btn--danger btn--sm">Reject</button>
+                                    </form>
                                 </div>
                             </td>
                         }

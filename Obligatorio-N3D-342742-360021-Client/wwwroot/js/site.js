@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var btn = form.querySelector('button[type="submit"].btn--primary');
             if (btn && !btn.disabled) {
                 btn.disabled = true;
-                btn.insertAdjacentHTML('beforeend', '<span class="btn-spinner"> …</span>');
+                btn.insertAdjacentHTML('beforeend', '<i class="btn-spinner fa-solid fa-circle-notch fa-spin"></i>');
             }
         });
     });

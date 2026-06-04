@@ -1,40 +1,127 @@
 @{
     ViewData["Title"] = "New Loan Request";
+    int? userId = Context.Session.GetInt32("UserId");
+
+    var nights = ViewBag.Nights as List<Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM>
+                 ?? new List<Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM>();
+
+    int? selectedNightId = ViewBag.SelectedNightId as int?;
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy  HH:mm") : raw;
+    }
 }
 
 <div class="page-head">
     <div>
         <h1 class="page-head__title">New Loan Request</h1>
-        <p class="page-head__sub">Submit an equipment loan request on behalf of a member</p>
+        <p class="page-head__sub">Select a planned observation night and confirm the equipment set</p>
     </div>
-    <a class="btn btn--ghost" asp-controller="Loans" asp-action="Index">← Back</a>
+    <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
 </div>
 
-<div class="card" style="max-width: 520px;">
+<div class="card" style="max-width: 560px;">
     <div class="card__body">
-        <form method="post" asp-controller="Loans" asp-action="Create" class="form-stack">
 
-            <div class="field">
-                <label class="field__label" for="memberId">Member ID</label>
-                <input id="memberId" name="memberId" type="number" class="input" min="1" required />
+        @if (!nights.Any())
+        {
+            <div class="empty">
+                <div class="empty__icon"><i class="fa-solid fa-moon"></i></div>
+                <p class="empty__title">No observation plans yet</p>
+                <p class="empty__body">You need at least one planned night before requesting equipment.</p>
+                <a class="btn btn--primary" asp-controller="ObservationNights" asp-action="Create">Plan a night</a>
             </div>
+        }
+        else
+        {
+            <form method="post" asp-controller="Loans" asp-action="Create" class="form-stack">
 
-            <div class="field">
-                <label class="field__label" for="equipmentId">Equipment ID</label>
-                <input id="equipmentId" name="equipmentId" type="number" class="input" min="1" required />
-                <span class="field__hint">Availability will be verified before submission (RF04)</span>
-            </div>
+                <input type="hidden" name="userId"            value="@userId" />
+                <input type="hidden" id="hDate"               name="date" />
+                <input type="hidden" id="hCelestialObjectId"  name="celestialObjectId" />
+                <input type="hidden" id="hDetails"            name="details" />
 
-            <div class="field">
-                <label class="field__label" for="requestDate">Request Date</label>
-                <input id="requestDate" name="requestDate" type="datetime-local" class="input" required />
-            </div>
+                <div class="field">
+                    <label class="field__label" for="nightSelector">Observation Plan</label>
+                    <select id="nightSelector" class="select" required onchange="fillNight(this.value)">
+                        <option value="">— Select a planned night —</option>
+                        @foreach (var night in nights)
+                        {
+                            if (night.Id == selectedNightId)
+                            {
+                                <option value="@night.Id" selected>@FmtDate(night.Date) — @(night.CelestialObject?.Name ?? "Unknown object")</option>
+                            }
+                            else
+                            {
+                                <option value="@night.Id">@FmtDate(night.Date) — @(night.CelestialObject?.Name ?? "Unknown object")</option>
+                            }
+                        }
+                    </select>
+                </div>
 
-            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Submit request</button>
-                <a class="btn btn--ghost" asp-controller="Loans" asp-action="Index">Cancel</a>
-            </div>
+                <div class="field-group-label">Equipment</div>
 
-        </form>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="telescopeId">Telescope ID</label>
+                        <input id="telescopeId" name="telescopeId" type="number" class="input" value="22" min="1" required />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="mountId">Mount ID</label>
+                        <input id="mountId" name="mountId" type="number" class="input" value="11" min="1" required />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="eyepieceId">Eyepiece ID</label>
+                        <input id="eyepieceId" name="eyepieceId" type="number" class="input" value="32" min="1" required />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="cameraId">Camera ID</label>
+                        <input id="cameraId" name="cameraId" type="number" class="input" value="1" min="1" required />
+                    </div>
+                </div>
+
+                <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
+                    <button type="submit" class="btn btn--primary" id="submitBtn" disabled>Submit request</button>
+                    <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
+                </div>
+
+            </form>
+        }
+
     </div>
 </div>
+
+@section Scripts {
+<script>
+const nights = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+    nights,
+    new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }
+));
+
+function fillNight(idStr) {
+    const id = parseInt(idStr);
+    const night = nights.find(n => n.id === id);
+    const btn = document.getElementById('submitBtn');
+    if (night) {
+        document.getElementById('hDate').value              = night.date ?? '';
+        document.getElementById('hCelestialObjectId').value = night.celestialObject?.id ?? '';
+        document.getElementById('hDetails').value           = night.details ?? '';
+        btn.disabled = false;
+    } else {
+        document.getElementById('hDate').value              = '';
+        document.getElementById('hCelestialObjectId').value = '';
+        document.getElementById('hDetails').value           = '';
+        btn.disabled = true;
+    }
+}
+
+@if (selectedNightId.HasValue)
+{
+    <text>document.addEventListener('DOMContentLoaded', function () { fillNight(@selectedNightId.Value); });</text>
+}
+</script>
+}

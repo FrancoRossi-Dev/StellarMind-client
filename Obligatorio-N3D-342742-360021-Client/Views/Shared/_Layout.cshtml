@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/css/design-tokens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 </head>
 <body>
 @{
@@ -49,7 +50,7 @@ else
         <aside class="sidebar">
 
             <div class="sidebar__header">
-                <span class="sidebar__brand-icon">✦</span>
+                <span class="sidebar__brand-icon"><i class="fa-solid fa-star-of-life"></i></span>
                 <span class="sidebar__brand-name">StellarMinds</span>
             </div>
 
@@ -67,7 +68,7 @@ else
             <nav class="sidebar__nav" aria-label="Main navigation">
 
                 <a class="@NavClass("Home", "Index")" asp-controller="Home" asp-action="Index">
-                    <span class="nav-item__icon">⊞</span>
+                    <span class="nav-item__icon"><i class="fa-solid fa-table-cells-large"></i></span>
                     Dashboard
                 </a>
 
@@ -75,11 +76,11 @@ else
                 {
                     <p class="nav-section-label">Management</p>
                     <a class="@NavClass("Users")" asp-controller="Users" asp-action="Index">
-                        <span class="nav-item__icon">👥</span>
+                        <span class="nav-item__icon"><i class="fa-solid fa-users"></i></span>
                         Members
                     </a>
                     <a class="@NavClass("Equipment")" asp-controller="Equipment" asp-action="Index">
-                        <span class="nav-item__icon">🔭</span>
+                        <span class="nav-item__icon"><i class="fa-solid fa-binoculars"></i></span>
                         Equipment
                     </a>
                 }
@@ -88,7 +89,7 @@ else
                 {
                     <p class="nav-section-label">Coordinator</p>
                     <a class="@NavClass("Loans")" asp-controller="Loans" asp-action="Index">
-                        <span class="nav-item__icon">📦</span>
+                        <span class="nav-item__icon"><i class="fa-solid fa-inbox"></i></span>
                         Loan Requests
                     </a>
                 }
@@ -97,29 +98,33 @@ else
                 {
                     <p class="nav-section-label">My Space</p>
                     <a class="@NavClass("ObservationNights")" asp-controller="ObservationNights" asp-action="Index">
-                        <span class="nav-item__icon">🌙</span>
-                        Observation Nights
+                        <span class="nav-item__icon"><i class="fa-solid fa-moon"></i></span>
+                        Observation Plans
+                    </a>
+                    <a class="@NavClass("Loans", "Create")" asp-controller="Loans" asp-action="Create">
+                        <span class="nav-item__icon"><i class="fa-solid fa-satellite"></i></span>
+                        Request Equipment
                     </a>
                     <a class="@NavClass("Loans", "MyLoans")" asp-controller="Loans" asp-action="MyLoans">
-                        <span class="nav-item__icon">📦</span>
+                        <span class="nav-item__icon"><i class="fa-solid fa-box-open"></i></span>
                         My Loans
                     </a>
                 }
 
                 <p class="nav-section-label">Reports</p>
                 <a class="@NavClass("Home", "Ranking")" asp-controller="Home" asp-action="Ranking">
-                    <span class="nav-item__icon">★</span>
+                    <span class="nav-item__icon"><i class="fa-solid fa-star"></i></span>
                     Celestial Ranking
                 </a>
 
                 @if (sessionRole == "Admin")
                 {
                     <a class="@NavClass("Home", "ByTelescope")" asp-controller="Home" asp-action="ByTelescope">
-                        <span class="nav-item__icon">📋</span>
+                        <span class="nav-item__icon"><i class="fa-solid fa-clipboard-list"></i></span>
                         Members by Telescope
                     </a>
                     <a class="@NavClass("Home", "LoanAudit")" asp-controller="Home" asp-action="LoanAudit">
-                        <span class="nav-item__icon">🔍</span>
+                        <span class="nav-item__icon"><i class="fa-solid fa-magnifying-glass"></i></span>
                         Loan Audit
                     </a>
                 }
@@ -128,7 +133,7 @@ else
 
             <div class="sidebar__footer">
                 <a class="nav-item nav-item--signout" asp-controller="Users" asp-action="Logout">
-                    <span class="nav-item__icon">↩</span>
+                    <span class="nav-item__icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
                     Sign out
                 </a>
             </div>
@@ -146,6 +151,7 @@ else
 
 <script src="~/js/toast.js" asp-append-version="true"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @{
     string? _errorMsg   = ViewBag.message as string ?? ViewBag.msg as string;
     string? _successMsg = TempData["Success"] as string;
