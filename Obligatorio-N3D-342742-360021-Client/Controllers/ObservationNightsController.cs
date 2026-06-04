@@ -1,7 +1,7 @@
-using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
-using Obligatorio_N3D_342742_360021_Client.Models;
 using Obligatorio_N3D_342742_360021_Client.Filters;
+using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021_Client.Services.Http;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
@@ -12,8 +12,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                string? role = HttpContext.Session.GetString("UserRole");
+                int? userId = HttpContext.Session.GetInt32("UserId");
+
+                string url = (role == "Member" && userId.HasValue)
+                    ? $"api/v1/users/nights/{userId}"
+                    : "api/v1/observationnights";
+
                 var nights = _auxiliarHttp
-                    .EnviarYDeserializar<List<ObservationNightVM>>("api/v1/observationnights", "GET")
+                    .EnviarYDeserializar<List<ObservationNightVM>>(url, "GET")
                     ?? new List<ObservationNightVM>();
 
                 return View(nights);
@@ -67,24 +74,18 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         }
 
         [HttpPost("ObservationNights/Create")]
-        public IActionResult Create(int userId, string date, string location, string notes)
+        public IActionResult Create(int requestingUserId, int celestialObjectId, string date, string details)
         {
             try
             {
-                var dto = new ObservationNightVM
-                {
-                    UserId = userId,
-                    Date = date,
-                    Location = location,
-                    Notes = notes
-                };
+                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, date, details);
                 _auxiliarHttp.EnviarSolicitud("api/v1/observationnights", "POST", dto);
-                TempData["Success"] = "Observation night logged successfully.";
+                TempData["Success"] = "Observation plan created successfully.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
             {
-                ViewBag.msg = "Couldn't log that night. Something got in the way.";
+                ViewBag.msg = "Couldn't save that plan. Something got in the way.";
                 return View();
             }
         }
@@ -107,20 +108,13 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         }
 
         [HttpPost("ObservationNights/Edit/{id}")]
-        public IActionResult Edit(int id, int userId, string date, string location, string notes)
+        public IActionResult Edit(int id, int requestingUserId, int celestialObjectId, string date, string details)
         {
             try
             {
-                var dto = new ObservationNightVM
-                {
-                    Id = id,
-                    UserId = userId,
-                    Date = date,
-                    Location = location,
-                    Notes = notes
-                };
+                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, date, details);
                 _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "PUT", dto);
-                TempData["Success"] = "Observation session updated.";
+                TempData["Success"] = "Observation plan updated.";
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -136,7 +130,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             try
             {
                 _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "DELETE");
-                TempData["Success"] = "Observation night removed.";
+                TempData["Success"] = "Observation plan removed.";
                 return RedirectToAction("Index");
             }
             catch (Exception)

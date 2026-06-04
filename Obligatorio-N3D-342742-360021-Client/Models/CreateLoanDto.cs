@@ -1,9 +1,12 @@
 namespace Obligatorio_N3D_342742_360021_Client.Models
 {
-    public class CreateLoanDto
+    public class CreateLoanRequestDto
     {
-        public int MemberId { get; set; }
-        public int EquipmentId { get; set; }
-        public string RequestDate { get; set; } = string.Empty;   // ISO 8601
+        public int UserId { get; set; }
+        public int TelescopeId { get; set; }
+        public int MountId { get; set; }
+        public int EyepieceId { get; set; }
+        public int CameraId { get; set; }
+        public LoanObservationNightDto ObservationNight { get; set; } = new();
     }
 }

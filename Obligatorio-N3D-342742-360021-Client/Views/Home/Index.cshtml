@@ -16,28 +16,28 @@
     @if (role == "Admin")
     {
         <a class="dash-card" asp-controller="Users" asp-action="Index">
-            <span class="dash-card__icon">👥</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-users"></i></span>
             <div>
                 <div class="dash-card__title">Members</div>
                 <div class="dash-card__sub">View and manage member accounts</div>
             </div>
         </a>
         <a class="dash-card" asp-controller="Equipment" asp-action="Index">
-            <span class="dash-card__icon">🔭</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-binoculars"></i></span>
             <div>
                 <div class="dash-card__title">Equipment</div>
                 <div class="dash-card__sub">Manage telescopes, cameras, mounts and eyepieces</div>
             </div>
         </a>
         <a class="dash-card dash-card--muted" asp-controller="Home" asp-action="ByTelescope">
-            <span class="dash-card__icon">📋</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-clipboard-list"></i></span>
             <div>
                 <div class="dash-card__title">Members by Telescope</div>
                 <div class="dash-card__sub">Distinct borrowers per telescope, sorted by name</div>
             </div>
         </a>
         <a class="dash-card dash-card--muted" asp-controller="Home" asp-action="LoanAudit">
-            <span class="dash-card__icon">🔍</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-magnifying-glass"></i></span>
             <div>
                 <div class="dash-card__title">Loan Audit</div>
                 <div class="dash-card__sub">Review loan activity filterable by coordinator</div>
@@ -48,7 +48,7 @@
     @if (role == "Coordinator")
     {
         <a class="dash-card" asp-controller="Loans" asp-action="Index">
-            <span class="dash-card__icon">📦</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-inbox"></i></span>
             <div>
                 <div class="dash-card__title">Loan Requests</div>
                 <div class="dash-card__sub">Review pending requests and process returns</div>
@@ -59,14 +59,14 @@
     @if (role == "Member")
     {
         <a class="dash-card" asp-controller="ObservationNights" asp-action="Index">
-            <span class="dash-card__icon">🌙</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-moon"></i></span>
             <div>
                 <div class="dash-card__title">Observation Nights</div>
                 <div class="dash-card__sub">Log and review your observation sessions</div>
             </div>
         </a>
         <a class="dash-card dash-card--muted" asp-controller="Loans" asp-action="MyLoans">
-            <span class="dash-card__icon">📦</span>
+            <span class="dash-card__icon"><i class="fa-solid fa-box-open"></i></span>
             <div>
                 <div class="dash-card__title">My Loans</div>
                 <div class="dash-card__sub">Track your equipment loans by month</div>
@@ -75,7 +75,7 @@
     }
 
     <a class="dash-card" asp-controller="Home" asp-action="Ranking">
-        <span class="dash-card__icon">★</span>
+        <span class="dash-card__icon"><i class="fa-solid fa-star"></i></span>
         <div>
             <div class="dash-card__title">Celestial Ranking</div>
             <div class="dash-card__sub">Most observed objects across the club</div>
