@@ -15,22 +15,21 @@
     <div class="card__body">
         <form method="post" asp-controller="ObservationNights" asp-action="Create" class="form-stack">
 
-            <input type="hidden" name="userId" value="@userId" />
+            <input type="hidden" name="requestingUserId" value="@userId" />
 
             <div class="field">
                 <label class="field__label" for="date">Date &amp; Time</label>
-                <input id="date" name="date" type="datetime-local" class="input" required />
+                <input id="date" name="date" type="text" class="input" placeholder="Pick a date and time" required />
             </div>
 
             <div class="field">
-                <label class="field__label" for="location">Location</label>
-                <input id="location" name="location" type="text" class="input"
-                       placeholder="e.g. Cerro Catedral Observatory" required />
+                <label class="field__label" for="celestialObjectId">Celestial Object ID</label>
+                <input id="celestialObjectId" name="celestialObjectId" type="number" class="input" min="1" required />
             </div>
 
             <div class="field">
-                <label class="field__label" for="notes">Notes</label>
-                <textarea id="notes" name="notes" class="textarea" rows="4"
+                <label class="field__label" for="details">Details</label>
+                <textarea id="details" name="details" class="textarea" rows="4"
                           placeholder="Objects observed, conditions, equipment used…"></textarea>
             </div>
 
@@ -42,3 +41,16 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+<script>
+flatpickr("#date", {
+    enableTime: true,
+    dateFormat: "Y-m-dTH:i",
+    altInput: true,
+    altFormat: "F j, Y  \\a\\t H:i",
+    altInputClass: "input",
+    time_24hr: true
+});
+</script>
+}

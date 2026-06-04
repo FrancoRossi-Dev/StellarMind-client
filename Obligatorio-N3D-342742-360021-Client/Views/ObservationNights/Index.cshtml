@@ -1,7 +1,7 @@
 @model List<Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM>
 
 @{
-    ViewData["Title"] = "Observation Nights";
+    ViewData["Title"] = "Observation Plans";
     string? role   = Context.Session.GetString("UserRole");
     bool canCreate = role == "Member";
     bool canEdit   = role == "Admin" || role == "Member";
@@ -14,12 +14,12 @@
 
 <div class="page-head">
     <div>
-        <h1 class="page-head__title">Observation Nights</h1>
-        <p class="page-head__sub">Logged observation sessions across the club</p>
+        <h1 class="page-head__title">Observation Plans</h1>
+        <p class="page-head__sub">Planned observation sessions across the club</p>
     </div>
     @if (canCreate)
     {
-        <a class="btn btn--primary" asp-controller="ObservationNights" asp-action="Create">+ Log night</a>
+        <a class="btn btn--primary" asp-controller="ObservationNights" asp-action="Create">+ Plan night</a>
     }
 </div>
 
@@ -27,9 +27,9 @@
 {
     <div class="card">
         <div class="empty">
-            <div class="empty__icon">🌙</div>
-            <p class="empty__title">No observation nights logged</p>
-            <p class="empty__body">Clear skies are waiting — log your first session to get started.</p>
+            <div class="empty__icon"><i class="fa-solid fa-moon"></i></div>
+            <p class="empty__title">No observation plans yet</p>
+            <p class="empty__body">Clear skies are waiting — plan your first session to get started.</p>
         </div>
     </div>
 }
@@ -40,8 +40,8 @@ else
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Location</th>
-                    <th>Notes</th>
+                    <th>Celestial Object</th>
+                    <th>Details</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
             </thead>
@@ -52,10 +52,10 @@ else
                         <td style="white-space:nowrap; color: var(--color-text-secondary); font-variant-numeric: tabular-nums;">
                             @FmtDate(night.Date)
                         </td>
-                        <td class="tbl__name">@night.Location</td>
+                        <td class="tbl__name">@(night.CelestialObject?.Name ?? "—")</td>
                         <td style="color: var(--color-text-muted); max-width: 260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
-                            title="@night.Notes">
-                            @night.Notes
+                            title="@night.Details">
+                            @night.Details
                         </td>
                         <td>
                             <div class="tbl__actions">
@@ -63,6 +63,13 @@ else
                                    asp-controller="ObservationNights"
                                    asp-action="Details"
                                    asp-route-id="@night.Id">View</a>
+                                @if (canCreate)
+                                {
+                                    <a class="btn btn--secondary btn--sm"
+                                       asp-controller="Loans"
+                                       asp-action="Create"
+                                       asp-route-nightId="@night.Id">Request equipment</a>
+                                }
                                 @if (canEdit)
                                 {
                                     <a class="btn btn--secondary btn--sm"
@@ -73,7 +80,7 @@ else
                                           asp-controller="ObservationNights"
                                           asp-action="Delete"
                                           asp-route-id="@night.Id"
-                                          onsubmit="return confirm('Delete this observation night?');">
+                                          onsubmit="return confirm('Delete this observation plan?');">
                                         <button type="submit" class="btn btn--danger btn--sm">Delete</button>
                                     </form>
                                 }

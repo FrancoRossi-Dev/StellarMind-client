@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Error = Obligatorio_N3D_342742_360021_Client.Models.Error;
 
 namespace Obligatorio_N3D_342742_360021_Client.Services.Http
 {
@@ -28,8 +29,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Services.Http
                 _ => throw new ArgumentException("Verbo no soportado", nameof(verbo))
             };
 
-            resp.EnsureSuccessStatusCode();
-            return resp;
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp;
+            }
+            string json = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            Error error = JsonSerializer.Deserialize<Error>(json, opts);
+            throw new Exception(error.Message);
+
         }
 
         public string ObtenerBody(HttpResponseMessage respuesta)
