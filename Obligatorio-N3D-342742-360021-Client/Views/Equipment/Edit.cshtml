@@ -2,10 +2,10 @@
 
 @{
     ViewData["Title"] = "Edit Equipment";
-    string typeVal    = Model?.EquipmentType ?? "";
+    string typeVal    = Model?.Type ?? "";
     string mountVal   = Model?.MountType ?? "";
     string sensorVal  = Model?.SensorType ?? "";
-    string focalVal   = Model?.FocalLenght?.ToString() ?? "";
+    string focalVal   = Model?.FocalLenght ?? "";
 }
 
 <div class="page-head">
@@ -21,8 +21,8 @@
         <form method="post" asp-controller="Equipment" asp-action="Edit" asp-route-id="@Model?.Id" class="form-stack">
 
             <div class="field">
-                <label class="field__label" for="name">Name</label>
-                <input id="name" name="name" type="text" class="input" value="@Model?.Name" required />
+                <label class="field__label" for="name">Brand</label>
+                <input id="name" name="name" type="text" class="input" value="@Model?.Brand" required />
             </div>
 
             <div class="field">
@@ -36,8 +36,8 @@
             </div>
 
             <div class="field">
-                <label class="field__label" for="description">Description</label>
-                <textarea id="description" name="description" class="textarea">@Model?.Description</textarea>
+                <label class="field__label" for="description">Model</label>
+                <textarea id="description" name="description" class="textarea">@Model?.Model</textarea>
             </div>
 
             <div class="field">

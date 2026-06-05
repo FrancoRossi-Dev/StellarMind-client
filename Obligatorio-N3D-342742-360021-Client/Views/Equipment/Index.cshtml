@@ -65,9 +65,9 @@ else
         <table class="tbl">
             <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>Brand</th>
                     <th>Type</th>
-                    <th>Description</th>
+                    <th>Model</th>
                     <th style="text-align:right;">Qty</th>
                     @if (isAdmin)
                     {
@@ -79,9 +79,9 @@ else
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="tbl__name">@item.Name</td>
-                        <td><span class="@TypeChipClass(item.EquipmentType)">@item.EquipmentType</span></td>
-                        <td style="color: var(--color-text-secondary);">@item.Description</td>
+                        <td class="tbl__name">@item.Brand</td>
+                        <td><span class="@TypeChipClass(item.Type)">@item.Type</span></td>
+                        <td style="color: var(--color-text-secondary);">@item.Model</td>
                         <td style="text-align:right; font-variant-numeric: tabular-nums;">@item.Quantity</td>
                         @if (isAdmin)
                         {
@@ -95,7 +95,7 @@ else
                                           asp-controller="Equipment"
                                           asp-action="Delete"
                                           asp-route-id="@item.Id"
-                                          onsubmit="return confirm('Remove @item.Name from inventory?');">
+                                          onsubmit="return confirm('Remove @item.Brand from inventory?');">
                                         <button type="submit" class="btn btn--danger btn--sm">Delete</button>
                                     </form>
                                 </div>

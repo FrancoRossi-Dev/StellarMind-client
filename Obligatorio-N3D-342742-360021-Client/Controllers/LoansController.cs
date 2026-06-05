@@ -15,7 +15,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var requests = _auxiliarHttp
                     .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loans/pendingRequests", "GET")
                     ?? new List<PendingLoanRequestVM>();
-
+                    
                 return View(requests);
             }
             catch (Exception)
