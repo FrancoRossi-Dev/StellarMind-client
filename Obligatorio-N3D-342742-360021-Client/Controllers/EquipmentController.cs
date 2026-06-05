@@ -101,13 +101,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "DELETE");
+                var response = _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "DELETE");
+                var body = _auxiliarHttp.ObtenerBody(response);
                 TempData["Success"] = "Item removed from inventory.";
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 ViewBag.msg = "Couldn't remove that item. Something crossed our path.";
+                Console.WriteLine(e.Message); // e.Message ahora contendrá el texto crudo si no era JSON
                 return RedirectToAction("Index");
             }
         }
