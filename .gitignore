@@ -19,3 +19,7 @@ project.lock.json
 
 # Publish output
 publish/
+/.vs
+/.vs
+/.vs
+/Obligatorio-N3D-342742-360021-Client/obj
