@@ -58,7 +58,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 var token = HttpContext.Session.GetString("Token");
                 var nights = _auxiliarHttp
-                    .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/observationnights/user/{userId}", "GET", token: token)
+                    .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/users/nights/{userId}", "GET", token: token)
                     ?? new List<ObservationNightVM>();
 
                 return View("Index", nights);
