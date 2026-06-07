@@ -12,8 +12,9 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
                 var equipment = _auxiliarHttp
-                    .EnviarYDeserializar<List<EquipmentVM>>("api/v1/equipment", "GET")
+                    .EnviarYDeserializar<List<EquipmentVM>>("api/v1/equipment", "GET", token: token)
                     ?? new List<EquipmentVM>();
 
                 if (!string.IsNullOrWhiteSpace(type) && type != "All")
@@ -51,7 +52,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     MountType = mountType,
                     SensorType = sensorType
                 };
-                _auxiliarHttp.EnviarSolicitud("api/v1/equipment", "POST", dto);
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud("api/v1/equipment", "POST", dto, token);
                 TempData["Success"] = "Item added to the inventory.";
                 return RedirectToAction("Index");
             }
@@ -85,7 +87,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     MountType = mountType,
                     SensorType = sensorType
                 };
-                _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "PUT", dto);
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "PUT", dto, token);
                 TempData["Success"] = "Equipment updated successfully.";
                 return RedirectToAction("Index");
             }
@@ -101,7 +104,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "DELETE");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/equipment/{id}", "DELETE", token: token);
                 TempData["Success"] = "Item removed from inventory.";
                 return RedirectToAction("Index");
             }

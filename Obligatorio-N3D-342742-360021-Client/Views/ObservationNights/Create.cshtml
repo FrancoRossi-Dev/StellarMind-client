@@ -1,56 +1,379 @@
 @{
-    ViewData["Title"] = "Log Observation Night";
+    ViewData["Title"] = "Plan Observation Night";
     int? userId = Context.Session.GetInt32("UserId");
+    var coList = ViewBag.CelestialObjects as List<Obligatorio_N3D_342742_360021_Client.Models.CelestialObjectVM> ?? new();
+    var coJson = System.Text.Json.JsonSerializer.Serialize(
+        coList.ToDictionary(o => o.Id, o => new { o.Id, o.Name, o.Type, o.AparentMagnitude, o.Details })
+    );
 }
+
+<style>
+/* ---- Two-column layout -------------------------------------------------- */
+.create-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--p-space-8);
+    align-items: stretch;          /* #1: stretch both columns to same height */
+}
+.create-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-space-3);
+}
+.create-col--right {
+    gap: var(--p-space-5);
+}
+
+/* ---- Catalog list container --------------------------------------------- */
+#co-list {
+    flex: 1;                       /* #1: fill remaining column height */
+    min-height: 0;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-input);
+    background: var(--color-surface);
+}
+
+/* #2: Custom scrollbar */
+#co-list::-webkit-scrollbar        { width: 5px; }
+#co-list::-webkit-scrollbar-track  { background: transparent; }
+#co-list::-webkit-scrollbar-thumb  { background: #3b82f6; border-radius: 4px; }
+#co-list { scrollbar-width: thin; scrollbar-color: #3b82f6 transparent; }
+
+/* ---- Catalog row --------------------------------------------------------- */
+.co-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: var(--p-space-2);
+    padding: var(--p-space-2) var(--p-space-3);
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent; /* #6: reserve space for accent border */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* #11: subtle divider */
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s, border-left-color 0.12s;
+}
+.co-item:last-child { border-bottom: none; }
+.co-item:hover { background: var(--color-surface-raised); }
+
+/* #6: Clear selected state */
+.co-item--selected {
+    background: var(--color-accent-soft) !important;
+    border-left-color: var(--color-accent) !important;
+}
+
+/* #3: Catalog item name — white text, fix undefined token refs */
+.co-item__name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Type badges --------------------------------------------------------- */
+.co-item__badge {
+    flex-shrink: 0;
+    font-size: var(--text-caption);
+    font-weight: var(--weight-label);
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--color-surface-raised);
+    color: var(--color-text-secondary);  /* #3: default badge text */
+}
+
+/* #10: Distinct badge color per object type */
+.co-item__badge[data-type-id="1"]  { /* Star — Blue */
+    background: var(--p-blue-a12);
+    color: var(--p-blue-300);
+}
+.co-item__badge[data-type-id="2"]  { /* Neutron Star — Purple */
+    background: color-mix(in srgb, #7C5CFF 12%, transparent);
+    color: #A98BFF;
+}
+.co-item__badge[data-type-id="3"]  { /* White Dwarf — Teal */
+    background: color-mix(in srgb, #2DD4BF 12%, transparent);
+    color: #2DD4BF;
+}
+.co-item__badge[data-type-id="4"]  { /* Black Hole — Red */
+    background: var(--p-red-a12);
+    color: var(--p-red-400);
+}
+
+/* #8: Search placeholder contrast */
+#co-search::placeholder { color: #94a3b8; }
+
+/* #4: Flatpickr today — filled accent circle (was outline-only) */
+.flatpickr-day.today {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+.flatpickr-day.today:hover,
+.flatpickr-day.today:focus {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+}
+
+/* #7: Time picker dark theme — override browser native light styles */
+.flatpickr-time input {
+    background: var(--color-surface-sunken) !important;
+    color: var(--color-text) !important;
+    border-radius: var(--p-radius-sm);
+}
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+    background: var(--p-ink-800) !important;
+    color: var(--color-text) !important;
+}
+
+/* #9: Button hover states */
+.form-actions .btn--primary:hover {
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+}
+.form-actions .btn--ghost {
+    border: 1px solid var(--color-border-soft);
+}
+.form-actions .btn--ghost:hover {
+    border-color: var(--color-border);
+    color: var(--color-text);
+    background: var(--color-surface-raised);
+}
+
+/* #5: Hover tooltip */
+#co-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 500;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-input);
+    box-shadow: var(--shadow-pop);
+    padding: var(--p-space-3);
+    font-size: var(--text-caption);
+    color: var(--color-text);
+    min-width: 190px;
+    max-width: 260px;
+    pointer-events: none;
+    line-height: 1.5;
+}
+.co-tooltip__name {
+    font-size: var(--text-body-dense);
+    font-weight: var(--weight-label);
+    color: #ffffff;
+    margin-bottom: var(--p-space-2);
+    padding-bottom: var(--p-space-2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.co-tooltip__row {
+    display: flex;
+    gap: var(--p-space-2);
+    margin-top: var(--p-space-1);
+    color: var(--color-text-secondary);
+}
+.co-tooltip__label {
+    color: var(--color-text-muted);
+    font-weight: var(--weight-label);
+    min-width: 68px;
+    flex-shrink: 0;
+}
+
+/* #12: Responsive — stack columns below 768px */
+@@media (max-width: 768px) {
+    .create-grid {
+        grid-template-columns: 1fr;
+    }
+    #co-list {
+        flex: none;
+        height: 280px;
+    }
+}
+</style>
+
+<div id="co-tooltip"></div>
 
 <div class="page-head">
     <div>
-        <h1 class="page-head__title">Log Observation Night</h1>
+        <h1 class="page-head__title">Plan Observation Night</h1>
         <p class="page-head__sub">Record a new observation session and request an AI sky evaluation</p>
     </div>
     <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
 </div>
 
-<div class="card" style="max-width: 560px;">
+<div class="card">
     <div class="card__body">
-        <form method="post" asp-controller="ObservationNights" asp-action="Create" class="form-stack">
+        <form id="create-form" method="post" asp-controller="ObservationNights" asp-action="Create">
 
             <input type="hidden" name="requestingUserId" value="@userId" />
+            <input type="hidden" id="celestialObjectId" name="celestialObjectId" />
+            <input type="hidden" id="date" name="date" />
 
-            <div class="field">
-                <label class="field__label" for="date">Date &amp; Time</label>
-                <input id="date" name="date" type="text" class="input" placeholder="Pick a date and time" required />
+            <div class="create-grid">
+
+                <!-- Left: object picker -->
+                <div class="create-col">
+                    <div class="field" style="margin: 0;">
+                        <label class="field__label" for="co-search">
+                            <i class="fa-solid fa-star" style="margin-right: var(--p-space-1);"></i>Celestial Object
+                        </label>
+                        <input type="text" id="co-search" class="input" placeholder="Search objects…" autocomplete="off" />
+                    </div>
+
+                    <div id="co-list">
+                        @foreach (var obj in coList)
+                        {
+                            <button type="button" class="co-item"
+                                    data-id="@obj.Id"
+                                    data-name="@obj.Name"
+                                    data-type="@obj.Type"
+                                    data-magnitude="@obj.AparentMagnitude"
+                                    data-details="@obj.Details">
+                                <span class="co-item__name">@obj.Name</span>
+                                <span class="co-item__badge" data-type-id="@obj.Type"></span>
+                            </button>
+                        }
+                    </div>
+
+                    <p id="co-error" style="display:none; margin: 0; font-size: var(--text-caption); color: var(--color-danger);">
+                        <i class="fa-solid fa-circle-exclamation" style="margin-right: var(--p-space-1);"></i>Every great night starts with a target — pick one from the list.
+                    </p>
+                </div>
+
+                <!-- Right: date, details, actions -->
+                <div class="create-col create-col--right">
+                    <div class="field" style="margin: 0;">
+                        <label class="field__label">
+                            <i class="fa-solid fa-calendar-days" style="margin-right: var(--p-space-1);"></i>Date &amp; Time
+                        </label>
+                        <div id="date-cal"></div>
+                        <p id="date-error" style="display:none; margin-top: var(--p-space-1); font-size: var(--text-caption); color: var(--color-danger);">
+                            <i class="fa-solid fa-circle-exclamation" style="margin-right: var(--p-space-1);"></i>Choose when to aim at the stars — a date and time are needed.
+                        </p>
+                    </div>
+
+                    <div class="field" style="margin: 0;">
+                        <label class="field__label" for="details">Details</label>
+                        <textarea id="details" name="details" class="textarea" rows="5"
+                                  placeholder="Objects observed, conditions, equipment used…"></textarea>
+                    </div>
+
+                    <div class="form-actions" style="display: flex; gap: var(--p-space-3);">
+                        <button type="submit" class="btn btn--primary">
+                            <i class="fa-solid fa-moon" style="margin-right: var(--p-space-2);"></i>Log session
+                        </button>
+                        <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="field">
-                <label class="field__label" for="celestialObjectId">Celestial Object ID</label>
-                <input id="celestialObjectId" name="celestialObjectId" type="number" class="input" min="1" required />
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="details">Details</label>
-                <textarea id="details" name="details" class="textarea" rows="4"
-                          placeholder="Objects observed, conditions, equipment used…"></textarea>
-            </div>
-
-            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Log session</button>
-                <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
-            </div>
-
         </form>
     </div>
 </div>
 
 @section Scripts {
 <script>
-flatpickr("#date", {
+const CO_TYPE = {
+    1:'Star', 2:'Neutron Star', 3:'White Dwarf', 4:'Black Hole',
+    5:'Open Cluster', 6:'Globular Cluster', 7:'Emission Nebula',
+    8:'Reflection Nebula', 9:'Planetary Nebula', 10:'Supernova Remnant',
+    11:'Galaxy', 12:'Galaxy Cluster', 13:'Planet', 14:'Dwarf Planet',
+    15:'Moon', 16:'Asteroid', 17:'Comet', 18:'Quasar', 19:'Pulsar'
+};
+
+// Set badge labels
+document.querySelectorAll('.co-item__badge[data-type-id]').forEach(el => {
+    el.textContent = CO_TYPE[el.dataset.typeId] || '—';
+});
+
+// Calendar
+flatpickr("#date-cal", {
+    inline: true,
     enableTime: true,
     dateFormat: "Y-m-dTH:i",
-    altInput: true,
-    altFormat: "F j, Y  \\a\\t H:i",
-    altInputClass: "input",
-    time_24hr: true
+    time_24hr: true,
+    onChange: function(selectedDates, dateStr) {
+        document.getElementById('date').value = dateStr;
+        document.getElementById('date-error').style.display = 'none';
+    }
+});
+
+const hiddenId  = document.getElementById('celestialObjectId');
+const coError   = document.getElementById('co-error');
+const tooltip   = document.getElementById('co-tooltip');
+
+// Tooltip positioning
+function positionTooltip(e) {
+    let x = e.clientX + 18;
+    let y = e.clientY - 10;
+    // Flip left if near right edge
+    if (x + tooltip.offsetWidth > window.innerWidth - 16) {
+        x = e.clientX - tooltip.offsetWidth - 18;
+    }
+    // Clamp to bottom edge
+    if (y + tooltip.offsetHeight > window.innerHeight - 16) {
+        y = window.innerHeight - tooltip.offsetHeight - 16;
+    }
+    tooltip.style.left = x + 'px';
+    tooltip.style.top  = y + 'px';
+}
+
+document.querySelectorAll('.co-item').forEach(btn => {
+    // Select
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.co-item').forEach(b => b.classList.remove('co-item--selected'));
+        btn.classList.add('co-item--selected');
+        hiddenId.value = btn.dataset.id;
+        coError.style.display = 'none';
+    });
+
+    // Tooltip show
+    btn.addEventListener('mouseenter', e => {
+        const typeName  = CO_TYPE[btn.dataset.type] || '—';
+        const rawMag    = parseFloat(btn.dataset.magnitude);
+        const magnitude = isNaN(rawMag) ? '—' : 'm = ' + rawMag.toFixed(2);
+        const details   = (btn.dataset.details || '').trim() || '—';
+        tooltip.innerHTML =
+            `<div class="co-tooltip__name">${btn.dataset.name}</div>` +
+            `<div class="co-tooltip__row"><span class="co-tooltip__label">Type</span>${typeName}</div>` +
+            `<div class="co-tooltip__row"><span class="co-tooltip__label">Magnitude</span>${magnitude}</div>` +
+            `<div class="co-tooltip__row"><span class="co-tooltip__label">Notes</span>${details}</div>`;
+        tooltip.style.display = 'block';
+        positionTooltip(e);
+    });
+
+    btn.addEventListener('mousemove', positionTooltip);
+
+    // Tooltip hide
+    btn.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+    });
+});
+
+// Search filter
+document.getElementById('co-search').addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.co-item').forEach(btn => {
+        btn.style.display = btn.dataset.name.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+
+// Submit validation
+document.getElementById('create-form').addEventListener('submit', function (e) {
+    let ok = true;
+    if (!hiddenId.value) {
+        coError.style.display = '';
+        ok = false;
+    }
+    if (!document.getElementById('date').value) {
+        document.getElementById('date-error').style.display = '';
+        ok = false;
+    }
+    if (!ok) e.preventDefault();
 });
 </script>
 }

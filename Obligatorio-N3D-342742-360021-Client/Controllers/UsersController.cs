@@ -12,8 +12,9 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
                 var users = _auxiliarHttp
-                    .EnviarYDeserializar<List<UserVM>>("api/v1/Users", "GET")
+                    .EnviarYDeserializar<List<UserVM>>("api/v1/Users", "GET", token: token)
                     ?? new List<UserVM>();
 
                 if (!string.IsNullOrWhiteSpace(search))
@@ -52,7 +53,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud("api/v1/Users/create", "POST", user);
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud("api/v1/Users/create", "POST", user, token);
                 TempData["Success"] = "Member added to the observatory.";
                 return RedirectToAction("Index");
             }
@@ -70,8 +72,9 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
                 var users = _auxiliarHttp
-                    .EnviarYDeserializar<List<UserVM>>("api/v1/Users", "GET")
+                    .EnviarYDeserializar<List<UserVM>>("api/v1/Users", "GET", token: token)
                     ?? new List<UserVM>();
 
                 var user = users.FirstOrDefault(u => u.UserId == id);
@@ -102,7 +105,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ViewBag.message = "A few things seem off, check the details and try again.";
                     return View(user);
                 }
-                _auxiliarHttp.EnviarSolicitud($"api/v1/Users/update/{id}", "POST", user);
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/Users/update/{id}", "POST", user, token);
                 TempData["Success"] = "Member details updated successfully.";
                 return RedirectToAction("Index");
             }
@@ -125,7 +129,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ViewBag.message = "Something seems off with that request. Please try again.";
                     return RedirectToAction("Index");
                 }
-                _auxiliarHttp.EnviarSolicitud($"api/v1/Users/delete/{id}", "POST", null);
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/Users/delete/{id}", "POST", token: token);
                 TempData["Success"] = "Member removed from the roster.";
                 return RedirectToAction("Index");
             }
@@ -136,12 +141,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
         }
 
+        [AlreadyLoggedFilter]
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+        [AlreadyLoggedFilter]
         [HttpPost]
         public IActionResult Login(LogInUserDto dto)
         {
