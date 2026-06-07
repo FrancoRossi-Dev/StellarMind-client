@@ -1,45 +1,59 @@
+@model Obligatorio_N3D_342742_360021_Client.Models.LogInUserDto
+
 @{
-    ViewData["Title"] = "Login";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Sign In";
+    ViewData["HideTopbar"] = true;
 }
 
 <div class="login-page">
     <div class="login-card">
         <div class="login-card__glow" aria-hidden="true"></div>
 
-        <div class="login-card__header">
-            <h1 class="login-card__title">StellarMinds</h1>
-            <p class="login-card__subtitle">Sign in to your account</p>
+        <div class="login-card__brand">
+            <span class="login-card__brand-icon"><i class="fa-solid fa-star-of-life"></i></span>
+            <span class="login-card__brand-name">StellarMinds</span>
         </div>
 
-        @if (ViewBag.message != null)
-        {
-            <div class="login-error" role="alert">
-                <span aria-hidden="true">⚠</span>
-                @ViewBag.message
-            </div>
-        }
+        <h1 class="login-card__title">Welcome back</h1>
+        <p class="login-card__sub">Sign in to your account to continue</p>
 
-        <form asp-controller="Users" asp-action="Login" method="post" class="login-form">
-            <div class="login-form__field">
-                <label for="username" class="login-form__label">Username</label>
-                <input type="text"
-                       class="login-form__input"
-                       id="username"
-                       name="username"
+        <form asp-controller="Users" asp-action="Login" method="post" class="form-stack">
+            <div class="field">
+                <label asp-for="username" class="field__label">Username</label>
+                <input asp-for="username"
+                       type="text"
+                       class="input"
                        autocomplete="username"
+                       placeholder="your username"
                        required />
             </div>
-            <div class="login-form__field">
-                <label for="password" class="login-form__label">Password</label>
-                <input type="password"
-                       class="login-form__input"
-                       id="password"
-                       name="password"
-                       autocomplete="current-password"
-                       required />
+            <div class="field">
+                <label asp-for="password" class="field__label">Password</label>
+                <div class="input-wrap">
+                    <input asp-for="password"
+                           id="passwordInput"
+                           type="password"
+                           class="input"
+                           autocomplete="current-password"
+                           placeholder="••••••••"
+                           required />
+                    <button type="button"
+                            class="input-wrap__toggle"
+                            aria-label="Show password"
+                            onclick="(function(btn){
+                                var inp = document.getElementById('passwordInput');
+                                var showing = inp.type === 'text';
+                                inp.type = showing ? 'password' : 'text';
+                                btn.querySelector('i').className = showing ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+                                btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                            })(this)"><i class="fa-regular fa-eye"></i></button>
+                </div>
             </div>
-            <button type="submit" class="login-form__submit">Sign in</button>
+            <button type="submit" class="btn btn--primary btn--full" style="margin-top: 0.5rem;">
+                Sign in
+            </button>
         </form>
+
+        @await Html.PartialAsync("_DevCredentials")
     </div>
 </div>

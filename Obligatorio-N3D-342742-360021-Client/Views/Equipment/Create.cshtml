@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "New Equipment";
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">New Equipment</h1>
+        <p class="page-head__sub">Add a new item to the observatory inventory</p>
+    </div>
+    <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index">← Back</a>
+</div>
+
+<div class="card" style="max-width: 600px;">
+    <div class="card__body">
+        <form method="post" asp-controller="Equipment" asp-action="Create" class="form-stack">
+
+            <div class="field">
+                <label class="field__label" for="name">Brand</label>
+                <input id="name" name="name" type="text" class="input" placeholder="e.g. Canon" required />
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="type">Type</label>
+                <select id="type" name="type" class="select" required onchange="updateFields(this.value)">
+                    <option value="">— Select type —</option>
+                    <option value="Telescope">Telescope</option>
+                    <option value="Mount">Mount</option>
+                    <option value="Camera">Camera</option>
+                    <option value="Eyepiece">Eyepiece</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="description">Model</label>
+                <textarea id="description" name="description" class="textarea" placeholder="e.g. EOS 5D Mark IV"></textarea>
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="quantity">Quantity</label>
+                <input id="quantity" name="quantity" type="number" class="input" min="1" value="1" required />
+            </div>
+
+            <div class="field" id="field-focalLenght" style="display:none;">
+                <label class="field__label" for="focalLenght">Focal Length (mm)</label>
+                <input id="focalLenght" name="focalLenght" type="number" step="any" class="input" placeholder="e.g. 2000" />
+            </div>
+
+            <div class="field" id="field-mountType" style="display:none;">
+                <label class="field__label" for="mountType">Mount Type</label>
+                <select id="mountType" name="mountType" class="select">
+                    <option value="">— Select —</option>
+                    <option value="Ecuatorial">Ecuatorial</option>
+                    <option value="AltAzimutal">AltAzimutal</option>
+                    <option value="Híbrida">Híbrida</option>
+                </select>
+            </div>
+
+            <div class="field" id="field-sensorType" style="display:none;">
+                <label class="field__label" for="sensorType">Sensor Type</label>
+                <select id="sensorType" name="sensorType" class="select">
+                    <option value="">— Select —</option>
+                    <option value="CMOS">CMOS</option>
+                    <option value="CCD">CCD</option>
+                </select>
+            </div>
+
+            <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
+                <button type="submit" class="btn btn--primary">Add to inventory</button>
+                <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function updateFields(type) {
+    document.getElementById('field-focalLenght').style.display = (type === 'Telescope' || type === 'Eyepiece') ? '' : 'none';
+    document.getElementById('field-mountType').style.display   = (type === 'Mount')     ? '' : 'none';
+    document.getElementById('field-sensorType').style.display  = (type === 'Camera')    ? '' : 'none';
+}
+</script>
+}

@@ -1,51 +1,177 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Obligatorio_N3D_342742_360021_Client</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - StellarMinds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/design-tokens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Obligatorio_N3D_342742_360021_Client.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Obligatorio_N3D_342742_360021_Client</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+@{
+    bool hideShell  = ViewData["HideTopbar"] as bool? == true;
+    string? sessionUsername = Context.Session.GetString("Username");
+    string? sessionRole     = Context.Session.GetString("UserRole");
+    string? currentCtrl     = ViewContext.RouteData.Values["controller"]?.ToString();
+    string? currentAction   = ViewContext.RouteData.Values["action"]?.ToString();
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Obligatorio_N3D_342742_360021_Client - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    string NavClass(string ctrl, string? action = null) {
+        bool match = string.Equals(currentCtrl, ctrl, StringComparison.OrdinalIgnoreCase)
+            && (action == null || string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase));
+        return match ? "nav-item active" : "nav-item";
+    }
+
+    string roleChipClass = sessionRole switch {
+        "Admin"       => "chip chip--accent",
+        "Coordinator" => "chip chip--info",
+        _             => "chip chip--plain"
+    };
+
+    string Initials(string? n) {
+        if (string.IsNullOrWhiteSpace(n)) return "?";
+        var p = n.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return (p.Length >= 2 ? $"{p[0][0]}{p[^1][0]}" : p[0][0].ToString()).ToUpper();
+    }
+}
+
+@if (hideShell)
+{
+    @RenderBody()
+}
+else
+{
+    <div class="shell">
+
+        <aside class="sidebar">
+
+            <div class="sidebar__header">
+                <span class="sidebar__brand-icon"><i class="fa-solid fa-star-of-life"></i></span>
+                <span class="sidebar__brand-name">StellarMinds</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(sessionUsername))
+            {
+                <div class="sidebar__user">
+                    <span class="avatar">@Initials(sessionUsername)</span>
+                    <div class="sidebar__user-info">
+                        <div class="sidebar__user-name">@sessionUsername</div>
+                        <span class="@roleChipClass">@sessionRole</span>
+                    </div>
+                </div>
+            }
+
+            <nav class="sidebar__nav" aria-label="Main navigation">
+
+                <a class="@NavClass("Home", "Index")" asp-controller="Home" asp-action="Index">
+                    <span class="nav-item__icon"><i class="fa-solid fa-table-cells-large"></i></span>
+                    Dashboard
+                </a>
+
+                @if (sessionRole == "Admin")
+                {
+                    <p class="nav-section-label">Management</p>
+                    <a class="@NavClass("Users")" asp-controller="Users" asp-action="Index">
+                        <span class="nav-item__icon"><i class="fa-solid fa-users"></i></span>
+                        Members
+                    </a>
+                    <a class="@NavClass("Equipment")" asp-controller="Equipment" asp-action="Index">
+                        <span class="nav-item__icon"><i class="fa-solid fa-binoculars"></i></span>
+                        Equipment
+                    </a>
+                }
+
+                @if (sessionRole == "Coordinator")
+                {
+                    <p class="nav-section-label">Coordinator</p>
+                    <a class="@NavClass("Loans")" asp-controller="Loans" asp-action="Index">
+                        <span class="nav-item__icon"><i class="fa-solid fa-inbox"></i></span>
+                        Loan Requests
+                    </a>
+                }
+
+                @if (sessionRole == "Member")
+                {
+                    <p class="nav-section-label">My Space</p>
+                    <a class="@NavClass("ObservationNights")" asp-controller="ObservationNights" asp-action="Index">
+                        <span class="nav-item__icon"><i class="fa-solid fa-moon"></i></span>
+                        Observation Plans
+                    </a>
+                    <a class="@NavClass("Loans", "Create")" asp-controller="Loans" asp-action="Create">
+                        <span class="nav-item__icon"><i class="fa-solid fa-satellite"></i></span>
+                        Request Equipment
+                    </a>
+                    <a class="@NavClass("Loans", "MyLoans")" asp-controller="Loans" asp-action="MyLoans">
+                        <span class="nav-item__icon"><i class="fa-solid fa-box-open"></i></span>
+                        My Loans
+                    </a>
+                }
+
+                <p class="nav-section-label">Reports</p>
+                <a class="@NavClass("Home", "Ranking")" asp-controller="Home" asp-action="Ranking">
+                    <span class="nav-item__icon"><i class="fa-solid fa-star"></i></span>
+                    Celestial Ranking
+                </a>
+
+                @if (sessionRole == "Admin")
+                {
+                    <a class="@NavClass("Home", "ByTelescope")" asp-controller="Home" asp-action="ByTelescope">
+                        <span class="nav-item__icon"><i class="fa-solid fa-clipboard-list"></i></span>
+                        Members by Telescope
+                    </a>
+                    <a class="@NavClass("Home", "LoanAudit")" asp-controller="Home" asp-action="LoanAudit">
+                        <span class="nav-item__icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        Loan Audit
+                    </a>
+                }
+
+            </nav>
+
+            <div class="sidebar__footer">
+                <a class="nav-item nav-item--signout" asp-controller="Users" asp-action="Logout">
+                    <span class="nav-item__icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                    Sign out
+                </a>
+            </div>
+
+        </aside>
+
+        <main class="shell__main">
+            <div class="shell__content">
+                @RenderBody()
+            </div>
+        </main>
+
+    </div>
+}
+
+<script src="~/js/toast.js" asp-append-version="true"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+@{
+    string? _errorMsg   = ViewBag.message as string ?? ViewBag.msg as string ?? TempData["Error"] as string;
+    string? _successMsg = TempData["Success"] as string;
+}
+@if (!string.IsNullOrEmpty(_errorMsg))
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Toast.show(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(_errorMsg)), 'error');
+        });
+    </script>
+}
+@if (!string.IsNullOrEmpty(_successMsg))
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Toast.show(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(_successMsg)), 'success');
+        });
+    </script>
+}
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,63 @@
+@model Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM
+
+@{
+    ViewData["Title"] = "Observation Plan";
+    bool canEdit = Context.Session.GetString("UserRole") is "Admin" or "Member";
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("dddd, MMMM d, yyyy  HH:mm") : raw;
+    }
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Observation Plan</h1>
+        <p class="page-head__sub">Planned session details</p>
+    </div>
+    <div style="display:flex; gap: var(--p-space-2);">
+        @if (canEdit && Model != null)
+        {
+            <a class="btn btn--secondary" asp-controller="ObservationNights"
+               asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        }
+        <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
+    </div>
+</div>
+
+@if (Model == null)
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-moon"></i></div>
+            <p class="empty__title">Plan not found</p>
+            <p class="empty__body">This session seems to have drifted off the map.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card" style="max-width: 560px;">
+        <div class="card__body">
+            <dl class="detail-list">
+                <dt>Date</dt>
+                <dd>@FmtDate(Model.Date)</dd>
+
+                <dt>Celestial Object</dt>
+                <dd>@(Model.CelestialObject?.Name ?? "—")</dd>
+
+                @if (Model.CelestialObject != null)
+                {
+                    <dt>Apparent Magnitude</dt>
+                    <dd>@Model.CelestialObject.AparentMagnitude.ToString("F2")</dd>
+
+                    <dt>Object Details</dt>
+                    <dd style="white-space: pre-wrap; line-height: var(--leading-body);">@Model.CelestialObject.Details</dd>
+                }
+
+                <dt>Session Details</dt>
+                <dd style="white-space: pre-wrap; line-height: var(--leading-body);">@Model.Details</dd>
+            </dl>
+        </div>
+    </div>
+}

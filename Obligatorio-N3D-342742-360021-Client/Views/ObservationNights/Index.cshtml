@@ -1,0 +1,175 @@
+@model List<ObservationNightVM>
+
+@{
+    ViewData["Title"] = "Observation Plans";
+    string? role   = Context.Session.GetString("UserRole");
+    bool canCreate = role == "Member";
+    bool canEdit   = role == "Admin" || role == "Member";
+
+    var requested = Model?.Where(n => n.IsRequested)
+                         .OrderBy(n => DateTime.TryParse(n.Date, out var d1) ? d1 : DateTime.MaxValue)
+                         .ToList() ?? new List<ObservationNightVM>();
+    var planning  = Model?.Where(n => !n.IsRequested)
+                         .OrderBy(n => DateTime.TryParse(n.Date, out var d2) ? d2 : DateTime.MaxValue)
+                         .ToList() ?? new List<ObservationNightVM>();
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy  HH:mm") : raw;
+    }
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Observation Plans</h1>
+        <p class="page-head__sub">Planned observation sessions across the club</p>
+    </div>
+    @if (canCreate)
+    {
+        <a class="btn btn--primary" asp-controller="ObservationNights" asp-action="Create">+ Plan night</a>
+    }
+</div>
+
+@if (!requested.Any() && !planning.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-moon"></i></div>
+            <p class="empty__title">No observation plans yet</p>
+            <p class="empty__body">Clear skies are waiting — plan your first session to get started.</p>
+        </div>
+    </div>
+}
+else
+{
+    @if (planning.Any())
+    {
+        <div style="margin: var(--p-space-5) 0 var(--p-space-3);">
+            <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin: 0 0 var(--p-space-1);">
+                <i class="fa-solid fa-clock" style="color: var(--color-text-secondary); margin-right: var(--p-space-2);"></i>Planning
+            </h2>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0;">
+                These nights are planned but don't have an equipment request yet.
+            </p>
+        </div>
+
+        <div class="table-wrap">
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Celestial Object</th>
+                        <th>Details</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var night in planning)
+                    {
+                        <tr>
+                            <td style="white-space:nowrap; color: var(--color-text-secondary); font-variant-numeric: tabular-nums;">
+                                @FmtDate(night.Date)
+                            </td>
+                            <td class="tbl__name">@(night.CelestialObject?.Name ?? "—")</td>
+                            <td style="color: var(--color-text-muted); max-width: 260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                                title="@night.Details">
+                                @night.Details
+                            </td>
+                            <td>
+                                <div class="tbl__actions">
+                                    <a class="btn btn--ghost btn--sm"
+                                       asp-controller="ObservationNights"
+                                       asp-action="Details"
+                                       asp-route-id="@night.Id">View</a>
+                                    @if (canCreate)
+                                    {
+                                        <a class="btn btn--secondary btn--sm"
+                                           asp-controller="Loans"
+                                           asp-action="Create"
+                                           asp-route-nightId="@night.Id">Request equipment</a>
+                                    }
+                                    @if (canEdit)
+                                    {
+                                        <a class="btn btn--secondary btn--sm"
+                                           asp-controller="ObservationNights"
+                                           asp-action="Edit"
+                                           asp-route-id="@night.Id">Edit</a>
+                                        <form method="post"
+                                              asp-controller="ObservationNights"
+                                              asp-action="Delete"
+                                              asp-route-id="@night.Id"
+                                              onsubmit="return confirm('Delete this observation plan?');">
+                                            <button type="submit" class="btn btn--danger btn--sm">Delete</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (requested.Any())
+    {
+        <div style="margin: var(--p-space-6) 0 var(--p-space-3);">
+            <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin: 0 0 var(--p-space-1);">
+                <i class="fa-solid fa-circle-check" style="color: var(--color-success); margin-right: var(--p-space-2);"></i>Planned &amp; Requested
+            </h2>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0;">
+                These nights already have an equipment request submitted.
+            </p>
+        </div>
+
+        <div class="table-wrap">
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Celestial Object</th>
+                        <th>Details</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var night in requested)
+                    {
+                        <tr>
+                            <td style="white-space:nowrap; color: var(--color-text-secondary); font-variant-numeric: tabular-nums;">
+                                @FmtDate(night.Date)
+                            </td>
+                            <td class="tbl__name">@(night.CelestialObject?.Name ?? "—")</td>
+                            <td style="color: var(--color-text-muted); max-width: 260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                                title="@night.Details">
+                                @night.Details
+                            </td>
+                            <td>
+                                <div class="tbl__actions">
+                                    <a class="btn btn--ghost btn--sm"
+                                       asp-controller="ObservationNights"
+                                       asp-action="Details"
+                                       asp-route-id="@night.Id">View</a>
+                                    @if (canEdit)
+                                    {
+                                        <a class="btn btn--secondary btn--sm"
+                                           asp-controller="ObservationNights"
+                                           asp-action="Edit"
+                                           asp-route-id="@night.Id">Edit</a>
+                                        <form method="post"
+                                              asp-controller="ObservationNights"
+                                              asp-action="Delete"
+                                              asp-route-id="@night.Id"
+                                              onsubmit="return confirm('Delete this observation plan?');">
+                                            <button type="submit" class="btn btn--danger btn--sm">Delete</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

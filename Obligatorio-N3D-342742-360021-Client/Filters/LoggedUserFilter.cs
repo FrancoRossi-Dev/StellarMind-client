@@ -9,7 +9,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Filters
         {
             if (context.HttpContext.Session.GetInt32("UserId") == null)
             {
-                context.Result = new Microsoft.AspNetCore.Mvc.RedirectToActionResult("Login", "User", null);
+                context.Result = new Microsoft.AspNetCore.Mvc.RedirectToActionResult("Login", "Users", null);
             }
         }
 
@@ -17,7 +17,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Filters
         {
             if (context.HttpContext.Session.GetInt32("UserId") == null)
             {
-                context.Result = new Microsoft.AspNetCore.Mvc.RedirectToActionResult("Login", "User", null);
+                context.Result = new Microsoft.AspNetCore.Mvc.RedirectToActionResult("Login", "Users", null);
             }
         }
     }
