@@ -153,7 +153,7 @@ else
 <script src="~/js/site.js" asp-append-version="true"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @{
-    string? _errorMsg   = ViewBag.message as string ?? ViewBag.msg as string;
+    string? _errorMsg   = ViewBag.message as string ?? ViewBag.msg as string ?? TempData["Error"] as string;
     string? _successMsg = TempData["Success"] as string;
 }
 @if (!string.IsNullOrEmpty(_errorMsg))

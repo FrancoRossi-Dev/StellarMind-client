@@ -12,8 +12,9 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
                 var requests = _auxiliarHttp
-                    .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loans/pendingRequests", "GET")
+                    .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loans/pendingRequests", "GET", token: token)
                     ?? new List<PendingLoanRequestVM>();
                     
                 return View(requests);
@@ -34,9 +35,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 try
                 {
-                    nights = _auxiliarHttp
-                        .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/users/nights/{userId}", "GET")
+                    var token = HttpContext.Session.GetString("Token");
+                    var all = _auxiliarHttp
+                        .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/users/nights/{userId}", "GET", token: token)
                         ?? new List<ObservationNightVM>();
+                    nights = all.Where(n => !n.IsRequested).ToList();
                 }
                 catch { }
             }
@@ -65,7 +68,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                         Details = details
                     }
                 };
-                _auxiliarHttp.EnviarSolicitud("api/v1/loans/createLoan", "POST", dto);
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud("api/v1/loans/createLoan", "POST", dto, token);
                 TempData["Success"] = "Loan request submitted.";
                 return RedirectToAction("Index");
             }
@@ -81,7 +85,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/approve/{id}", "PUT");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/approve/{id}", "PUT", token: token);
                 TempData["Success"] = "Loan request approved.";
                 return RedirectToAction("Index");
             }
@@ -97,7 +102,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/reject/{id}", "PUT");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/reject/{id}", "PUT", token: token);
                 TempData["Success"] = "Loan request rejected.";
                 return RedirectToAction("Index");
             }
@@ -113,7 +119,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/return/{id}", "POST");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/return/{id}", "POST", token: token);
                 TempData["Success"] = "Loan marked as returned.";
                 return RedirectToAction("Index");
             }
@@ -129,7 +136,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/cancel/{id}", "POST");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/cancel/{id}", "POST", token: token);
                 TempData["Success"] = "Loan canceled.";
                 return RedirectToAction("Index");
             }
@@ -152,7 +160,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/deleteLoanRequest/{id}", "DELETE");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loans/deleteLoanRequest/{id}", "DELETE", token: token);
                 TempData["Success"] = "Loan request removed.";
                 return RedirectToAction("Index");
             }

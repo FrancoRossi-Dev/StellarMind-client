@@ -14,20 +14,21 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 string? role = HttpContext.Session.GetString("UserRole");
                 int? userId = HttpContext.Session.GetInt32("UserId");
+                var token = HttpContext.Session.GetString("Token");
 
                 string url = (role == "Member" && userId.HasValue)
                     ? $"api/v1/users/nights/{userId}"
                     : "api/v1/observationnights";
 
                 var nights = _auxiliarHttp
-                    .EnviarYDeserializar<List<ObservationNightVM>>(url, "GET")
+                    .EnviarYDeserializar<List<ObservationNightVM>>(url, "GET", token: token)
                     ?? new List<ObservationNightVM>();
 
                 return View(nights);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "Couldn't load the observation nights. The skies seem cloudy right now.";
+                ViewBag.msg = ex.Message;
                 return View(new List<ObservationNightVM>());
             }
         }
@@ -37,14 +38,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
                 var night = _auxiliarHttp
-                    .EnviarYDeserializar<ObservationNightVM>($"api/v1/observationnights/{id}", "GET");
+                    .EnviarYDeserializar<ObservationNightVM>($"api/v1/observationnights/{id}", "GET", token: token);
 
                 return View(night);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "Couldn't find that night. It may have drifted off the map.";
+                TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
         }
@@ -54,15 +56,16 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
                 var nights = _auxiliarHttp
-                    .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/observationnights/user/{userId}", "GET")
+                    .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/observationnights/user/{userId}", "GET", token: token)
                     ?? new List<ObservationNightVM>();
 
                 return View("Index", nights);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "Couldn't load this member's nights — try again in a moment.";
+                ViewBag.msg = ex.Message;
                 return View("Index", new List<ObservationNightVM>());
             }
         }
@@ -70,22 +73,26 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         [HttpGet("ObservationNights/Create")]
         public IActionResult Create()
         {
+            var token = HttpContext.Session.GetString("Token");
+            ViewBag.CelestialObjects = FetchCelestialObjects(token);
             return View();
         }
 
         [HttpPost("ObservationNights/Create")]
         public IActionResult Create(int requestingUserId, int celestialObjectId, string date, string details)
         {
+            var token = HttpContext.Session.GetString("Token");
             try
             {
                 var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, date, details);
-                _auxiliarHttp.EnviarSolicitud("api/v1/observationnights", "POST", dto);
+                _auxiliarHttp.EnviarSolicitud("api/v1/observationnights", "POST", dto, token);
                 TempData["Success"] = "Observation plan created successfully.";
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "Couldn't save that plan. Something got in the way.";
+                ViewBag.msg = ex.Message;
+                ViewBag.CelestialObjects = FetchCelestialObjects(token);
                 return View();
             }
         }
@@ -93,16 +100,18 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         [HttpGet("ObservationNights/Edit/{id}")]
         public IActionResult Edit(int id)
         {
+            var token = HttpContext.Session.GetString("Token");
             try
             {
                 var night = _auxiliarHttp
-                    .EnviarYDeserializar<ObservationNightVM>($"api/v1/observationnights/{id}", "GET");
+                    .EnviarYDeserializar<ObservationNightVM>($"api/v1/observationnights/{id}", "GET", token: token);
 
+                ViewBag.CelestialObjects = FetchCelestialObjects(token);
                 return View(night);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "Couldn't load that session. Something drifted off.";
+                TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
         }
@@ -110,32 +119,39 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         [HttpPost("ObservationNights/Edit/{id}")]
         public IActionResult Edit(int id, int requestingUserId, int celestialObjectId, string date, string details)
         {
+            var token = HttpContext.Session.GetString("Token");
             try
             {
                 var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, date, details);
-                _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "PUT", dto);
+                _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "PUT", dto, token);
                 TempData["Success"] = "Observation plan updated.";
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "The update got lost somewhere. Please try again.";
+                ViewBag.msg = ex.Message;
+                ViewBag.CelestialObjects = FetchCelestialObjects(token);
                 return View();
             }
         }
+
+        private List<CelestialObjectVM> FetchCelestialObjects(string? token) =>
+            _auxiliarHttp.EnviarYDeserializar<List<CelestialObjectVM>>("api/v1/celestialobjects", "GET", token: token)
+            ?? new List<CelestialObjectVM>();
 
         [HttpPost("ObservationNights/Delete/{id}")]
         public IActionResult Delete(int id)
         {
             try
             {
-                _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "DELETE");
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "DELETE", token: token);
                 TempData["Success"] = "Observation plan removed.";
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ViewBag.msg = "Couldn't remove that night. Something crossed our path.";
+                TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
         }

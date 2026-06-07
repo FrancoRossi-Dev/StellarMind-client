@@ -1,7 +1,7 @@
-﻿using System.Net.Http.Headers;
+﻿using Obligatorio_N3D_342742_360021_Client.Models;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Error = Obligatorio_N3D_342742_360021_Client.Models.Error;
 
 namespace Obligatorio_N3D_342742_360021_Client.Services.Http
 {
