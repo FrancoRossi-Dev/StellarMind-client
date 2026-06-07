@@ -8,7 +8,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
     [LoggedUserFilter]
     public class EquipmentController(AuxiliarClienteHttp _auxiliarHttp) : Controller
     {
-        public IActionResult Index(string? type)
+        public async Task<IActionResult> Index(string? type)
         {
             try
             {
@@ -18,13 +18,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ?? new List<EquipmentVM>();
 
                 if (!string.IsNullOrWhiteSpace(type) && type != "All")
-                    equipment = equipment.Where(e => e.EquipmentType == type).ToList();
+                    equipment = equipment.Where(e => e.Type == type).ToList();
 
                 ViewBag.Type = type ?? "All";
                 return View(equipment);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error fetching equipment list: {ex.Message}");
                 ViewBag.msg = "The equipment list drifted off. Give it another moment.";
                 return View(new List<EquipmentVM>());
             }
@@ -109,9 +110,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Item removed from inventory.";
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 ViewBag.msg = "Couldn't remove that item. Something crossed our path.";
+                Console.WriteLine(e.Message); // e.Message ahora contendrá el texto crudo si no era JSON
                 return RedirectToAction("Index");
             }
         }
