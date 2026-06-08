@@ -1,0 +1,110 @@
+@model List<UserVM>
+
+@{
+    ViewData["Title"] = "Members by Telescope";
+
+    var telescopes = ViewBag.Telescopes as List<EquipmentVM> ?? new List<EquipmentVM>();
+    int? selectedId = ViewBag.SelectedTelescopeId as int?;
+    var selectedTelescope = telescopes.FirstOrDefault(t => t.Id == selectedId);
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Members by Telescope</h1>
+        <p class="page-head__sub">Distinct members who have ever borrowed a given telescope, sorted by name</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(ViewBag.msg as string))
+{
+    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
+}
+
+<div class="card" style="margin-bottom: var(--p-space-5);">
+    <form method="get" asp-controller="Reports" asp-action="ByTelescope"
+          style="display:flex; gap: var(--p-space-3); align-items:flex-end; flex-wrap:wrap;">
+        <div class="field" style="flex:1; min-width:200px;">
+            <label class="field__label" for="telescopeId">Telescope</label>
+            <select id="telescopeId" name="telescopeId" class="input select">
+                <option value="">— Select a telescope —</option>
+                @foreach (var t in telescopes)
+                {
+                    <option value="@t.Id" selected="@(t.Id == selectedId ? "selected" : null)">
+                        @t.Brand @t.Model
+                    </option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn--primary">
+            <i class="fa-solid fa-magnifying-glass" style="margin-right: var(--p-space-1);"></i>Show members
+        </button>
+        @if (selectedId.HasValue)
+        {
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="ByTelescope">Clear</a>
+        }
+    </form>
+</div>
+
+@if (!selectedId.HasValue)
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-binoculars"></i></div>
+            <p class="empty__title">Select a telescope above</p>
+            <p class="empty__body">Choose a telescope to see which members have borrowed it.</p>
+        </div>
+    </div>
+}
+else if (Model == null || !Model.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-user-slash"></i></div>
+            <p class="empty__title">No borrowers found</p>
+            <p class="empty__body">
+                No members have borrowed <strong>@(selectedTelescope != null ? $"{selectedTelescope.Brand} {selectedTelescope.Model}" : "this telescope")</strong> yet.
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div style="margin-bottom: var(--p-space-3);">
+        <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 var(--p-space-1);">
+            <i class="fa-solid fa-users" style="color: var(--color-text-secondary); margin-right: var(--p-space-2);"></i>
+            @(selectedTelescope != null ? $"{selectedTelescope.Brand} {selectedTelescope.Model}" : "Telescope")
+            <span style="font-weight:400; color: var(--color-text-muted); font-size: var(--text-base); margin-left: var(--p-space-2);">
+                @Model.Count @(Model.Count == 1 ? "member" : "members")
+            </span>
+        </h2>
+    </div>
+
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var member in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="tbl__cell-with-avatar">
+                                <span class="avatar avatar--sm">@(string.IsNullOrEmpty(member.fullName) ? "?" : member.fullName.Split(' ')[0][0].ToString().ToUpper())</span>
+                                <span class="tbl__name">@member.fullName</span>
+                            </div>
+                        </td>
+                        <td style="color: var(--color-text-secondary);">@@@member.username</td>
+                        <td style="color: var(--color-text-secondary);">@member.email</td>
+                        <td style="color: var(--color-text-muted);">@(string.IsNullOrEmpty(member.phoneNumber) ? "—" : member.phoneNumber)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

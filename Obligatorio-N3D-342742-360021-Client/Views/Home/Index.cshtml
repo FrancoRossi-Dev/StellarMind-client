@@ -29,14 +29,14 @@
                 <div class="dash-card__sub">Manage telescopes, cameras, mounts and eyepieces</div>
             </div>
         </a>
-        <a class="dash-card dash-card--muted" asp-controller="Home" asp-action="ByTelescope">
+        <a class="dash-card dash-card--muted" asp-controller="Reports" asp-action="ByTelescope">
             <span class="dash-card__icon"><i class="fa-solid fa-clipboard-list"></i></span>
             <div>
                 <div class="dash-card__title">Members by Telescope</div>
                 <div class="dash-card__sub">Distinct borrowers per telescope, sorted by name</div>
             </div>
         </a>
-        <a class="dash-card dash-card--muted" asp-controller="Home" asp-action="LoanAudit">
+        <a class="dash-card dash-card--muted" asp-controller="Reports" asp-action="LoanAudit">
             <span class="dash-card__icon"><i class="fa-solid fa-magnifying-glass"></i></span>
             <div>
                 <div class="dash-card__title">Loan Audit</div>
@@ -74,7 +74,7 @@
         </a>
     }
 
-    <a class="dash-card" asp-controller="Home" asp-action="Ranking">
+    <a class="dash-card" asp-controller="Reports" asp-action="Ranking">
         <span class="dash-card__icon"><i class="fa-solid fa-star"></i></span>
         <div>
             <div class="dash-card__title">Celestial Ranking</div>

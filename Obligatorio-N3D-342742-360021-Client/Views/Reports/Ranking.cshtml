@@ -1,0 +1,119 @@
+@model List<CelestialRankingItem>
+
+@{
+    ViewData["Title"] = "Celestial Ranking";
+
+    string TypeLabel(int t) => t switch {
+        1  => "Star",
+        2  => "Neutron Star",
+        3  => "White Dwarf",
+        4  => "Black Hole",
+        5  => "Open Cluster",
+        6  => "Globular Cluster",
+        7  => "Emission Nebula",
+        8  => "Reflection Nebula",
+        9  => "Planetary Nebula",
+        10 => "Supernova Remnant",
+        11 => "Galaxy",
+        12 => "Galaxy Cluster",
+        13 => "Planet",
+        14 => "Dwarf Planet",
+        15 => "Moon",
+        16 => "Asteroid",
+        17 => "Comet",
+        18 => "Quasar",
+        19 => "Pulsar",
+        _  => "Unknown"
+    };
+
+    string TypeGroup(int t) => t switch {
+        1 or 2 or 3 or 4 or 19 => "Star",
+        5 or 6                  => "Cluster",
+        7 or 8 or 9 or 10       => "Nebula",
+        11 or 12                => "Galaxy",
+        13 or 14 or 15          => "Planet",
+        16 or 17                => "Small Body",
+        18                      => "Quasar",
+        _                       => "Other"
+    };
+
+    string GroupColor(int t) => TypeGroup(t) switch {
+        "Star"       => "var(--color-warning)",
+        "Cluster"    => "var(--color-accent)",
+        "Nebula"     => "var(--color-info)",
+        "Galaxy"     => "var(--color-success)",
+        "Planet"     => "var(--color-text-secondary)",
+        "Small Body" => "var(--color-text-muted)",
+        _            => "var(--color-text-muted)"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Celestial Ranking</h1>
+        <p class="page-head__sub">Most observed celestial objects across the club, ranked by observation count</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(ViewBag.msg as string))
+{
+    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-star"></i></div>
+            <p class="empty__title">No observations recorded yet</p>
+            <p class="empty__body">Once members plan observation nights, the most observed objects will appear here.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th style="width:48px; text-align:center;">#</th>
+                    <th>Object</th>
+                    <th>Type</th>
+                    <th style="text-align:right;">Observations</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var item = Model[i];
+                    int rank = i + 1;
+                    string rankColor = rank switch {
+                        1 => "var(--color-warning)",
+                        2 => "var(--color-text-secondary)",
+                        3 => "#cd7f32",
+                        _ => "var(--color-text-muted)"
+                    };
+                    <tr>
+                        <td style="text-align:center; font-weight:700; font-size: var(--text-sm); color: @rankColor; font-variant-numeric: tabular-nums;">
+                            @if (rank <= 3)
+                            {
+                                <i class="fa-solid fa-medal" style="margin-right:2px;"></i>
+                            }
+                            @rank
+                        </td>
+                        <td class="tbl__name">@item.Name</td>
+                        <td>
+                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                         letter-spacing: .04em; color: @GroupColor(item.Type);">
+                                @TypeLabel(item.Type)
+                            </span>
+                        </td>
+                        <td style="text-align:right; font-variant-numeric: tabular-nums; font-weight:600; color: var(--color-accent);">
+                            @item.Count
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

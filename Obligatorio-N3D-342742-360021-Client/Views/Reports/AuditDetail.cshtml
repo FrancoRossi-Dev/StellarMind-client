@@ -1,0 +1,195 @@
+@{
+    ViewData["Title"] = "Audit Detail";
+
+    var ticket = ViewBag.Ticket as LoanTicketVM;
+    var logs   = ViewBag.Logs as List<LogEventDto> ?? new List<LogEventDto>();
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy HH:mm") : raw;
+    }
+
+    string FmtShort(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
+    }
+
+    string TicketStatusColor(string s) => s switch {
+        "Loaned"   => "var(--color-accent)",
+        "Returned" => "var(--color-success)",
+        _          => "var(--color-text-muted)"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <a class="btn btn--ghost btn--sm" asp-controller="Reports" asp-action="LoanAudit"
+           style="margin-bottom: var(--p-space-2);">
+            <i class="fa-solid fa-arrow-left" style="margin-right: var(--p-space-1);"></i>Back to Audit
+        </a>
+        <h1 class="page-head__title">
+            Ticket #@(ticket?.Id.ToString() ?? "—")
+        </h1>
+        <p class="page-head__sub">Full audit trail for this loan ticket</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(ViewBag.msg as string))
+{
+    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
+}
+
+@if (ticket == null)
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-satellite-dish"></i></div>
+            <p class="empty__title">Ticket not found</p>
+            <p class="empty__body">This ticket may have drifted off. Check the audit list and try again.</p>
+        </div>
+    </div>
+}
+else
+{
+    var member = ticket.LoanRequest?.RequestingUser;
+    var night  = ticket.LoanRequest?.ObservationNight;
+    var eqSet  = ticket.LoanRequest?.EquipmentSet;
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: var(--p-space-4); margin-bottom: var(--p-space-6);">
+
+        <div class="card">
+            <p class="modal-section__title" style="margin-bottom: var(--p-space-3);">
+                <i class="fa-solid fa-ticket" style="color: var(--color-accent); margin-right: var(--p-space-2);"></i>Loan Ticket
+            </p>
+            <dl class="detail-list">
+                <dt>Ticket ID</dt><dd>#@ticket.Id</dd>
+                <dt>Status</dt>
+                <dd>
+                    <span style="font-size: var(--text-xs); font-weight:600; text-transform:uppercase;
+                                 letter-spacing:.04em; color: @TicketStatusColor(ticket.Status);">
+                        @ticket.Status
+                    </span>
+                    @if (ticket.IsOverdue)
+                    {
+                        <span style="color: var(--color-danger); font-size: var(--text-xs); margin-left:6px;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> overdue
+                        </span>
+                    }
+                </dd>
+                <dt>Start Date</dt><dd>@FmtShort(ticket.StartDate)</dd>
+                <dt>Return By</dt><dd>@FmtShort(ticket.EndDate)</dd>
+                <dt>Coordinator</dt>
+                <dd>
+                    @(string.IsNullOrEmpty(ticket.CoordinatorName) ? "—" : ticket.CoordinatorName)
+                    @if (!string.IsNullOrEmpty(ticket.CoordinatorEmail))
+                    {
+                        <span style="color: var(--color-text-muted); font-size: var(--text-xs); display:block;">
+                            @ticket.CoordinatorEmail
+                        </span>
+                    }
+                </dd>
+            </dl>
+        </div>
+
+        <div class="card">
+            <p class="modal-section__title" style="margin-bottom: var(--p-space-3);">
+                <i class="fa-solid fa-user" style="color: var(--color-accent); margin-right: var(--p-space-2);"></i>Member
+            </p>
+            <dl class="detail-list">
+                <dt>Name</dt><dd>@(member?.fullName ?? "—")</dd>
+                <dt>Username</dt><dd>@@@(member?.username ?? "—")</dd>
+                <dt>Email</dt><dd>@(member?.email ?? "—")</dd>
+            </dl>
+        </div>
+
+        <div class="card">
+            <p class="modal-section__title" style="margin-bottom: var(--p-space-3);">
+                <i class="fa-solid fa-moon" style="color: var(--color-accent); margin-right: var(--p-space-2);"></i>Observation Night
+            </p>
+            <dl class="detail-list">
+                <dt>Date</dt><dd>@FmtShort(night?.Date)</dd>
+                <dt>Celestial Object</dt><dd>@(night?.CelestialObject?.Name ?? "—")</dd>
+                <dt>Details</dt>
+                <dd style="white-space:pre-line;">@(string.IsNullOrEmpty(night?.Details) ? "—" : night.Details)</dd>
+            </dl>
+        </div>
+
+        <div class="card">
+            <p class="modal-section__title" style="margin-bottom: var(--p-space-3);">
+                <i class="fa-solid fa-box-open" style="color: var(--color-accent); margin-right: var(--p-space-2);"></i>Equipment Set
+            </p>
+            <dl class="detail-list">
+                <dt>Telescope</dt>
+                <dd>@(eqSet?.Telescope != null ? $"{eqSet.Telescope.Brand} {eqSet.Telescope.Model}" : "—")</dd>
+                <dt>Mount</dt>
+                <dd>@(eqSet?.Mount != null ? $"{eqSet.Mount.Brand} {eqSet.Mount.Model}" : "—")</dd>
+                <dt>Eyepiece</dt>
+                <dd>@(eqSet?.Eyepiece != null ? $"{eqSet.Eyepiece.Brand} {eqSet.Eyepiece.Model}" : "—")</dd>
+                <dt>Camera</dt>
+                <dd>@(eqSet?.Camera != null ? $"{eqSet.Camera.Brand} {eqSet.Camera.Model}" : "—")</dd>
+            </dl>
+        </div>
+
+    </div>
+
+    <div style="margin-bottom: var(--p-space-3);">
+        <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 var(--p-space-1);">
+            <i class="fa-solid fa-clock-rotate-left" style="color: var(--color-text-secondary); margin-right: var(--p-space-2);"></i>Event Log
+        </h2>
+        <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin:0;">
+            All recorded state changes for this ticket, newest first
+        </p>
+    </div>
+
+    @if (!logs.Any())
+    {
+        <div class="card">
+            <div class="empty">
+                <div class="empty__icon"><i class="fa-solid fa-scroll"></i></div>
+                <p class="empty__title">No audit events yet</p>
+                <p class="empty__body">State changes will appear here once the server records them.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Operation</th>
+                        <th>Table</th>
+                        <th>Coordinator</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in logs)
+                    {
+                        string opColor = log.Operation == "CREATE"
+                            ? "var(--color-success)"
+                            : log.IsError
+                                ? "var(--color-danger)"
+                                : "var(--color-accent)";
+
+                        <tr>
+                            <td style="white-space:nowrap; color: var(--color-text-muted); font-size: var(--text-xs); font-variant-numeric: tabular-nums;">
+                                @FmtDate(log.Date)
+                            </td>
+                            <td>
+                                <span style="font-size: var(--text-xs); font-weight:700; text-transform:uppercase;
+                                             letter-spacing:.06em; color: @opColor;">
+                                    @log.Operation
+                                </span>
+                            </td>
+                            <td style="color: var(--color-text-muted); font-size: var(--text-xs);">@log.TableName</td>
+                            <td style="color: var(--color-text-secondary); font-size: var(--text-sm);">@log.Email</td>
+                            <td style="color: var(--color-text-secondary); font-size: var(--text-sm); max-width:340px;">@log.Message</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
