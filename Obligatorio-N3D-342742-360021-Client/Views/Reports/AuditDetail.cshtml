@@ -55,7 +55,7 @@ else
     var night  = ticket.LoanRequest?.ObservationNight;
     var eqSet  = ticket.LoanRequest?.EquipmentSet;
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: var(--p-space-4); margin-bottom: var(--p-space-6);">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: var(--p-space-5); margin-bottom: var(--p-space-6);">
 
         <div class="card">
             <p class="modal-section__title" style="margin-bottom: var(--p-space-3);">
@@ -132,8 +132,16 @@ else
 
     </div>
 
-    <div style="margin-bottom: var(--p-space-3);">
-        <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 var(--p-space-1);">
+    @if (!string.IsNullOrEmpty(ViewBag.LogError as string))
+    {
+        <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">
+            <i class="fa-solid fa-triangle-exclamation" style="margin-right: var(--p-space-2);"></i>
+            Could not load event log — API said: <code>@ViewBag.LogError</code>
+        </div>
+    }
+
+    <div style="margin-bottom: var(--p-space-4);">
+        <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text); margin:0 0 var(--p-space-1);">
             <i class="fa-solid fa-clock-rotate-left" style="color: var(--color-text-secondary); margin-right: var(--p-space-2);"></i>Event Log
         </h2>
         <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin:0;">

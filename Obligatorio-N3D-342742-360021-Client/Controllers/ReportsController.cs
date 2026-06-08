@@ -144,7 +144,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     $"api/v1/logs/loanticket/{id}", "GET", token: token)
                     ?? new List<LogEventDto>();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ViewBag.LogError = ex.Message;
+            }
 
             ViewBag.Ticket = ticket;
             ViewBag.Logs = logs;

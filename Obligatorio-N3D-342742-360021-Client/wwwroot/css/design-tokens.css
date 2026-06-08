@@ -228,6 +228,10 @@
   --font-ui:   var(--p-font-sans);
   --font-mono: var(--p-font-mono);
 
+  --text-xs:         var(--p-text-11);
+  --text-sm:         var(--p-text-12);
+  --text-base:       var(--p-text-14);
+  --text-lg:         var(--p-text-18);
   --text-body:       var(--p-text-14);
   --text-body-dense: var(--p-text-13);
   --text-caption:    var(--p-text-12);
