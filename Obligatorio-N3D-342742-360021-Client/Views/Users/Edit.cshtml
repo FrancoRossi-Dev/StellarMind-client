@@ -54,12 +54,18 @@
                 </div>
                 <div class="field">
                     <label asp-for="password" class="field__label">Password</label>
-                    <input asp-for="password"
-                           type="password"
-                           class="input"
-                           id="pw-input"
-                           placeholder="Leave blank to keep current"
-                           oninput="checkPw(this.value)" />
+                    <div class="input-wrap">
+                        <input asp-for="password"
+                               type="password"
+                               class="input"
+                               id="pw-input"
+                               placeholder="Leave blank to keep current"
+                               oninput="checkPw(this.value)" />
+                        <button type="button" class="input-wrap__toggle" id="pw-toggle"
+                                onclick="togglePw()" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye" id="pw-icon"></i>
+                        </button>
+                    </div>
                     <span class="field__hint">Leave blank to keep the current password.</span>
                     <div class="pw-rules" id="pw-rules" aria-live="polite">
                         <span class="pw-rule" data-rule="length">At least 8 characters</span>
@@ -96,6 +102,18 @@ function checkPw(val) {
     for (const [key, ok] of Object.entries(rules)) {
         const el = document.querySelector(`.pw-rule[data-rule="${key}"]`);
         if (el) el.classList.toggle('ok', ok);
+    }
+}
+
+function togglePw() {
+    const input = document.getElementById('pw-input');
+    const icon  = document.getElementById('pw-icon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
     }
 }
 </script>

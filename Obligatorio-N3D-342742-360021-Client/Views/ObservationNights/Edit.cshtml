@@ -24,7 +24,7 @@
             <input type="hidden" name="requestingUserId" value="@Model?.RequestingUserId" />
 
             <div class="field">
-                <label class="field__label" for="date">Date &amp; Time</label>
+                <label class="field__label" for="date">Date</label>
                 <input id="date" name="date" type="text" class="input"
                        value="@Model?.Date" placeholder="Pick a date and time" required />
             </div>
@@ -92,12 +92,11 @@ const CO_TYPE = {
 const CO_OBJECTS = @Html.Raw(coJson);
 
 flatpickr("#date", {
-    enableTime: true,
-    dateFormat: "Y-m-dTH:i",
+    enableTime: false,
+    dateFormat: "Y-m-d",
     altInput: true,
-    altFormat: "F j, Y  \\a\\t H:i",
+    altFormat: "F j, Y",
     altInputClass: "input",
-    time_24hr: true,
     defaultDate: "@existingDate"
 });
 

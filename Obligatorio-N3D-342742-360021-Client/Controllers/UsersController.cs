@@ -106,7 +106,29 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     return View(user);
                 }
                 var token = HttpContext.Session.GetString("Token");
-                _auxiliarHttp.EnviarSolicitud($"api/v1/Users/update/{id}", "POST", user, token);
+
+                // ASP.NET Core suppresses value on type="password" inputs — if the form
+                // submitted no password, fetch the current one from the API to preserve it.
+                string effectivePassword = user.password ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(effectivePassword))
+                {
+                    var allUsers = _auxiliarHttp
+                        .EnviarYDeserializar<List<UserVM>>("api/v1/Users", "GET", token: token)
+                        ?? new List<UserVM>();
+                    effectivePassword = allUsers.FirstOrDefault(u => u.UserId == id)?.password ?? string.Empty;
+                }
+
+                var body = new {
+                    userId      = user.UserId,
+                    fullName    = user.fullName,
+                    username    = user.username,
+                    email       = user.email,
+                    phoneNumber = user.phoneNumber,
+                    address     = user.address,
+                    role        = user.role,
+                    password    = effectivePassword
+                };
+                _auxiliarHttp.EnviarSolicitud($"api/v1/Users/update/{id}", "POST", body, token);
                 TempData["Success"] = "Member details updated successfully.";
                 return RedirectToAction("Index");
             }

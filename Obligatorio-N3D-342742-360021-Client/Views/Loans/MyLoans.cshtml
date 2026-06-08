@@ -1,18 +1,239 @@
 @{
     ViewData["Title"] = "My Loans";
+
+    var requests = ViewBag.Requests as List<Obligatorio_N3D_342742_360021_Client.Models.PendingLoanRequestVM>
+                   ?? new List<Obligatorio_N3D_342742_360021_Client.Models.PendingLoanRequestVM>();
+
+    var tickets  = ViewBag.Tickets as List<Obligatorio_N3D_342742_360021_Client.Models.LoanTicketVM>
+                   ?? new List<Obligatorio_N3D_342742_360021_Client.Models.LoanTicketVM>();
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
+    }
+
+    string ReqStatusColor(string s) => s switch {
+        "Pending"  => "var(--color-warning)",
+        "Approved" => "var(--color-success)",
+        "Rejected" => "var(--color-danger)",
+        _          => "var(--color-text-muted)"
+    };
+
+    string TicketStatusColor(string s) => s switch {
+        "Loaned"   => "var(--color-accent)",
+        "Returned" => "var(--color-success)",
+        _          => "var(--color-text-muted)"
+    };
 }
 
 <div class="page-head">
     <div>
         <h1 class="page-head__title">My Loans</h1>
-        <p class="page-head__sub">Your equipment loan history, filtered by month and year</p>
+        <p class="page-head__sub">Your equipment requests and active loan tickets</p>
     </div>
+    <a class="btn btn--primary" asp-controller="Loans" asp-action="Create">+ Request equipment</a>
 </div>
 
-<div class="card">
-    <div class="empty">
-        <div class="empty__icon"><i class="fa-solid fa-box-open"></i></div>
-        <p class="empty__title">Coming in milestone E</p>
-        <p class="empty__body">Monthly loan history with overdue detection will be available soon.</p>
-    </div>
+@* ── My Requests ── *@
+<div style="margin: var(--p-space-5) 0 var(--p-space-3);">
+    <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin: 0 0 var(--p-space-1);">
+        <i class="fa-solid fa-paper-plane" style="color: var(--color-text-secondary); margin-right: var(--p-space-2);"></i>My Requests
+    </h2>
+    <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0;">
+        Equipment requests you have submitted
+    </p>
 </div>
+
+@if (!requests.Any())
+{
+    <div class="card" style="margin-bottom: var(--p-space-6);">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-satellite-dish"></i></div>
+            <p class="empty__title">No requests yet</p>
+            <p class="empty__body">You haven't submitted any equipment requests. Plan an observation night to get started.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap" style="margin-bottom: var(--p-space-6);">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Observation Night</th>
+                    <th>Telescope</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var req in requests)
+                {
+                    <tr>
+                        <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@req.RequestId</td>
+                        <td>
+                            <div>@FmtDate(req.ObservationNight?.Date)</div>
+                            <div class="tbl__sub">@(req.ObservationNight?.CelestialObject?.Name ?? "—")</div>
+                        </td>
+                        <td style="color: var(--color-text-secondary);">
+                            @if (req.EquipmentSet?.Telescope != null)
+                            {
+                                <span>@req.EquipmentSet.Telescope.Brand @req.EquipmentSet.Telescope.Model</span>
+                            }
+                            else { <span>—</span> }
+                        </td>
+                        <td>
+                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                         letter-spacing: .04em; color: @ReqStatusColor(req.Status);">
+                                @req.Status
+                            </span>
+                        </td>
+                        <td>
+                            @if (req.Status == "Pending")
+                            {
+                                <div class="tbl__actions">
+                                    <form method="post" asp-controller="Loans" asp-action="CancelRequest" asp-route-id="@req.RequestId"
+                                          onsubmit="return confirm('Cancel this request?');">
+                                        <button type="submit" class="btn btn--danger btn--sm">Cancel</button>
+                                    </form>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@* ── Loaned Equipment ── *@
+<div style="margin: var(--p-space-5) 0 var(--p-space-3);">
+    <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin: 0 0 var(--p-space-1);">
+        <i class="fa-solid fa-binoculars" style="color: var(--color-text-secondary); margin-right: var(--p-space-2);"></i>Loaned Equipment
+    </h2>
+    <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0;">
+        Approved loans and their return status
+    </p>
+</div>
+
+@if (!tickets.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-box-open"></i></div>
+            <p class="empty__title">No loaned equipment</p>
+            <p class="empty__body">Once a request is approved, your loan will appear here.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Night</th>
+                    <th>Celestial Object</th>
+                    <th>Start Date</th>
+                    <th>Return By</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Equipment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in tickets)
+                {
+                    var night = ticket.LoanRequest?.ObservationNight;
+                    var eqSet = ticket.LoanRequest?.EquipmentSet;
+                    <tr>
+                        <td style="color: var(--color-text-secondary); font-variant-numeric: tabular-nums; white-space:nowrap;">
+                            @FmtDate(night?.Date)
+                        </td>
+                        <td class="tbl__name">@(night?.CelestialObject?.Name ?? "—")</td>
+                        <td style="color: var(--color-text-secondary); font-variant-numeric: tabular-nums; white-space:nowrap;">
+                            @FmtDate(ticket.StartDate)
+                        </td>
+                        <td style="font-variant-numeric: tabular-nums; white-space:nowrap;">
+                            <span style="color: @(ticket.IsOverdue ? "var(--color-danger)" : "var(--color-text-secondary)");">
+                                @FmtDate(ticket.EndDate)
+                            </span>
+                            @if (ticket.IsOverdue)
+                            {
+                                <span style="color: var(--color-danger); font-size: var(--text-xs); margin-left: 4px;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> overdue
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                         letter-spacing: .04em; color: @TicketStatusColor(ticket.Status);">
+                                @ticket.Status
+                            </span>
+                        </td>
+                        <td style="text-align:right;">
+                            @if (eqSet != null)
+                            {
+                                <button type="button" class="btn btn--ghost btn--sm"
+                                        onclick="openEquipModal(@ticket.Id)">
+                                    <i class="fa-solid fa-eye" style="margin-right: var(--p-space-1);"></i>View
+                                </button>
+                            }
+                            else { <span style="color: var(--color-text-muted);">—</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* ── Per-ticket equipment modals ── *@
+    @foreach (var ticket in tickets)
+    {
+        var eqSet = ticket.LoanRequest?.EquipmentSet;
+        if (eqSet == null) continue;
+        var night = ticket.LoanRequest?.ObservationNight;
+        <div id="equip-modal-@ticket.Id" class="modal-overlay" onclick="if(event.target===this)closeEquipModal(@ticket.Id)">
+            <div class="modal-panel" role="dialog" aria-modal="true">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        <i class="fa-solid fa-box-open" style="color: var(--color-accent); margin-right: var(--p-space-2);"></i>Equipment Set
+                    </h2>
+                    <button class="modal-close" onclick="closeEquipModal(@ticket.Id)" aria-label="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0;">
+                        @(night?.CelestialObject?.Name ?? "Observation") — @FmtDate(night?.Date)
+                    </p>
+                    <dl class="detail-list">
+                        <dt><i class="fa-solid fa-circle" style="font-size:8px; margin-right:6px;"></i>Telescope</dt>
+                        <dd>@(eqSet.Telescope != null ? $"{eqSet.Telescope.Brand} {eqSet.Telescope.Model}" : "—")</dd>
+                        <dt><i class="fa-solid fa-circle" style="font-size:8px; margin-right:6px;"></i>Mount</dt>
+                        <dd>@(eqSet.Mount != null ? $"{eqSet.Mount.Brand} {eqSet.Mount.Model}" : "—")</dd>
+                        <dt><i class="fa-solid fa-circle" style="font-size:8px; margin-right:6px;"></i>Eyepiece</dt>
+                        <dd>@(eqSet.Eyepiece != null ? $"{eqSet.Eyepiece.Brand} {eqSet.Eyepiece.Model}" : "—")</dd>
+                        <dt><i class="fa-solid fa-circle" style="font-size:8px; margin-right:6px;"></i>Camera</dt>
+                        <dd>@(eqSet.Camera != null ? $"{eqSet.Camera.Brand} {eqSet.Camera.Model}" : "—")</dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--ghost" onclick="closeEquipModal(@ticket.Id)">Close</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+<script>
+function openEquipModal(id)  { document.getElementById('equip-modal-' + id).classList.add('is-open'); }
+function closeEquipModal(id) { document.getElementById('equip-modal-' + id).classList.remove('is-open'); }
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.is-open').forEach(m => m.classList.remove('is-open'));
+    }
+});
+</script>
+}

@@ -24,6 +24,21 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     .EnviarYDeserializar<List<ObservationNightVM>>(url, "GET", token: token)
                     ?? new List<ObservationNightVM>();
 
+                if (role == "Member" && userId.HasValue)
+                {
+                    try
+                    {
+                        var userRequests = _auxiliarHttp
+                            .EnviarYDeserializar<List<PendingLoanRequestVM>>($"api/v1/loanrequests/user/{userId}", "GET", token: token)
+                            ?? new List<PendingLoanRequestVM>();
+
+                        ViewBag.NightRequestMap = userRequests
+                            .Where(r => r.ObservationNight != null)
+                            .ToDictionary(r => r.ObservationNight!.Id, r => r.RequestId);
+                    }
+                    catch { ViewBag.NightRequestMap = new Dictionary<int, int>(); }
+                }
+
                 return View(nights);
             }
             catch (Exception ex)
@@ -84,7 +99,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             var token = HttpContext.Session.GetString("Token");
             try
             {
-                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, date, details);
+                string isoDate = DateTime.TryParse(date, out var d) ? d.ToString("yyyy-MM-ddT00:00:00") : date;
+                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, isoDate, details);
                 _auxiliarHttp.EnviarSolicitud("api/v1/observationnights", "POST", dto, token);
                 TempData["Success"] = "Observation plan created successfully.";
                 return RedirectToAction("Index");
@@ -122,7 +138,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             var token = HttpContext.Session.GetString("Token");
             try
             {
-                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, date, details);
+                string isoDate = DateTime.TryParse(date, out var d) ? d.ToString("yyyy-MM-ddT00:00:00") : date;
+                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, isoDate, details);
                 _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "PUT", dto, token);
                 TempData["Success"] = "Observation plan updated.";
                 return RedirectToAction("Index");
@@ -136,8 +153,27 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         }
 
         private List<CelestialObjectVM> FetchCelestialObjects(string? token) =>
-            _auxiliarHttp.EnviarYDeserializar<List<CelestialObjectVM>>("api/v1/celestialobjects", "GET", token: token)
-            ?? new List<CelestialObjectVM>();
+            (_auxiliarHttp.EnviarYDeserializar<List<CelestialObjectVM>>("api/v1/celestialobjects", "GET", token: token)
+            ?? new List<CelestialObjectVM>())
+            .OrderBy(o => o.Name)
+            .ToList();
+
+        [HttpPost("ObservationNights/CancelRequest/{requestId}")]
+        public IActionResult CancelRequest(int requestId)
+        {
+            try
+            {
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loanrequests/{requestId}/cancel", "PUT", token: token);
+                TempData["Success"] = "Equipment request canceled. Your night is back in planning.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
 
         [HttpPost("ObservationNights/Delete/{id}")]
         public IActionResult Delete(int id)

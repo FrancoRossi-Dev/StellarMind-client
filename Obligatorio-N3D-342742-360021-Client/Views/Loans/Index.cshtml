@@ -2,28 +2,46 @@
 
 @{
     ViewData["Title"] = "Loan Requests";
-    bool isCoord = Context.Session.GetString("UserRole") == "Coordinator";
+    string? role    = Context.Session.GetString("UserRole");
+    bool isCoord    = role == "Coordinator" || role == "Admin";
 
     string FmtDate(string? raw) {
         if (string.IsNullOrWhiteSpace(raw)) return "—";
         return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
     }
+
+    string StatusColor(string s) => s switch {
+        "Pending"  => "var(--color-warning)",
+        "Approved" => "var(--color-success)",
+        "Rejected" => "var(--color-danger)",
+        _          => "var(--color-text-muted)"
+    };
+
+    var sorted = Model?
+        .OrderByDescending(r => r.Status == "Pending")
+        .ThenBy(r => DateTime.TryParse(r.ObservationNight?.Date, out var d) ? d : DateTime.MaxValue)
+        .ToList() ?? new List<Obligatorio_N3D_342742_360021_Client.Models.PendingLoanRequestVM>();
 }
 
 <div class="page-head">
     <div>
         <h1 class="page-head__title">Loan Requests</h1>
-        <p class="page-head__sub">Pending equipment requests awaiting coordinator action</p>
+        <p class="page-head__sub">All equipment requests across the club</p>
     </div>
 </div>
 
-@if (Model == null || !Model.Any())
+@if (!string.IsNullOrEmpty(ViewBag.msg as string))
+{
+    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
+}
+
+@if (!sorted.Any())
 {
     <div class="card">
         <div class="empty">
             <div class="empty__icon"><i class="fa-solid fa-inbox"></i></div>
-            <p class="empty__title">No pending requests</p>
-            <p class="empty__body">All loan requests have been processed — the queue is clear.</p>
+            <p class="empty__title">No requests yet</p>
+            <p class="empty__body">No equipment requests have been submitted yet.</p>
         </div>
     </div>
 }
@@ -36,7 +54,8 @@ else
                     <th>#</th>
                     <th>Member</th>
                     <th>Observation Night</th>
-                    <th>Telescope</th>
+                    <th>Celestial Object</th>
+                    <th>Status</th>
                     @if (isCoord)
                     {
                         <th style="text-align:right;">Actions</th>
@@ -44,7 +63,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var req in Model)
+                @foreach (var req in sorted)
                 {
                     <tr>
                         <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@req.RequestId</td>
@@ -52,31 +71,23 @@ else
                             <div class="tbl__name">@(req.RequestingUser?.fullName ?? "—")</div>
                             <div class="tbl__sub">@@@(req.RequestingUser?.username ?? "")</div>
                         </td>
-                        <td>
-                            <div>@FmtDate(req.ObservationNight?.Date)</div>
-                            <div class="tbl__sub">@(req.ObservationNight?.CelestialObject?.Name ?? "—")</div>
+                        <td style="color: var(--color-text-secondary); white-space:nowrap;">
+                            @FmtDate(req.ObservationNight?.Date)
                         </td>
-                        <td style="color: var(--color-text-secondary);">
-                            @if (req.EquipmentSet?.Telescope != null)
-                            {
-                                <span>@req.EquipmentSet.Telescope.Brand @req.EquipmentSet.Telescope.Model</span>
-                            }
-                            else
-                            {
-                                <span>—</span>
-                            }
+                        <td class="tbl__name">@(req.ObservationNight?.CelestialObject?.Name ?? "—")</td>
+                        <td>
+                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                         letter-spacing: .04em; color: @StatusColor(req.Status);">
+                                @req.Status
+                            </span>
                         </td>
                         @if (isCoord)
                         {
-                            <td>
-                                <div class="tbl__actions">
-                                    <form method="post" asp-controller="Loans" asp-action="Approve" asp-route-id="@req.RequestId">
-                                        <button type="submit" class="btn btn--secondary btn--sm">Approve</button>
-                                    </form>
-                                    <form method="post" asp-controller="Loans" asp-action="Reject" asp-route-id="@req.RequestId">
-                                        <button type="submit" class="btn btn--danger btn--sm">Reject</button>
-                                    </form>
-                                </div>
+                            <td style="text-align:right;">
+                                <button type="button" class="btn btn--secondary btn--sm"
+                                        onclick="openRequestModal(@req.RequestId)">
+                                    <i class="fa-solid fa-circle-info" style="margin-right: var(--p-space-1);"></i>Details
+                                </button>
                             </td>
                         }
                     </tr>
@@ -84,4 +95,163 @@ else
             </tbody>
         </table>
     </div>
+
+    @* ── Per-request detail modals (coord/admin only) ── *@
+    @if (isCoord)
+    {
+        @foreach (var req in sorted)
+        {
+            var night  = req.ObservationNight;
+            var eqSet  = req.EquipmentSet;
+            var user   = req.RequestingUser;
+            <div id="req-modal-@req.RequestId" class="modal-overlay"
+                 onclick="if(event.target===this)closeRequestModal(@req.RequestId)">
+                <div class="modal-panel" role="dialog" aria-modal="true"
+                     style="max-width: 560px;">
+                    <div class="modal-header">
+                        <h2 class="modal-title">
+                            <i class="fa-solid fa-file-lines" style="color: var(--color-accent); margin-right: var(--p-space-2);"></i>Request #@req.RequestId
+                        </h2>
+                        <button class="modal-close" onclick="closeRequestModal(@req.RequestId)" aria-label="Close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        @* Member info *@
+                        <div>
+                            <p class="modal-section__title"><i class="fa-solid fa-user" style="margin-right:4px;"></i>Member</p>
+                            <dl class="detail-list">
+                                <dt>Name</dt><dd>@(user?.fullName ?? "—")</dd>
+                                <dt>Username</dt><dd>@@@(user?.username ?? "—")</dd>
+                                <dt>Email</dt><dd>@(user?.email ?? "—")</dd>
+                            </dl>
+                        </div>
+
+                        @* Observation night info *@
+                        <div>
+                            <p class="modal-section__title"><i class="fa-solid fa-moon" style="margin-right:4px;"></i>Observation Night</p>
+                            <dl class="detail-list">
+                                <dt>Date</dt><dd>@FmtDate(night?.Date)</dd>
+                                <dt>Celestial Object</dt><dd>@(night?.CelestialObject?.Name ?? "—")</dd>
+                                <dt>Details</dt><dd style="white-space:pre-line;">@(night?.Details is { Length: > 0 } d ? d : "—")</dd>
+                            </dl>
+                        </div>
+
+                        @* Equipment set *@
+                        <div>
+                            <p class="modal-section__title"><i class="fa-solid fa-box-open" style="margin-right:4px;"></i>Equipment</p>
+                            <dl class="detail-list">
+                                <dt>Telescope</dt><dd>@(eqSet?.Telescope != null ? $"{eqSet.Telescope.Brand} {eqSet.Telescope.Model}" : "—")</dd>
+                                <dt>Mount</dt><dd>@(eqSet?.Mount != null ? $"{eqSet.Mount.Brand} {eqSet.Mount.Model}" : "—")</dd>
+                                <dt>Eyepiece</dt><dd>@(eqSet?.Eyepiece != null ? $"{eqSet.Eyepiece.Brand} {eqSet.Eyepiece.Model}" : "—")</dd>
+                                <dt>Camera</dt><dd>@(eqSet?.Camera != null ? $"{eqSet.Camera.Brand} {eqSet.Camera.Model}" : "—")</dd>
+                            </dl>
+                        </div>
+
+                        @* Status badge *@
+                        <div>
+                            <p class="modal-section__title">Status</p>
+                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                         letter-spacing: .06em; color: @StatusColor(req.Status);">
+                                @req.Status
+                            </span>
+                        </div>
+
+                    </div>
+
+                    @* Footer: actions only shown when Pending *@
+                    @if (req.Status == "Pending")
+                    {
+                        <div class="modal-footer">
+                            <form method="post" asp-controller="Loans" asp-action="Approve"
+                                  asp-route-id="@req.RequestId"
+                                  id="approve-form-@req.RequestId"
+                                  style="display:flex; align-items:center; gap: var(--p-space-2); flex:1; flex-wrap:wrap;">
+                                <div style="display:flex; flex-direction:column; gap:2px; flex:1; min-width:160px;">
+                                    <label style="font-size: var(--text-xs); color: var(--color-text-muted); font-weight:600;"
+                                           for="endDate-@req.RequestId">
+                                        Return-by date <span style="color: var(--color-danger);">*</span>
+                                    </label>
+                                    <input type="date"
+                                           id="endDate-@req.RequestId"
+                                           name="endDate"
+                                           class="input input--sm"
+                                           required
+                                           data-night-date="@(night?.Date ?? "")"
+                                           style="color-scheme: dark;" />
+                                    <span id="date-err-@req.RequestId"
+                                          style="display:none; font-size: var(--text-xs); color: var(--color-danger);">
+                                        Must be at least 7 days after the observation night.
+                                    </span>
+                                </div>
+                                <button type="submit" class="btn btn--secondary btn--sm">
+                                    <i class="fa-solid fa-check" style="margin-right: var(--p-space-1);"></i>Approve
+                                </button>
+                            </form>
+                            <form method="post" asp-controller="Loans" asp-action="Reject"
+                                  asp-route-id="@req.RequestId">
+                                <button type="submit" class="btn btn--danger btn--sm">
+                                    <i class="fa-solid fa-xmark" style="margin-right: var(--p-space-1);"></i>Reject
+                                </button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn--ghost" onclick="closeRequestModal(@req.RequestId)">Close</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+
+@section Scripts {
+<script>
+function openRequestModal(id)  { document.getElementById('req-modal-' + id).classList.add('is-open'); }
+function closeRequestModal(id) { document.getElementById('req-modal-' + id).classList.remove('is-open'); }
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape')
+        document.querySelectorAll('.modal-overlay.is-open').forEach(m => m.classList.remove('is-open'));
+});
+
+// Validate return date ≥ night date + 7 days
+document.querySelectorAll('[id^="approve-form-"]').forEach(function(form) {
+    const requestId  = form.id.replace('approve-form-', '');
+    const dateInput  = document.getElementById('endDate-' + requestId);
+    const errSpan    = document.getElementById('date-err-' + requestId);
+    const nightDate  = dateInput.dataset.nightDate;
+
+    // Set min attribute dynamically
+    if (nightDate) {
+        const night  = new Date(nightDate);
+        night.setDate(night.getDate() + 7);
+        const yyyy   = night.getFullYear();
+        const mm     = String(night.getMonth() + 1).padStart(2, '0');
+        const dd     = String(night.getDate()).padStart(2, '0');
+        dateInput.min = yyyy + '-' + mm + '-' + dd;
+    }
+
+    form.addEventListener('submit', function(e) {
+        if (!dateInput.value) return; // html required handles empty
+        if (nightDate) {
+            const night  = new Date(nightDate);
+            night.setDate(night.getDate() + 7);
+            const chosen = new Date(dateInput.value);
+            if (chosen < night) {
+                e.preventDefault();
+                errSpan.style.display = '';
+                dateInput.focus();
+                return;
+            }
+        }
+        errSpan.style.display = 'none';
+    });
+
+    dateInput.addEventListener('change', function() { errSpan.style.display = 'none'; });
+});
+</script>
 }
