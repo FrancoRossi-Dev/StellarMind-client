@@ -3,6 +3,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Models
     public class PendingLoanRequestVM
     {
         public int RequestId { get; set; }
+        public string Status { get; set; } = string.Empty; // "Pending", "Approved", "Rejected", "Canceled"
         public EquipmentSetVM? EquipmentSet { get; set; }
         public ObservationNightVM? ObservationNight { get; set; }
         public UserVM? RequestingUser { get; set; }

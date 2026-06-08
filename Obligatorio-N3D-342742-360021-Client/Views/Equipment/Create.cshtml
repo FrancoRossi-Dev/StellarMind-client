@@ -14,54 +14,121 @@
     <div class="card__body">
         <form method="post" asp-controller="Equipment" asp-action="Create" class="form-stack">
 
-            <div class="field">
-                <label class="field__label" for="name">Brand</label>
-                <input id="name" name="name" type="text" class="input" placeholder="e.g. Canon" required />
+            <div class="field-row">
+                <div class="field">
+                    <label class="field__label" for="brand">Brand</label>
+                    <input id="brand" name="brand" type="text" class="input" placeholder="e.g. Celestron" required />
+                </div>
+                <div class="field">
+                    <label class="field__label" for="model">Model</label>
+                    <input id="model" name="model" type="text" class="input" placeholder="e.g. C14" required />
+                </div>
             </div>
 
-            <div class="field">
-                <label class="field__label" for="type">Type</label>
-                <select id="type" name="type" class="select" required onchange="updateFields(this.value)">
-                    <option value="">— Select type —</option>
-                    <option value="Telescope">Telescope</option>
-                    <option value="Mount">Mount</option>
-                    <option value="Camera">Camera</option>
-                    <option value="Eyepiece">Eyepiece</option>
-                </select>
+            <div class="field-row">
+                <div class="field">
+                    <label class="field__label" for="type">Type</label>
+                    <select id="type" name="type" class="select" required onchange="updateFields(this.value)">
+                        <option value="">— Select type —</option>
+                        <option value="Telescope">Telescope</option>
+                        <option value="Mount">Mount</option>
+                        <option value="Camera">Camera</option>
+                        <option value="Eyepiece">Eyepiece</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="quantity">Quantity</label>
+                    <input id="quantity" name="quantity" type="number" class="input" min="1" value="1" required />
+                </div>
             </div>
 
-            <div class="field">
-                <label class="field__label" for="description">Model</label>
-                <textarea id="description" name="description" class="textarea" placeholder="e.g. EOS 5D Mark IV"></textarea>
+            @* ── Telescope ── *@
+            <div id="group-telescope" style="display:none;">
+                <div class="field-group-label">Telescope specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="aperture">Aperture</label>
+                        <input id="aperture" name="aperture" type="text" class="input" placeholder="e.g. 356mm" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="focalRatio">Focal Ratio</label>
+                        <input id="focalRatio" name="focalRatio" type="text" class="input" placeholder="e.g. f/11" />
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="focalLenght">Focal Length</label>
+                        <input id="focalLenght" name="focalLenght" type="text" class="input" placeholder="e.g. 3910mm" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="weight">Weight</label>
+                        <input id="weight" name="weight" type="text" class="input" placeholder="e.g. 12kg" />
+                    </div>
+                </div>
             </div>
 
-            <div class="field">
-                <label class="field__label" for="quantity">Quantity</label>
-                <input id="quantity" name="quantity" type="number" class="input" min="1" value="1" required />
+            @* ── Camera ── *@
+            <div id="group-camera" style="display:none;">
+                <div class="field-group-label">Camera specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="resolution">Resolution</label>
+                        <input id="resolution" name="resolution" type="text" class="input" placeholder="e.g. 24MP" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="pixelSize">Pixel Size</label>
+                        <input id="pixelSize" name="pixelSize" type="text" class="input" placeholder="e.g. 5.94μm" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="sensorType">Sensor Type</label>
+                    <select id="sensorType" name="sensorType" class="select">
+                        <option value="">— Select —</option>
+                        <option value="CMOS">CMOS</option>
+                        <option value="CCD">CCD</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="field" id="field-focalLenght" style="display:none;">
-                <label class="field__label" for="focalLenght">Focal Length (mm)</label>
-                <input id="focalLenght" name="focalLenght" type="number" step="any" class="input" placeholder="e.g. 2000" />
+            @* ── Eyepiece ── *@
+            <div id="group-eyepiece" style="display:none;">
+                <div class="field-group-label">Eyepiece specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="diameter">Barrel Diameter</label>
+                        <input id="diameter" name="diameter" type="text" class="input" placeholder="e.g. 31.7mm" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="fieldOfView">Field of View</label>
+                        <input id="fieldOfView" name="fieldOfView" type="text" class="input" placeholder="e.g. 52°" />
+                    </div>
+                </div>
             </div>
 
-            <div class="field" id="field-mountType" style="display:none;">
-                <label class="field__label" for="mountType">Mount Type</label>
-                <select id="mountType" name="mountType" class="select">
-                    <option value="">— Select —</option>
-                    <option value="Ecuatorial">Ecuatorial</option>
-                    <option value="AltAzimutal">AltAzimutal</option>
-                    <option value="Híbrida">Híbrida</option>
-                </select>
-            </div>
-
-            <div class="field" id="field-sensorType" style="display:none;">
-                <label class="field__label" for="sensorType">Sensor Type</label>
-                <select id="sensorType" name="sensorType" class="select">
-                    <option value="">— Select —</option>
-                    <option value="CMOS">CMOS</option>
-                    <option value="CCD">CCD</option>
-                </select>
+            @* ── Mount ── *@
+            <div id="group-mount" style="display:none;">
+                <div class="field-group-label">Mount specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="mountType">Mount Type</label>
+                        <select id="mountType" name="mountType" class="select">
+                            <option value="">— Select —</option>
+                            <option value="Ecuatorial">Ecuatorial</option>
+                            <option value="AltAzimutal">AltAzimutal</option>
+                            <option value="Híbrida">Híbrida</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="weightSupport">Weight Support</label>
+                        <input id="weightSupport" name="weightSupport" type="text" class="input" placeholder="e.g. 20kg" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label style="display:flex; align-items:center; gap: var(--p-space-2); cursor:pointer;">
+                        <input id="isGoTo" name="isGoTo" type="checkbox" value="true" />
+                        <span class="field__label" style="margin:0;">GoTo (motorized)</span>
+                    </label>
+                </div>
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
@@ -76,9 +143,10 @@
 @section Scripts {
 <script>
 function updateFields(type) {
-    document.getElementById('field-focalLenght').style.display = (type === 'Telescope' || type === 'Eyepiece') ? '' : 'none';
-    document.getElementById('field-mountType').style.display   = (type === 'Mount')     ? '' : 'none';
-    document.getElementById('field-sensorType').style.display  = (type === 'Camera')    ? '' : 'none';
+    document.getElementById('group-telescope').style.display = type === 'Telescope' ? '' : 'none';
+    document.getElementById('group-camera').style.display    = type === 'Camera'    ? '' : 'none';
+    document.getElementById('group-eyepiece').style.display  = type === 'Eyepiece'  ? '' : 'none';
+    document.getElementById('group-mount').style.display     = type === 'Mount'     ? '' : 'none';
 }
 </script>
 }

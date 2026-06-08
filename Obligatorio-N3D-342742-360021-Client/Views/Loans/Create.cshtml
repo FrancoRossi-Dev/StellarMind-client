@@ -37,14 +37,9 @@
         {
             <form method="post" asp-controller="Loans" asp-action="Create" class="form-stack">
 
-                <input type="hidden" name="userId"            value="@userId" />
-                <input type="hidden" id="hDate"               name="date" />
-                <input type="hidden" id="hCelestialObjectId"  name="celestialObjectId" />
-                <input type="hidden" id="hDetails"            name="details" />
-
                 <div class="field">
                     <label class="field__label" for="nightSelector">Observation Plan</label>
-                    <select id="nightSelector" class="select" required onchange="fillNight(this.value)">
+                    <select id="nightSelector" name="observationNightId" class="select" required onchange="fillNight(this.value)">
                         <option value="">— Select a planned night —</option>
                         @foreach (var night in nights)
                         {
@@ -75,12 +70,12 @@
 
                 <div class="field-row">
                     <div class="field">
-                        <label class="field__label" for="eyepieceId">Eyepiece ID</label>
-                        <input id="eyepieceId" name="eyepieceId" type="number" class="input" value="32" min="1" required />
+                        <label class="field__label" for="eyepieceId">Eyepiece ID <span style="color:var(--color-text-muted); font-weight:400;">(optional)</span></label>
+                        <input id="eyepieceId" name="eyepieceId" type="number" class="input" min="1" />
                     </div>
                     <div class="field">
-                        <label class="field__label" for="cameraId">Camera ID</label>
-                        <input id="cameraId" name="cameraId" type="number" class="input" value="1" min="1" required />
+                        <label class="field__label" for="cameraId">Camera ID <span style="color:var(--color-text-muted); font-weight:400;">(optional)</span></label>
+                        <input id="cameraId" name="cameraId" type="number" class="input" min="1" />
                     </div>
                 </div>
 
@@ -97,31 +92,13 @@
 
 @section Scripts {
 <script>
-const nights = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-    nights,
-    new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }
-));
-
 function fillNight(idStr) {
-    const id = parseInt(idStr);
-    const night = nights.find(n => n.id === id);
-    const btn = document.getElementById('submitBtn');
-    if (night) {
-        document.getElementById('hDate').value              = night.date ?? '';
-        document.getElementById('hCelestialObjectId').value = night.celestialObject?.id ?? '';
-        document.getElementById('hDetails').value           = night.details ?? '';
-        btn.disabled = false;
-    } else {
-        document.getElementById('hDate').value              = '';
-        document.getElementById('hCelestialObjectId').value = '';
-        document.getElementById('hDetails').value           = '';
-        btn.disabled = true;
-    }
+    document.getElementById('submitBtn').disabled = !idStr;
 }
 
 @if (selectedNightId.HasValue)
 {
-    <text>document.addEventListener('DOMContentLoaded', function () { fillNight(@selectedNightId.Value); });</text>
+    <text>document.addEventListener('DOMContentLoaded', function () { fillNight('@selectedNightId.Value'); });</text>
 }
 </script>
 }

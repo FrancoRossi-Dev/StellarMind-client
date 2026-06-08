@@ -2,10 +2,6 @@
 
 @{
     ViewData["Title"] = "Edit Equipment";
-    string typeVal    = Model?.Type ?? "";
-    string mountVal   = Model?.MountType ?? "";
-    string sensorVal  = Model?.SensorType ?? "";
-    string focalVal   = Model?.FocalLenght ?? "";
 }
 
 <div class="page-head">
@@ -20,9 +16,15 @@
     <div class="card__body">
         <form method="post" asp-controller="Equipment" asp-action="Edit" asp-route-id="@Model?.Id" class="form-stack">
 
-            <div class="field">
-                <label class="field__label" for="name">Brand</label>
-                <input id="name" name="name" type="text" class="input" value="@Model?.Brand" required />
+            <div class="field-row">
+                <div class="field">
+                    <label class="field__label" for="brand">Brand</label>
+                    <input id="brand" name="brand" type="text" class="input" value="@Model?.Brand" required />
+                </div>
+                <div class="field">
+                    <label class="field__label" for="model">Model</label>
+                    <input id="model" name="model" type="text" class="input" value="@Model?.Model" required />
+                </div>
             </div>
 
             <div class="field">
@@ -35,38 +37,104 @@
                 </select>
             </div>
 
-            <div class="field">
-                <label class="field__label" for="description">Model</label>
-                <textarea id="description" name="description" class="textarea">@Model?.Model</textarea>
+            <div class="field-row">
+                <div class="field">
+                    <label class="field__label" for="quantity">Total Quantity</label>
+                    <input id="quantity" name="quantity" type="number" class="input" min="0" value="@Model?.Quantity" required />
+                </div>
+                <div class="field">
+                    <label class="field__label" for="availableQuantity">Available</label>
+                    <input id="availableQuantity" name="availableQuantity" type="number" class="input" min="0" value="@Model?.availableQuantity" required />
+                </div>
             </div>
 
-            <div class="field">
-                <label class="field__label" for="quantity">Quantity</label>
-                <input id="quantity" name="quantity" type="number" class="input" min="1" value="@Model?.Quantity" required />
+            @* ── Telescope ── *@
+            <div id="group-telescope" style="display:none;">
+                <div class="field-group-label">Telescope specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="aperture">Aperture</label>
+                        <input id="aperture" name="aperture" type="text" class="input" value="@Model?.Aperture" placeholder="e.g. 356mm" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="focalRatio">Focal Ratio</label>
+                        <input id="focalRatio" name="focalRatio" type="text" class="input" value="@Model?.FocalRatio" placeholder="e.g. f/11" />
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="focalLenght">Focal Length</label>
+                        <input id="focalLenght" name="focalLenght" type="text" class="input" value="@Model?.FocalLenght" placeholder="e.g. 3910mm" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="weight">Weight</label>
+                        <input id="weight" name="weight" type="text" class="input" value="@Model?.Weight" placeholder="e.g. 12kg" />
+                    </div>
+                </div>
             </div>
 
-            <div class="field" id="field-focalLenght" style="display:none;">
-                <label class="field__label" for="focalLenght">Focal Length (mm)</label>
-                <input id="focalLenght" name="focalLenght" type="number" step="any" class="input" value="@focalVal" />
+            @* ── Camera ── *@
+            <div id="group-camera" style="display:none;">
+                <div class="field-group-label">Camera specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="resolution">Resolution</label>
+                        <input id="resolution" name="resolution" type="text" class="input" value="@Model?.Resolution" placeholder="e.g. 24MP" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="pixelSize">Pixel Size</label>
+                        <input id="pixelSize" name="pixelSize" type="text" class="input" value="@Model?.PixelSize" placeholder="e.g. 5.94μm" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="sensorType">Sensor Type</label>
+                    <select id="sensorType" name="sensorType" class="select">
+                        <option value="">— Select —</option>
+                        <option value="CMOS">CMOS</option>
+                        <option value="CCD">CCD</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="field" id="field-mountType" style="display:none;">
-                <label class="field__label" for="mountType">Mount Type</label>
-                <select id="mountType" name="mountType" class="select">
-                    <option value="">— Select —</option>
-                    <option value="Ecuatorial">Ecuatorial</option>
-                    <option value="AltAzimutal">AltAzimutal</option>
-                    <option value="Híbrida">Híbrida</option>
-                </select>
+            @* ── Eyepiece ── *@
+            <div id="group-eyepiece" style="display:none;">
+                <div class="field-group-label">Eyepiece specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="diameter">Barrel Diameter</label>
+                        <input id="diameter" name="diameter" type="text" class="input" value="@Model?.Diameter" placeholder="e.g. 31.7mm" />
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="fieldOfView">Field of View</label>
+                        <input id="fieldOfView" name="fieldOfView" type="text" class="input" value="@Model?.FieldOfView" placeholder="e.g. 52°" />
+                    </div>
+                </div>
             </div>
 
-            <div class="field" id="field-sensorType" style="display:none;">
-                <label class="field__label" for="sensorType">Sensor Type</label>
-                <select id="sensorType" name="sensorType" class="select">
-                    <option value="">— Select —</option>
-                    <option value="CMOS">CMOS</option>
-                    <option value="CCD">CCD</option>
-                </select>
+            @* ── Mount ── *@
+            <div id="group-mount" style="display:none;">
+                <div class="field-group-label">Mount specs</div>
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field__label" for="mountType">Mount Type</label>
+                        <select id="mountType" name="mountType" class="select">
+                            <option value="">— Select —</option>
+                            <option value="Ecuatorial">Ecuatorial</option>
+                            <option value="AltAzimutal">AltAzimutal</option>
+                            <option value="Híbrida">Híbrida</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="weightSupport">Weight Support</label>
+                        <input id="weightSupport" name="weightSupport" type="text" class="input" value="@Model?.WeightSupport" placeholder="e.g. 20kg" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label style="display:flex; align-items:center; gap: var(--p-space-2); cursor:pointer;">
+                        <input id="isGoTo" name="isGoTo" type="checkbox" value="true" />
+                        <span class="field__label" style="margin:0;">GoTo (motorized)</span>
+                    </label>
+                </div>
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
@@ -81,17 +149,23 @@
 @section Scripts {
 <script>
 function updateFields(type) {
-    document.getElementById('field-focalLenght').style.display = (type === 'Telescope' || type === 'Eyepiece') ? '' : 'none';
-    document.getElementById('field-mountType').style.display   = (type === 'Mount')     ? '' : 'none';
-    document.getElementById('field-sensorType').style.display  = (type === 'Camera')    ? '' : 'none';
+    document.getElementById('group-telescope').style.display = type === 'Telescope' ? '' : 'none';
+    document.getElementById('group-camera').style.display    = type === 'Camera'    ? '' : 'none';
+    document.getElementById('group-eyepiece').style.display  = type === 'Eyepiece'  ? '' : 'none';
+    document.getElementById('group-mount').style.display     = type === 'Mount'     ? '' : 'none';
 }
 
-// Restore all values from server — avoids the selected="True"/"False" Razor boolean bug
 (function () {
-    document.getElementById('equipmentType').value = '@Html.Raw(typeVal)';
-    document.getElementById('mountType').value     = '@Html.Raw(mountVal)';
-    document.getElementById('sensorType').value    = '@Html.Raw(sensorVal)';
-    updateFields('@Html.Raw(typeVal)');
+    const type     = '@Html.Raw(Model?.Type ?? "")';
+    const sensor   = '@Html.Raw(Model?.SensorType ?? "")';
+    const mount    = '@Html.Raw(Model?.MountType ?? "")';
+    const isGoTo   = @((Model?.IsGoTo ?? false) ? "true" : "false");
+
+    document.getElementById('equipmentType').value = type;
+    if (sensor) document.getElementById('sensorType').value = sensor;
+    if (mount)  document.getElementById('mountType').value  = mount;
+    if (isGoTo) document.getElementById('isGoTo').checked   = true;
+    updateFields(type);
 })();
 </script>
 }

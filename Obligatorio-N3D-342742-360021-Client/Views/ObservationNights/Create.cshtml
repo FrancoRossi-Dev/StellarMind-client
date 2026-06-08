@@ -120,18 +120,6 @@
     color: #fff;
 }
 
-/* #7: Time picker dark theme — override browser native light styles */
-.flatpickr-time input {
-    background: var(--color-surface-sunken) !important;
-    color: var(--color-text) !important;
-    border-radius: var(--p-radius-sm);
-}
-.flatpickr-time input:hover,
-.flatpickr-time input:focus {
-    background: var(--p-ink-800) !important;
-    color: var(--color-text) !important;
-}
-
 /* #9: Button hover states */
 .form-actions .btn--primary:hover {
     box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
@@ -193,6 +181,79 @@
         height: 280px;
     }
 }
+
+/* ---- Flatpickr calendar — blue tone ------------------------------------ */
+.flatpickr-calendar {
+    border: 1px solid var(--color-accent) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 0 0 1px var(--color-accent-soft), var(--shadow-pop) !important;
+}
+.flatpickr-months {
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface-raised)) !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+}
+.flatpickr-month, .flatpickr-prev-month, .flatpickr-next-month {
+    color: #c7dfff !important;
+    fill: #c7dfff !important;
+}
+.flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg { fill: #fff !important; }
+.flatpickr-current-month {
+    color: #e0eeff !important;
+    font-weight: 600;
+}
+.flatpickr-day {
+    color: #94b8e8 !important;
+}
+.flatpickr-day:hover, .flatpickr-day:focus {
+    background: var(--color-accent-soft) !important;
+    border-color: var(--color-accent) !important;
+    color: #fff !important;
+}
+.flatpickr-day.selected, .flatpickr-day.selected:hover {
+    background: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    color: #fff !important;
+}
+.flatpickr-day.today {
+    border-color: var(--color-accent) !important;
+    color: var(--color-accent) !important;
+    font-weight: 700;
+}
+.flatpickr-weekday { color: #6b9cce !important; font-size: 11px !important; }
+.flatpickr-weekdays { background: transparent !important; }
+.flatpickr-innerContainer { background: var(--color-surface-raised) !important; }
+
+/* ---- Viewport height containment --------------------------------------- */
+.card {
+    max-height: calc(100vh - 10rem);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.card__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+#create-form {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.create-grid {
+    flex: 1;
+    min-height: 0;
+}
+.create-col {
+    min-height: 0;
+    overflow: hidden;
+}
+#co-list {
+    max-height: 70%;
+}
 </style>
 
 <div id="co-tooltip"></div>
@@ -248,7 +309,7 @@
                 <div class="create-col create-col--right">
                     <div class="field" style="margin: 0;">
                         <label class="field__label">
-                            <i class="fa-solid fa-calendar-days" style="margin-right: var(--p-space-1);"></i>Date &amp; Time
+                            <i class="fa-solid fa-calendar-days" style="margin-right: var(--p-space-1);"></i>Date
                         </label>
                         <div id="date-cal"></div>
                         <p id="date-error" style="display:none; margin-top: var(--p-space-1); font-size: var(--text-caption); color: var(--color-danger);">
@@ -293,9 +354,8 @@ document.querySelectorAll('.co-item__badge[data-type-id]').forEach(el => {
 // Calendar
 flatpickr("#date-cal", {
     inline: true,
-    enableTime: true,
-    dateFormat: "Y-m-dTH:i",
-    time_24hr: true,
+    enableTime: false,
+    dateFormat: "Y-m-d",
     onChange: function(selectedDates, dateStr) {
         document.getElementById('date').value = dateStr;
         document.getElementById('date-error').style.display = 'none';
