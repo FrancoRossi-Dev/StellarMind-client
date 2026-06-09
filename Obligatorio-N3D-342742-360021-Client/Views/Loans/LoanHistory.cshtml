@@ -1,0 +1,155 @@
+@model List<Obligatorio_N3D_342742_360021_Client.Models.LoanTicketVM>
+
+@{
+    ViewData["Title"] = "Loan History";
+
+    int? selectedMonth = ViewBag.SelectedMonth as int?;
+    int? selectedYear  = ViewBag.SelectedYear  as int?;
+    string? emptyMsg   = ViewBag.EmptyMessage  as string;
+
+    bool searched = selectedMonth.HasValue && selectedYear.HasValue;
+
+    var monthNames = new[] {
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+    };
+
+    int currentYear = DateTime.Now.Year;
+    var years = Enumerable.Range(currentYear - 3, 4).Reverse().ToList();
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
+    }
+
+    string TicketStatusColor(string s) => s switch {
+        "Loaned"   => "var(--color-accent)",
+        "Returned" => "var(--color-success)",
+        _          => "var(--color-text-muted)"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Loan History</h1>
+        <p class="page-head__sub">Your approved loans filtered by month and year</p>
+    </div>
+    <a class="btn btn--ghost" asp-controller="Loans" asp-action="MyLoans">← My Loans</a>
+</div>
+
+<div class="card" style="margin-bottom: var(--p-space-5);">
+    <form method="get" asp-controller="Loans" asp-action="LoanHistory"
+          style="display:flex; gap: var(--p-space-3); align-items:flex-end; flex-wrap:wrap;">
+        <div class="field" style="min-width:160px;">
+            <label class="field__label" for="month">Month</label>
+            <select id="month" name="month" class="select" required>
+                <option value="">— Month —</option>
+                @for (int m = 1; m <= 12; m++)
+                {
+                    <option value="@m" @(m == selectedMonth ? "selected" : "")>@monthNames[m - 1]</option>
+                }
+            </select>
+        </div>
+        <div class="field" style="min-width:120px;">
+            <label class="field__label" for="year">Year</label>
+            <select id="year" name="year" class="select" required>
+                <option value="">— Year —</option>
+                @foreach (var y in years)
+                {
+                    <option value="@y" @(y == selectedYear ? "selected" : "")>@y</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn--primary">
+            <i class="fa-solid fa-magnifying-glass" style="margin-right: var(--p-space-1);"></i>Search
+        </button>
+        @if (searched)
+        {
+            <a class="btn btn--ghost" asp-controller="Loans" asp-action="LoanHistory">Clear</a>
+        }
+    </form>
+</div>
+
+@if (!searched)
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-calendar-days"></i></div>
+            <p class="empty__title">Select a period</p>
+            <p class="empty__body">Choose a month and year above to view your loan history for that period.</p>
+        </div>
+    </div>
+}
+else if (!Model.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-box-open"></i></div>
+            <p class="empty__title">No loans found</p>
+            <p class="empty__body">
+                @if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    @emptyMsg
+                }
+                else
+                {
+                    <text>No loan records were found for @monthNames[(selectedMonth ?? 1) - 1] @selectedYear.</text>
+                }
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Observation Night</th>
+                    <th>Celestial Object</th>
+                    <th>Start</th>
+                    <th>Return By</th>
+                    <th>Status</th>
+                    <th>Coordinator</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in Model)
+                {
+                    var night = ticket.LoanRequest?.ObservationNight;
+                    <tr>
+                        <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@ticket.Id</td>
+                        <td style="color: var(--color-text-secondary); white-space:nowrap;">
+                            @FmtDate(night?.Date)
+                        </td>
+                        <td class="tbl__name">@(night?.CelestialObject?.Name ?? "—")</td>
+                        <td style="color: var(--color-text-secondary); font-variant-numeric: tabular-nums; white-space:nowrap;">
+                            @FmtDate(ticket.StartDate)
+                        </td>
+                        <td style="font-variant-numeric: tabular-nums; white-space:nowrap;">
+                            <span style="color: @(ticket.IsOverdue ? "var(--color-danger)" : "var(--color-text-secondary)");">
+                                @FmtDate(ticket.EndDate)
+                            </span>
+                            @if (ticket.IsOverdue)
+                            {
+                                <span style="color: var(--color-danger); font-size: var(--text-xs); margin-left:4px;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> overdue
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <span style="font-size: var(--text-xs); font-weight:600; text-transform:uppercase;
+                                         letter-spacing:.04em; color: @TicketStatusColor(ticket.Status);">
+                                @ticket.Status
+                            </span>
+                        </td>
+                        <td style="color: var(--color-text-secondary);">
+                            @(string.IsNullOrEmpty(ticket.CoordinatorName) ? "—" : ticket.CoordinatorName)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

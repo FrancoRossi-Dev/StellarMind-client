@@ -1,9 +1,13 @@
+@using Obligatorio_N3D_342742_360021_Client.Models
 @{
     ViewData["Title"] = "New Loan Request";
     int? userId = Context.Session.GetInt32("UserId");
 
-    var nights = ViewBag.Nights as List<Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM>
-                 ?? new List<Obligatorio_N3D_342742_360021_Client.Models.ObservationNightVM>();
+    var nights     = ViewBag.Nights    as List<ObservationNightVM>  ?? new List<ObservationNightVM>();
+    var telescopes = ViewBag.Telescopes as List<EquipmentVM>         ?? new List<EquipmentVM>();
+    var mounts     = ViewBag.Mounts    as List<EquipmentVM>         ?? new List<EquipmentVM>();
+    var eyepieces  = ViewBag.Eyepieces as List<EquipmentVM>         ?? new List<EquipmentVM>();
+    var cameras    = ViewBag.Cameras   as List<EquipmentVM>         ?? new List<EquipmentVM>();
 
     int? selectedNightId = ViewBag.SelectedNightId as int?;
 
@@ -11,6 +15,11 @@
         if (string.IsNullOrWhiteSpace(raw)) return "—";
         return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy  HH:mm") : raw;
     }
+
+    string OptionLabel(EquipmentVM e) =>
+        e.availableQuantity <= 0
+            ? $"[!] {e.Brand} {e.Model}"
+            : $"{e.Brand} {e.Model}";
 }
 
 <div class="page-head">
@@ -43,39 +52,92 @@
                         <option value="">— Select a planned night —</option>
                         @foreach (var night in nights)
                         {
-                            if (night.Id == selectedNightId)
-                            {
-                                <option value="@night.Id" selected>@FmtDate(night.Date) — @(night.CelestialObject?.Name ?? "Unknown object")</option>
-                            }
-                            else
-                            {
-                                <option value="@night.Id">@FmtDate(night.Date) — @(night.CelestialObject?.Name ?? "Unknown object")</option>
-                            }
+                            <option value="@night.Id" @(night.Id == selectedNightId ? "selected" : "")>
+                                @FmtDate(night.Date) — @(night.CelestialObject?.Name ?? "Unknown object")
+                            </option>
                         }
                     </select>
                 </div>
 
                 <div class="field-group-label">Equipment</div>
 
+                @* ── Telescope (required) ── *@
                 <div class="field-row">
                     <div class="field">
-                        <label class="field__label" for="telescopeId">Telescope ID</label>
-                        <input id="telescopeId" name="telescopeId" type="number" class="input" value="22" min="1" required />
+                        <label class="field__label" for="telescopeId">Telescope</label>
+                        <div style="display:flex; align-items:center; gap: var(--p-space-2);">
+                            <select id="telescopeId" name="telescopeId" class="select" required
+                                    style="flex:1;" onchange="checkStock('telescope', this)">
+                                <option value="">— Select —</option>
+                                @foreach (var e in telescopes)
+                                {
+                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                }
+                            </select>
+                            <i id="warn-telescope" class="fa-solid fa-triangle-exclamation"
+                               style="display:none; color: var(--color-warning); flex-shrink:0;"
+                               title="This item is currently out of stock. Consult a coordinator about the return date for an available unit."></i>
+                        </div>
                     </div>
+
+                    @* ── Mount (required) ── *@
                     <div class="field">
-                        <label class="field__label" for="mountId">Mount ID</label>
-                        <input id="mountId" name="mountId" type="number" class="input" value="11" min="1" required />
+                        <label class="field__label" for="mountId">Mount</label>
+                        <div style="display:flex; align-items:center; gap: var(--p-space-2);">
+                            <select id="mountId" name="mountId" class="select" required
+                                    style="flex:1;" onchange="checkStock('mount', this)">
+                                <option value="">— Select —</option>
+                                @foreach (var e in mounts)
+                                {
+                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                }
+                            </select>
+                            <i id="warn-mount" class="fa-solid fa-triangle-exclamation"
+                               style="display:none; color: var(--color-warning); flex-shrink:0;"
+                               title="This item is currently out of stock. Consult a coordinator about the return date for an available unit."></i>
+                        </div>
                     </div>
                 </div>
 
+                @* ── Eyepiece (optional) ── *@
                 <div class="field-row">
                     <div class="field">
-                        <label class="field__label" for="eyepieceId">Eyepiece ID <span style="color:var(--color-text-muted); font-weight:400;">(optional)</span></label>
-                        <input id="eyepieceId" name="eyepieceId" type="number" class="input" min="1" />
+                        <label class="field__label" for="eyepieceId">
+                            Eyepiece <span style="color:var(--color-text-muted); font-weight:400;">(optional)</span>
+                        </label>
+                        <div style="display:flex; align-items:center; gap: var(--p-space-2);">
+                            <select id="eyepieceId" name="eyepieceId" class="select"
+                                    style="flex:1;" onchange="checkStock('eyepiece', this)">
+                                <option value="">— None —</option>
+                                @foreach (var e in eyepieces)
+                                {
+                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                }
+                            </select>
+                            <i id="warn-eyepiece" class="fa-solid fa-triangle-exclamation"
+                               style="display:none; color: var(--color-warning); flex-shrink:0;"
+                               title="This item is currently out of stock. Consult a coordinator about the return date for an available unit."></i>
+                        </div>
                     </div>
+
+                    @* ── Camera (optional) ── *@
                     <div class="field">
-                        <label class="field__label" for="cameraId">Camera ID <span style="color:var(--color-text-muted); font-weight:400;">(optional)</span></label>
-                        <input id="cameraId" name="cameraId" type="number" class="input" min="1" />
+                        <label class="field__label" for="cameraId">
+                            Camera <span style="color:var(--color-text-muted); font-weight:400;">(optional)</span>
+                        </label>
+                        <div style="display:flex; align-items:center; gap: var(--p-space-2);">
+                            <select id="cameraId" name="cameraId" class="select"
+                                    style="flex:1;" onchange="checkStock('camera', this)">
+                                <option value="">— None —</option>
+                                @foreach (var e in cameras)
+                                {
+                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                }
+                            </select>
+                            <i id="warn-camera" class="fa-solid fa-triangle-exclamation"
+                               style="display:none; color: var(--color-warning); flex-shrink:0;"
+                               title="This item is currently out of stock. Consult a coordinator about the return date for an available unit."></i>
+                        </div>
                     </div>
                 </div>
 
@@ -94,6 +156,13 @@
 <script>
 function fillNight(idStr) {
     document.getElementById('submitBtn').disabled = !idStr;
+}
+
+function checkStock(type, select) {
+    var opt  = select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
+    var avail = opt && opt.value ? parseInt(opt.dataset.available ?? '1', 10) : 1;
+    var icon = document.getElementById('warn-' + type);
+    if (icon) icon.style.display = (avail <= 0) ? 'inline' : 'none';
 }
 
 @if (selectedNightId.HasValue)

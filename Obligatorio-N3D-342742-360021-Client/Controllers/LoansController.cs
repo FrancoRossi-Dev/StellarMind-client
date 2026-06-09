@@ -13,10 +13,22 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                var token = HttpContext.Session.GetString("Token");
+                var token    = HttpContext.Session.GetString("Token");
                 var requests = _auxiliarHttp
                     .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loanrequests", "GET", token: token)
                     ?? new List<PendingLoanRequestVM>();
+
+                try
+                {
+                    var tickets = _auxiliarHttp
+                        .EnviarYDeserializar<List<LoanTicketVM>>("api/v1/loantickets", "GET", token: token)
+                        ?? new List<LoanTicketVM>();
+                    ViewBag.RequestTicketMap = tickets
+                        .Where(t => t.LoanRequest != null)
+                        .GroupBy(t => t.LoanRequest!.RequestId)
+                        .ToDictionary(g => g.Key, g => g.First().Id);
+                }
+                catch { ViewBag.RequestTicketMap = new Dictionary<int, int>(); }
 
                 return View(requests);
             }
@@ -31,12 +43,13 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         public IActionResult Create(int? nightId = null)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            var nights = new List<ObservationNightVM>();
+            var token   = HttpContext.Session.GetString("Token");
+            var nights  = new List<ObservationNightVM>();
+
             if (userId.HasValue)
             {
                 try
                 {
-                    var token = HttpContext.Session.GetString("Token");
                     var all = _auxiliarHttp
                         .EnviarYDeserializar<List<ObservationNightVM>>($"api/v1/users/nights/{userId}", "GET", token: token)
                         ?? new List<ObservationNightVM>();
@@ -44,6 +57,26 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 }
                 catch { }
             }
+
+            try
+            {
+                var allEquip = _auxiliarHttp
+                    .EnviarYDeserializar<List<EquipmentVM>>("api/v1/equipment", "GET", token: token)
+                    ?? new List<EquipmentVM>();
+
+                ViewBag.Telescopes = allEquip.Where(e => e.Type == "Telescope").ToList();
+                ViewBag.Mounts     = allEquip.Where(e => e.Type == "Mount").ToList();
+                ViewBag.Eyepieces  = allEquip.Where(e => e.Type == "Eyepiece").ToList();
+                ViewBag.Cameras    = allEquip.Where(e => e.Type == "Camera").ToList();
+            }
+            catch
+            {
+                ViewBag.Telescopes = new List<EquipmentVM>();
+                ViewBag.Mounts     = new List<EquipmentVM>();
+                ViewBag.Eyepieces  = new List<EquipmentVM>();
+                ViewBag.Cameras    = new List<EquipmentVM>();
+            }
+
             ViewBag.Nights = nights;
             ViewBag.SelectedNightId = nightId;
             return View();
@@ -63,9 +96,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     CameraId = cameraId
                 };
                 var token = HttpContext.Session.GetString("Token");
-                _auxiliarHttp.EnviarSolicitud("api/v1/loanrequests", "POST", dto, token);
+                var result = _auxiliarHttp.EnviarYDeserializar<PendingLoanRequestVM>("api/v1/loanrequests", "POST", dto, token);
                 TempData["Success"] = "Loan request submitted.";
-                return RedirectToAction("Index");
+                if (result?.AiIndicator is not null)
+                {
+                    TempData["AiIndicator"] = result.AiIndicator;
+                    TempData["AiDetail"]    = result.AiDetail;
+                }
+                return RedirectToAction("MyLoans");
             }
             catch (Exception)
             {
@@ -210,6 +248,51 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 ViewBag.msg = "The request couldn't be removed. Something got in the way.";
                 return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost("Loans/DeleteTicket/{id}")]
+        public IActionResult DeleteTicket(int id)
+        {
+            try
+            {
+                var token = HttpContext.Session.GetString("Token");
+                _auxiliarHttp.EnviarSolicitud($"api/v1/loantickets/{id}", "DELETE", token: token);
+                TempData["Success"] = "Approval undone. The request is back to pending.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Couldn't undo that approval. The ticket may no longer be in the right state.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpGet("Loans/LoanHistory")]
+        [AccessFilter("Member")]
+        public IActionResult LoanHistory(int? month, int? year)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            var token   = HttpContext.Session.GetString("Token");
+
+            ViewBag.SelectedMonth = month;
+            ViewBag.SelectedYear  = year;
+
+            if (!userId.HasValue || !month.HasValue || !year.HasValue)
+                return View(new List<LoanTicketVM>());
+
+            try
+            {
+                var result = _auxiliarHttp.EnviarYDeserializar<MonthlyLoansDto>(
+                    $"api/v1/loanrequests/user/{userId}/{month}/{year}", "GET", token: token);
+
+                ViewBag.EmptyMessage = result?.Message;
+                return View(result?.Loans ?? new List<LoanTicketVM>());
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "Couldn't load the loan history. The records drifted out of range.";
+                return View(new List<LoanTicketVM>());
             }
         }
     }
