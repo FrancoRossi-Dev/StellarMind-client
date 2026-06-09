@@ -7,6 +7,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Models
         public EquipmentSetVM? EquipmentSet { get; set; }
         public ObservationNightVM? ObservationNight { get; set; }
         public UserVM? RequestingUser { get; set; }
+        public string? AiIndicator { get; set; } // "IDEAL", "ADECUADO", "NO_RECOMENDABLE"
+        public string? AiDetail { get; set; }    // null when IDEAL, short explanation otherwise
     }
 
     public class EquipmentSetVM

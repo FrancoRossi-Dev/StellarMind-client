@@ -19,6 +19,28 @@
         _          => "var(--color-text-muted)"
     };
 
+    string AiColor(string? ai) => ai switch {
+        "IDEAL"            => "var(--color-success)",
+        "ADECUADO"         => "var(--color-warning)",
+        "NO_RECOMENDABLE"  => "var(--color-danger)",
+        _                  => "var(--color-text-muted)"
+    };
+    string AiIcon(string? ai) => ai switch {
+        "IDEAL"            => "fa-circle-check",
+        "ADECUADO"         => "fa-circle-exclamation",
+        "NO_RECOMENDABLE"  => "fa-circle-xmark",
+        _                  => "fa-circle"
+    };
+    string AiLabel(string? ai) => ai switch {
+        "IDEAL"            => "Ideal",
+        "ADECUADO"         => "Adequate",
+        "NO_RECOMENDABLE"  => "Not Recommended",
+        _                  => "—"
+    };
+
+    string? aiIndicator = TempData["AiIndicator"] as string;
+    string? aiDetail    = TempData["AiDetail"] as string;
+
     string TicketStatusColor(string s) => s switch {
         "Loaned"   => "var(--color-accent)",
         "Returned" => "var(--color-success)",
@@ -33,6 +55,19 @@
     </div>
     <a class="btn btn--primary" asp-controller="Loans" asp-action="Create">+ Request equipment</a>
 </div>
+
+@if (aiIndicator is not null)
+{
+    <div class="alert" style="margin-bottom: var(--p-space-4); border-left: 3px solid @AiColor(aiIndicator);
+         background: color-mix(in srgb, @AiColor(aiIndicator) 10%, var(--color-surface-2));">
+        <i class="fa-solid @AiIcon(aiIndicator)" style="color: @AiColor(aiIndicator); margin-right: var(--p-space-2);"></i>
+        <strong style="color: @AiColor(aiIndicator);">AI Assessment: @AiLabel(aiIndicator)</strong>
+        @if (!string.IsNullOrEmpty(aiDetail))
+        {
+            <span style="color: var(--color-text-secondary); margin-left: var(--p-space-2);">— @aiDetail</span>
+        }
+    </div>
+}
 
 @* ── My Requests ── *@
 <div style="margin: var(--p-space-5) 0 var(--p-space-3);">
@@ -63,6 +98,7 @@ else
                     <th>#</th>
                     <th>Observation Night</th>
                     <th>Telescope</th>
+                    <th>AI Assessment</th>
                     <th>Status</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
@@ -82,6 +118,17 @@ else
                                 <span>@req.EquipmentSet.Telescope.Brand @req.EquipmentSet.Telescope.Model</span>
                             }
                             else { <span>—</span> }
+                        </td>
+                        <td>
+                            @if (req.AiIndicator is not null)
+                            {
+                                <span title="@(req.AiDetail ?? string.Empty)"
+                                      style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                             letter-spacing: .04em; color: @AiColor(req.AiIndicator); white-space:nowrap;">
+                                    <i class="fa-solid @AiIcon(req.AiIndicator)" style="margin-right:3px;"></i>@AiLabel(req.AiIndicator)
+                                </span>
+                            }
+                            else { <span style="color: var(--color-text-muted);">—</span> }
                         </td>
                         <td>
                             <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;

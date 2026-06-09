@@ -120,6 +120,24 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 .ToList());
         }
 
+        [AccessFilter("Admin, Coordinator")]
+        public IActionResult Logs()
+        {
+            var token = HttpContext.Session.GetString("Token");
+            var logs  = new List<LogEventDto>();
+            try
+            {
+                logs = _auxiliarHttp.EnviarYDeserializar<List<LogEventDto>>(
+                    "api/v1/logs", "GET", token: token)
+                    ?? new List<LogEventDto>();
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "Couldn't load the event log. Something drifted out of range.";
+            }
+            return View(logs);
+        }
+
         [AccessFilter("Admin")]
         public IActionResult AuditDetail(int id)
         {

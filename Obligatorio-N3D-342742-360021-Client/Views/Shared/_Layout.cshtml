@@ -113,6 +113,10 @@ else
                         <span class="nav-item__icon"><i class="fa-solid fa-box-open"></i></span>
                         My Loans
                     </a>
+                    <a class="@NavClass("Loans", "LoanHistory")" asp-controller="Loans" asp-action="LoanHistory">
+                        <span class="nav-item__icon"><i class="fa-solid fa-calendar-days"></i></span>
+                        Loan History
+                    </a>
                 }
 
                 <p class="nav-section-label">Reports</p>
@@ -130,6 +134,18 @@ else
                     <a class="@NavClass("Reports", "LoanAudit")" asp-controller="Reports" asp-action="LoanAudit">
                         <span class="nav-item__icon"><i class="fa-solid fa-magnifying-glass"></i></span>
                         Loan Audit
+                    </a>
+                    <a class="@NavClass("Reports", "Logs")" asp-controller="Reports" asp-action="Logs">
+                        <span class="nav-item__icon"><i class="fa-solid fa-scroll"></i></span>
+                        Event Log
+                    </a>
+                }
+
+                @if (sessionRole == "Coordinator")
+                {
+                    <a class="@NavClass("Reports", "Logs")" asp-controller="Reports" asp-action="Logs">
+                        <span class="nav-item__icon"><i class="fa-solid fa-scroll"></i></span>
+                        Event Log
                     </a>
                 }
 

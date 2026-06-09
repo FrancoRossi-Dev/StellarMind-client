@@ -17,10 +17,31 @@
         _          => "var(--color-text-muted)"
     };
 
+    string AiColor(string? ai) => ai switch {
+        "IDEAL"            => "var(--color-success)",
+        "ADECUADO"         => "var(--color-warning)",
+        "NO_RECOMENDABLE"  => "var(--color-danger)",
+        _                  => "var(--color-text-muted)"
+    };
+    string AiIcon(string? ai) => ai switch {
+        "IDEAL"            => "fa-circle-check",
+        "ADECUADO"         => "fa-circle-exclamation",
+        "NO_RECOMENDABLE"  => "fa-circle-xmark",
+        _                  => "fa-circle"
+    };
+    string AiLabel(string? ai) => ai switch {
+        "IDEAL"            => "Ideal",
+        "ADECUADO"         => "Adequate",
+        "NO_RECOMENDABLE"  => "Not Recommended",
+        _                  => "—"
+    };
+
     var sorted = Model?
         .OrderByDescending(r => r.Status == "Pending")
         .ThenBy(r => DateTime.TryParse(r.ObservationNight?.Date, out var d) ? d : DateTime.MaxValue)
         .ToList() ?? new List<Obligatorio_N3D_342742_360021_Client.Models.PendingLoanRequestVM>();
+
+    var ticketMap = ViewBag.RequestTicketMap as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 
 <div class="page-head">
@@ -149,6 +170,24 @@ else
                             </dl>
                         </div>
 
+                        @* AI assessment *@
+                        @if (req.AiIndicator is not null)
+                        {
+                            <div>
+                                <p class="modal-section__title"><i class="fa-solid fa-robot" style="margin-right:4px;"></i>AI Assessment</p>
+                                <div style="display:flex; align-items:flex-start; gap: var(--p-space-2);">
+                                    <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
+                                                 letter-spacing: .06em; color: @AiColor(req.AiIndicator); white-space:nowrap;">
+                                        <i class="fa-solid @AiIcon(req.AiIndicator)" style="margin-right:3px;"></i>@AiLabel(req.AiIndicator)
+                                    </span>
+                                    @if (!string.IsNullOrEmpty(req.AiDetail))
+                                    {
+                                        <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">@req.AiDetail</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
                         @* Status badge *@
                         <div>
                             <p class="modal-section__title">Status</p>
@@ -200,6 +239,16 @@ else
                     else
                     {
                         <div class="modal-footer">
+                            @if (req.Status == "Approved" && ticketMap.TryGetValue(req.RequestId, out int ticketId))
+                            {
+                                <form method="post" asp-controller="Loans" asp-action="DeleteTicket"
+                                      asp-route-id="@ticketId"
+                                      onsubmit="return confirm('Undo this approval? The request will return to pending.');">
+                                    <button type="submit" class="btn btn--danger btn--sm">
+                                        <i class="fa-solid fa-rotate-left" style="margin-right: var(--p-space-1);"></i>Undo Approval
+                                    </button>
+                                </form>
+                            }
                             <button type="button" class="btn btn--ghost" onclick="closeRequestModal(@req.RequestId)">Close</button>
                         </div>
                     }
