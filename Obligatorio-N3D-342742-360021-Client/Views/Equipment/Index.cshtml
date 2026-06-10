@@ -68,7 +68,7 @@ else
                     <th>Brand</th>
                     <th>Type</th>
                     <th>Model</th>
-                    <th style="text-align:right;">Qty</th>
+                    <th style="text-align:right;">Available / Total</th>
                     @if (isAdmin)
                     {
                         <th style="text-align:right;">Actions</th>
@@ -82,7 +82,13 @@ else
                         <td class="tbl__name">@item.Brand</td>
                         <td><span class="@TypeChipClass(item.Type)">@item.Type</span></td>
                         <td style="color: var(--color-text-secondary);">@item.Model</td>
-                        <td style="text-align:right; font-variant-numeric: tabular-nums;">@item.Quantity</td>
+                        <td style="text-align:right; font-variant-numeric: tabular-nums; white-space:nowrap;">
+                            @if (!item.IsAvailable)
+                            {
+                                <i class="fa-solid fa-circle-xmark" style="color:var(--color-danger); margin-right:4px;" title="Out of stock"></i>
+                            }
+                            @item.availableQuantity / @item.Quantity
+                        </td>
                         @if (isAdmin)
                         {
                             <td>

@@ -36,21 +36,20 @@ namespace Obligatorio_N3D_342742_360021_Client.Services.Http
 
             // Leer body y devolver mensaje comprensible aunque no sea JSON
             var content = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            Console.WriteLine($"HTTP Error { (int)resp.StatusCode } for {relativeUrl}. Body: {content}");
+            var statusCode = (int)resp.StatusCode;
+            Console.WriteLine($"HTTP Error {statusCode} for {relativeUrl}. Body: {content}");
 
             var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             try
             {
                 Error? error = JsonSerializer.Deserialize<Error>(content, opts);
                 if (error != null && !string.IsNullOrWhiteSpace(error.Message))
-                    throw new Exception(error.Message);
-                // si la deserialización no produjo un Error útil, lanzar el body crudo
-                throw new Exception(content);
+                    throw new ApiException(statusCode, error.Message);
+                throw new ApiException(statusCode, content);
             }
             catch (JsonException)
             {
-                // No es JSON: lanzar el texto crudo para que el caller lo vea
-                throw new Exception(content);
+                throw new ApiException(statusCode, content);
             }
         }
 

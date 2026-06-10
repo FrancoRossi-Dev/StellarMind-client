@@ -17,8 +17,8 @@
     }
 
     string OptionLabel(EquipmentVM e) =>
-        e.availableQuantity <= 0
-            ? $"[!] {e.Brand} {e.Model}"
+        !e.IsAvailable
+            ? $"[out of stock] {e.Brand} {e.Model}"
             : $"{e.Brand} {e.Model}";
 }
 
@@ -48,7 +48,7 @@
 
                 <div class="field">
                     <label class="field__label" for="nightSelector">Observation Plan</label>
-                    <select id="nightSelector" name="observationNightId" class="select" required onchange="fillNight(this.value)">
+                    <select id="nightSelector" name="observationNightId" class="select" required onchange="validateButtons()">
                         <option value="">— Select a planned night —</option>
                         @foreach (var night in nights)
                         {
@@ -71,7 +71,9 @@
                                 <option value="">— Select —</option>
                                 @foreach (var e in telescopes)
                                 {
-                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                    <option value="@e.Id"
+                                            data-is-available="@(e.IsAvailable ? "true" : "false")"
+                                            data-weight="@e.Weight">@OptionLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-telescope" class="fa-solid fa-triangle-exclamation"
@@ -89,7 +91,10 @@
                                 <option value="">— Select —</option>
                                 @foreach (var e in mounts)
                                 {
-                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                    <option value="@e.Id"
+                                            data-is-available="@(e.IsAvailable ? "true" : "false")"
+                                            data-weight-support="@e.WeightSupport"
+                                            data-mount-type="@e.MountType">@OptionLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-mount" class="fa-solid fa-triangle-exclamation"
@@ -98,6 +103,7 @@
                         </div>
                     </div>
                 </div>
+                <span id="err-mount-compat" style="display:none; color:var(--color-danger); font-size:var(--text-xs); margin-top: calc(var(--p-space-1) * -1);"></span>
 
                 @* ── Eyepiece (optional) ── *@
                 <div class="field-row">
@@ -111,7 +117,8 @@
                                 <option value="">— None —</option>
                                 @foreach (var e in eyepieces)
                                 {
-                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                    <option value="@e.Id"
+                                            data-is-available="@(e.IsAvailable ? "true" : "false")">@OptionLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-eyepiece" class="fa-solid fa-triangle-exclamation"
@@ -131,13 +138,34 @@
                                 <option value="">— None —</option>
                                 @foreach (var e in cameras)
                                 {
-                                    <option value="@e.Id" data-available="@e.availableQuantity">@OptionLabel(e)</option>
+                                    <option value="@e.Id"
+                                            data-is-available="@(e.IsAvailable ? "true" : "false")">@OptionLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-camera" class="fa-solid fa-triangle-exclamation"
                                style="display:none; color: var(--color-warning); flex-shrink:0;"
                                title="This item is currently out of stock. Consult a coordinator about the return date for an available unit."></i>
                         </div>
+                    </div>
+                </div>
+
+                <span id="err-optical"      style="display:none; color:var(--color-danger); font-size:var(--text-xs); margin-top: calc(var(--p-space-1) * -1);"></span>
+                <span id="err-camera-mount" style="display:none; color:var(--color-danger); font-size:var(--text-xs); margin-top: calc(var(--p-space-1) * -1);"></span>
+
+                @* ── AI Assessment ── *@
+                <div style="border-top: 1px solid var(--color-border); padding-top: var(--p-space-4); margin-top: var(--p-space-2);">
+                    <div style="display:flex; align-items:center; gap: var(--p-space-3); flex-wrap:wrap;">
+                        <button type="button" id="assessBtn" class="btn btn--secondary" disabled>
+                            <i class="fa-solid fa-robot" style="margin-right: var(--p-space-1);"></i>Get AI Assessment
+                        </button>
+                        <span style="color: var(--color-text-muted); font-size: var(--text-xs);">
+                            Select a night, telescope and mount to enable
+                        </span>
+                    </div>
+                    <div id="ai-result" style="display:none; margin-top: var(--p-space-3);
+                         padding: var(--p-space-3); border-radius: var(--radius-md);
+                         border-left: 3px solid var(--color-border); align-items:flex-start;
+                         gap: var(--p-space-2); flex-wrap:wrap;">
                     </div>
                 </div>
 
@@ -154,20 +182,153 @@
 
 @section Scripts {
 <script>
-function fillNight(idStr) {
-    document.getElementById('submitBtn').disabled = !idStr;
+function parseWeight(str) {
+    if (!str) return NaN;
+    const m = String(str).match(/[\d.]+/);
+    return m ? parseFloat(m[0]) : NaN;
+}
+
+function getOptionData(selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel || !sel.value) return null;
+    return sel.options[sel.selectedIndex]?.dataset ?? null;
+}
+
+function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = msg ? 'block' : 'none';
+}
+
+function validateCompatibility() {
+    const telData   = getOptionData('telescopeId');
+    const mountData = getOptionData('mountId');
+    const cameraVal = document.getElementById('cameraId').value;
+    const eyeVal    = document.getElementById('eyepieceId').value;
+    const telOk     = !!document.getElementById('telescopeId').value;
+
+    let mountCompat = '';
+    let cameraMount = '';
+    let opticalReq  = '';
+
+    if (telData && mountData) {
+        const telW   = parseWeight(telData.weight);
+        const mountW = parseWeight(mountData.weightSupport);
+        if (!isNaN(telW) && !isNaN(mountW) && mountW < telW) {
+            mountCompat = 'This mount may not support the weight of that telescope — things could drift off balance.';
+        }
+    }
+
+    if (cameraVal && mountData) {
+        const mt = (mountData.mountType ?? '').toLowerCase();
+        if (mt && mt !== 'ecuatorial' && mt !== 'híbrida') {
+            cameraMount = 'Astrophotography needs an equatorial or hybrid mount to track the sky — the stars won\'t wait.';
+        }
+    }
+
+    if (telOk && !eyeVal && !cameraVal) {
+        opticalReq = 'Pick at least an eyepiece or a camera — even the stars need something to look through.';
+    }
+
+    showError('err-mount-compat', mountCompat);
+    showError('err-camera-mount', cameraMount);
+    showError('err-optical',      opticalReq);
+
+    return !mountCompat && !cameraMount && !opticalReq;
+}
+
+function validateButtons() {
+    const nightOk = !!document.getElementById('nightSelector').value;
+    const telOk   = !!document.getElementById('telescopeId').value;
+    const mountOk = !!document.getElementById('mountId').value;
+    const eyeVal  = document.getElementById('eyepieceId').value;
+    const camVal  = document.getElementById('cameraId').value;
+    const optOk   = !!(eyeVal || camVal);
+    const compatible = validateCompatibility();
+
+    document.getElementById('submitBtn').disabled = !(nightOk && telOk && mountOk && optOk && compatible);
+    document.getElementById('assessBtn').disabled = !(nightOk && telOk && mountOk);
 }
 
 function checkStock(type, select) {
-    var opt  = select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
-    var avail = opt && opt.value ? parseInt(opt.dataset.available ?? '1', 10) : 1;
-    var icon = document.getElementById('warn-' + type);
-    if (icon) icon.style.display = (avail <= 0) ? 'inline' : 'none';
+    const opt   = select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
+    const avail = !(opt && opt.value && opt.dataset.isAvailable === 'false');
+    const icon  = document.getElementById('warn-' + type);
+    if (icon) icon.style.display = avail ? 'none' : 'inline';
+    validateButtons();
 }
 
 @if (selectedNightId.HasValue)
 {
-    <text>document.addEventListener('DOMContentLoaded', function () { fillNight('@selectedNightId.Value'); });</text>
+    <text>document.addEventListener('DOMContentLoaded', function () { validateButtons(); });</text>
 }
+
+// AI Assessment
+const AI_COLORS = { IDEAL: 'var(--color-success)', ADECUADO: 'var(--color-warning)', NO_RECOMENDABLE: 'var(--color-danger)' };
+const AI_ICONS  = { IDEAL: 'fa-circle-check',       ADECUADO: 'fa-circle-exclamation', NO_RECOMENDABLE: 'fa-circle-xmark' };
+const AI_LABELS = { IDEAL: 'Ideal',                  ADECUADO: 'Adequate',              NO_RECOMENDABLE: 'Not Recommended' };
+
+function showAiResult(data) {
+    const el = document.getElementById('ai-result');
+    if (data.error) {
+        const c = 'var(--color-text-muted)';
+        el.style.borderLeftColor = c;
+        el.style.background = 'color-mix(in srgb, var(--color-text-muted) 8%, var(--color-surface-2))';
+        el.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:' + c + '; margin-right:var(--p-space-2);"></i>'
+                     + '<span style="color:var(--color-text-secondary); font-size:var(--text-sm);">The AI oracle is away. You can still submit your request.</span>';
+    } else {
+        const ind    = data.aiIndicator ?? '';
+        const color  = AI_COLORS[ind] ?? 'var(--color-text-muted)';
+        const icon   = AI_ICONS[ind]  ?? 'fa-circle';
+        const label  = AI_LABELS[ind] ?? ind;
+        const detail = data.aiDetail
+            ? '<span style="color:var(--color-text-secondary); font-size:var(--text-sm);">— ' + data.aiDetail + '</span>'
+            : '';
+        el.style.borderLeftColor = color;
+        el.style.background = 'color-mix(in srgb, ' + color + ' 8%, var(--color-surface-2))';
+        el.innerHTML = '<i class="fa-solid ' + icon + '" style="color:' + color + '; margin-right:var(--p-space-2); flex-shrink:0;"></i>'
+                     + '<strong style="color:' + color + '; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.06em; white-space:nowrap;">' + label + '</strong>'
+                     + (detail ? '<span style="margin-left:var(--p-space-2);">' + detail + '</span>' : '');
+    }
+    el.style.display = 'flex';
+}
+
+document.getElementById('assessBtn').addEventListener('click', async function () {
+    const btn = this;
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:var(--p-space-1);"></i>Analyzing...';
+    document.getElementById('ai-result').style.display = 'none';
+
+    const params = new URLSearchParams({
+        observationNightId: document.getElementById('nightSelector').value,
+        telescopeId:        document.getElementById('telescopeId').value,
+        mountId:            document.getElementById('mountId').value,
+    });
+    const eid = document.getElementById('eyepieceId').value;
+    const cid = document.getElementById('cameraId').value;
+    if (eid) params.append('eyepieceId', eid);
+    if (cid) params.append('cameraId', cid);
+
+    try {
+        const resp = await fetch('/Loans/Assess', {
+            method:  'POST',
+            headers: {
+                'Content-Type':            'application/x-www-form-urlencoded',
+                'RequestVerificationToken': token
+            },
+            body: params.toString()
+        });
+        const data = resp.ok ? await resp.json() : { error: true };
+        showAiResult(data);
+    } catch {
+        showAiResult({ error: true });
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-robot" style="margin-right:var(--p-space-1);"></i>Get AI Assessment';
+        validateButtons();
+    }
+});
 </script>
 }

@@ -53,7 +53,12 @@
         <h1 class="page-head__title">My Loans</h1>
         <p class="page-head__sub">Your equipment requests and active loan tickets</p>
     </div>
-    <a class="btn btn--primary" asp-controller="Loans" asp-action="Create">+ Request equipment</a>
+    <div style="display:flex; gap: var(--p-space-2);">
+        <a class="btn btn--ghost" asp-controller="Loans" asp-action="LoanHistory">
+            <i class="fa-solid fa-clock-rotate-left" style="margin-right: var(--p-space-1);"></i>Loan History
+        </a>
+        <a class="btn btn--primary" asp-controller="Loans" asp-action="Create">+ Request equipment</a>
+    </div>
 </div>
 
 @if (aiIndicator is not null)

@@ -80,7 +80,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var user = users.FirstOrDefault(u => u.UserId == id);
                 if (user == null)
                 {
-                    ViewBag.message = "We searched the whole sky and couldn't find that member.";
+                    TempData["Error"] = "We searched the whole sky and couldn't find that member.";
                     return RedirectToAction("Index");
                 }
 
@@ -88,7 +88,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.message = "Something drifted out of orbit. Couldn't load that member's details.";
+                TempData["Error"] = "Something drifted out of orbit. Couldn't load that member's details.";
                 return RedirectToAction("Index");
             }
         }
@@ -148,7 +148,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 if (id <= 0)
                 {
-                    ViewBag.message = "Something seems off with that request. Please try again.";
+                    TempData["Error"] = "Something seems off with that request. Please try again.";
                     return RedirectToAction("Index");
                 }
                 var token = HttpContext.Session.GetString("Token");
@@ -158,7 +158,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.message = "Couldn't remove that member. Something crossed our path.";
+                TempData["Error"] = "Couldn't remove that member. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }

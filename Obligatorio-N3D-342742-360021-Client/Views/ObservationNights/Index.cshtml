@@ -6,6 +6,8 @@
     bool canCreate = role == "Member";
     bool canEdit   = role == "Admin" || role == "Member";
     var nightRequestMap = ViewBag.NightRequestMap as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var userNames       = ViewBag.UserNames as Dictionary<int, string>    ?? new Dictionary<int, string>();
+    bool isCoordinator  = role == "Coordinator" || role == "Admin";
 
     var requested = Model?.Where(n => n.IsRequested)
                          .OrderBy(n => DateTime.TryParse(n.Date, out var d1) ? d1 : DateTime.MaxValue)
@@ -60,6 +62,7 @@ else
                     <tr>
                         <th>Date</th>
                         <th>Celestial Object</th>
+                        @if (isCoordinator) { <th>Member</th> }
                         <th>Details</th>
                         <th style="text-align:right;">Actions</th>
                     </tr>
@@ -72,6 +75,12 @@ else
                                 @FmtDate(night.Date)
                             </td>
                             <td class="tbl__name">@(night.CelestialObject?.Name ?? "—")</td>
+                            @if (isCoordinator)
+                            {
+                                <td style="color: var(--color-text-secondary);">
+                                    @(userNames.TryGetValue(night.RequestingUserId, out var un) ? un : "—")
+                                </td>
+                            }
                             <td style="color: var(--color-text-muted); max-width: 260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
                                 title="@night.Details">
                                 @night.Details
@@ -122,6 +131,7 @@ else
                     <tr>
                         <th>Date</th>
                         <th>Celestial Object</th>
+                        @if (isCoordinator) { <th>Member</th> }
                         <th>Details</th>
                         <th style="text-align:right;">Actions</th>
                     </tr>
@@ -134,6 +144,12 @@ else
                                 @FmtDate(night.Date)
                             </td>
                             <td class="tbl__name">@(night.CelestialObject?.Name ?? "—")</td>
+                            @if (isCoordinator)
+                            {
+                                <td style="color: var(--color-text-secondary);">
+                                    @(userNames.TryGetValue(night.RequestingUserId, out var un2) ? un2 : "—")
+                                </td>
+                            }
                             <td style="color: var(--color-text-muted); max-width: 260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
                                 title="@night.Details">
                                 @night.Details

@@ -23,5 +23,6 @@ namespace Obligatorio_N3D_342742_360021_Client.Models
     {
         public string Brand { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
+        public bool IsAvailable { get; set; }
     }
 }

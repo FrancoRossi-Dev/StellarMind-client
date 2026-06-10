@@ -15,11 +15,6 @@
     </div>
 </div>
 
-@if (!string.IsNullOrEmpty(ViewBag.msg as string))
-{
-    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
-}
-
 <div class="card" style="margin-bottom: var(--p-space-5);">
     <form method="get" asp-controller="Reports" asp-action="ByTelescope"
           style="display:flex; gap: var(--p-space-3); align-items:flex-end; flex-wrap:wrap;">

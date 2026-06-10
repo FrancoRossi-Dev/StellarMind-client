@@ -38,6 +38,17 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     }
                     catch { ViewBag.NightRequestMap = new Dictionary<int, int>(); }
                 }
+                else
+                {
+                    try
+                    {
+                        var users = _auxiliarHttp
+                            .EnviarYDeserializar<List<UserVM>>("api/v1/users", "GET", token: token)
+                            ?? new List<UserVM>();
+                        ViewBag.UserNames = users.ToDictionary(u => u.UserId, u => u.username);
+                    }
+                    catch { ViewBag.UserNames = new Dictionary<int, string>(); }
+                }
 
                 return View(nights);
             }

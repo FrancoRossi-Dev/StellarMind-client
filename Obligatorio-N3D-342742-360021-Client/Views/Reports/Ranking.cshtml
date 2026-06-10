@@ -55,11 +55,6 @@
     </div>
 </div>
 
-@if (!string.IsNullOrEmpty(ViewBag.msg as string))
-{
-    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
-}
-
 @if (Model == null || !Model.Any())
 {
     <div class="card">

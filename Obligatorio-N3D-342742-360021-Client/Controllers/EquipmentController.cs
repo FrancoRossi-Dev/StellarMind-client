@@ -154,8 +154,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception e)
             {
-                ViewBag.msg = "Couldn't remove that item. Something crossed our path.";
-                Console.WriteLine(e.Message); // e.Message ahora contendrá el texto crudo si no era JSON
+                TempData["Error"] = "Couldn't remove that item. Something crossed our path.";
+                Console.WriteLine(e.Message);
                 return RedirectToAction("Index");
             }
         }

@@ -51,11 +51,6 @@
     </div>
 </div>
 
-@if (!string.IsNullOrEmpty(ViewBag.msg as string))
-{
-    <div class="alert alert--error" style="margin-bottom: var(--p-space-4);">@ViewBag.msg</div>
-}
-
 @if (!sorted.Any())
 {
     <div class="card">
@@ -160,13 +155,55 @@ else
                         </div>
 
                         @* Equipment set *@
+                        @{
+                            var eqItems = new (string Label, EquipmentItemVM? Item)[] {
+                                ("Telescope", eqSet?.Telescope),
+                                ("Mount",     eqSet?.Mount),
+                                ("Eyepiece",  eqSet?.Eyepiece),
+                                ("Camera",    eqSet?.Camera),
+                            };
+                            bool allAvailable = eqItems.Where(x => x.Item != null).All(x => x.Item!.IsAvailable);
+                        }
                         <div>
-                            <p class="modal-section__title"><i class="fa-solid fa-box-open" style="margin-right:4px;"></i>Equipment</p>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--p-space-2);">
+                                <p class="modal-section__title" style="margin:0;"><i class="fa-solid fa-box-open" style="margin-right:4px;"></i>Equipment</p>
+                                @if (allAvailable)
+                                {
+                                    <span style="font-size:var(--text-xs); font-weight:600; color:var(--color-success);">
+                                        <i class="fa-solid fa-circle-check" style="margin-right:3px;"></i>All in stock
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="font-size:var(--text-xs); font-weight:600; color:var(--color-warning);">
+                                        <i class="fa-solid fa-triangle-exclamation" style="margin-right:3px;"></i>Some items out of stock
+                                    </span>
+                                }
+                            </div>
                             <dl class="detail-list">
-                                <dt>Telescope</dt><dd>@(eqSet?.Telescope != null ? $"{eqSet.Telescope.Brand} {eqSet.Telescope.Model}" : "—")</dd>
-                                <dt>Mount</dt><dd>@(eqSet?.Mount != null ? $"{eqSet.Mount.Brand} {eqSet.Mount.Model}" : "—")</dd>
-                                <dt>Eyepiece</dt><dd>@(eqSet?.Eyepiece != null ? $"{eqSet.Eyepiece.Brand} {eqSet.Eyepiece.Model}" : "—")</dd>
-                                <dt>Camera</dt><dd>@(eqSet?.Camera != null ? $"{eqSet.Camera.Brand} {eqSet.Camera.Model}" : "—")</dd>
+                                @foreach (var (label, item) in eqItems)
+                                {
+                                    <dt>@label</dt>
+                                    <dd>
+                                        @if (item != null)
+                                        {
+                                            <span>@item.Brand @item.Model</span>
+                                            if (item.IsAvailable)
+                                            {
+                                                <i class="fa-solid fa-circle-check"
+                                                   style="color:var(--color-success); margin-left:6px; font-size:var(--text-xs);"
+                                                   title="In stock"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa-solid fa-circle-xmark"
+                                                   style="color:var(--color-danger); margin-left:6px; font-size:var(--text-xs);"
+                                                   title="Out of stock"></i>
+                                            }
+                                        }
+                                        else { <span style="color:var(--color-text-muted);">—</span> }
+                                    </dd>
+                                }
                             </dl>
                         </div>
 
@@ -293,7 +330,7 @@ document.addEventListener('keydown', function(e) {
         document.querySelectorAll('.modal-overlay.is-open').forEach(m => m.classList.remove('is-open'));
 });
 
-// Validate return date ≥ night date + 7 days
+// Validate return date ≥ night date + 8 days
 document.querySelectorAll('[id^="approve-form-"]').forEach(function(form) {
     const requestId  = form.id.replace('approve-form-', '');
     const dateInput  = document.getElementById('endDate-' + requestId);
@@ -303,7 +340,7 @@ document.querySelectorAll('[id^="approve-form-"]').forEach(function(form) {
     // Set min attribute dynamically
     if (nightDate) {
         const night  = new Date(nightDate);
-        night.setDate(night.getDate() + 7);
+        night.setDate(night.getDate() + 8);
         const yyyy   = night.getFullYear();
         const mm     = String(night.getMonth() + 1).padStart(2, '0');
         const dd     = String(night.getDate()).padStart(2, '0');
@@ -314,7 +351,7 @@ document.querySelectorAll('[id^="approve-form-"]').forEach(function(form) {
         if (!dateInput.value) return; // html required handles empty
         if (nightDate) {
             const night  = new Date(nightDate);
-            night.setDate(night.getDate() + 7);
+            night.setDate(night.getDate() + 8);
             const chosen = new Date(dateInput.value);
             if (chosen < night) {
                 e.preventDefault();

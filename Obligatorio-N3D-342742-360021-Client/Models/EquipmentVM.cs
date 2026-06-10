@@ -9,6 +9,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Models
         public int Quantity { get; set; }
         public string Type { get; set; }
         public int availableQuantity { get; set; }
+        public bool IsAvailable { get; set; }
 
         // Telescope
         public string? Aperture { get; set; }

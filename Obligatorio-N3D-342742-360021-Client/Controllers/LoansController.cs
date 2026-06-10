@@ -82,6 +82,30 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             return View();
         }
 
+        [HttpPost("Loans/Assess")]
+        public IActionResult Assess(int observationNightId, int telescopeId, int mountId, int? eyepieceId, int? cameraId)
+        {
+            try
+            {
+                var token = HttpContext.Session.GetString("Token");
+                var dto = new CreateLoanRequestDto
+                {
+                    ObservationNightId = observationNightId,
+                    TelescopeId = telescopeId,
+                    MountId = mountId,
+                    EyepieceId = eyepieceId,
+                    CameraId = cameraId
+                };
+                var result = _auxiliarHttp.EnviarYDeserializar<AiAssessmentDto>(
+                    "api/v1/loanrequests/evaluate", "POST", dto, token);
+                return Json(new { aiIndicator = result?.Indicator, aiDetail = result?.Detail });
+            }
+            catch (Exception)
+            {
+                return StatusCode(503, new { error = true });
+            }
+        }
+
         [HttpPost("Loans/Create")]
         public IActionResult Create(int observationNightId, int telescopeId, int mountId, int? eyepieceId, int? cameraId)
         {
@@ -125,9 +149,19 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Loan request approved.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex) when (ex.StatusCode == 404)
+            {
+                TempData["Error"] = "That request seems to have drifted off — it may no longer exist.";
+                return RedirectToAction("Index");
+            }
+            catch (ApiException ex) when (ex.StatusCode == 409)
+            {
+                TempData["Error"] = "This request couldn't be approved — the equipment may have been claimed or the request has already moved on.";
+                return RedirectToAction("Index");
+            }
             catch (Exception)
             {
-                ViewBag.msg = "Couldn't approve that loan. Something drifted off course.";
+                TempData["Error"] = "Couldn't approve that loan. Something drifted off course.";
                 return RedirectToAction("Index");
             }
         }
@@ -144,7 +178,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
             catch (Exception)
             {
-                ViewBag.msg = "Couldn't reject that loan. Something went sideways out there.";
+                TempData["Error"] = "Couldn't reject that loan. Something went sideways out there.";
                 return RedirectToAction("Index");
             }
         }
@@ -311,11 +345,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
 
             try
             {
-                var result = _auxiliarHttp.EnviarYDeserializar<MonthlyLoansDto>(
-                    $"api/v1/loanrequests/user/{userId}/{month}/{year}", "GET", token: token);
+                var loans = _auxiliarHttp.EnviarYDeserializar<List<LoanTicketVM>>(
+                    $"api/v1/loanrequests/user/{userId}/{month}/{year}", "GET", token: token)
+                    ?? new List<LoanTicketVM>();
 
-                ViewBag.EmptyMessage = result?.Message;
-                return View(result?.Loans ?? new List<LoanTicketVM>());
+                return View(loans);
             }
             catch (Exception)
             {
