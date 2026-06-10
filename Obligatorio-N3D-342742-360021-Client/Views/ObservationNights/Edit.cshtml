@@ -17,11 +17,31 @@
     <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
 </div>
 
+@if (Model?.IsRequested == true)
+{
+    <div class="alert alert--warn" style="margin-bottom: var(--p-space-4);">
+        <i class="fa-solid fa-lock" style="margin-right: var(--p-space-2);"></i>
+        This observation plan already has an equipment request — it can't be edited until the request is resolved.
+    </div>
+    <div class="card" style="max-width: 560px;">
+        <div class="card__body">
+            <dl class="detail-list">
+                <dt>Date</dt><dd>@Model?.Date</dd>
+                <dt>Celestial Object</dt><dd>@(Model?.CelestialObject?.Name ?? "—")</dd>
+                <dt>Details</dt><dd style="white-space:pre-line;">@(Model?.Details is { Length: > 0 } d ? d : "—")</dd>
+            </dl>
+            <div style="margin-top: var(--p-space-4);">
+                <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">← Back</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
 <div class="card" style="max-width: 560px;">
     <div class="card__body">
         <form method="post" asp-controller="ObservationNights" asp-action="Edit" asp-route-id="@Model?.Id" class="form-stack">
-
-            <input type="hidden" name="requestingUserId" value="@Model?.RequestingUserId" />
 
             <div class="field">
                 <label class="field__label" for="date">Date</label>
@@ -78,6 +98,8 @@
         </form>
     </div>
 </div>
+
+} @* end else (not IsRequested) *@
 
 @section Scripts {
 <script>

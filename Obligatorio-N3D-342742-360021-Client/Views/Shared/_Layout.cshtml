@@ -96,6 +96,14 @@ else
                         <span class="nav-item__icon"><i class="fa-solid fa-inbox"></i></span>
                         Loan Requests
                     </a>
+                    <a class="@NavClass("Equipment")" asp-controller="Equipment" asp-action="Index">
+                        <span class="nav-item__icon"><i class="fa-solid fa-binoculars"></i></span>
+                        Equipment
+                    </a>
+                    <a class="@NavClass("ObservationNights")" asp-controller="ObservationNights" asp-action="Index">
+                        <span class="nav-item__icon"><i class="fa-solid fa-moon"></i></span>
+                        Observation Nights
+                    </a>
                 }
 
                 @if (sessionRole == "Member")
@@ -125,6 +133,14 @@ else
                     Celestial Ranking
                 </a>
 
+                @if (sessionRole == "Admin" || sessionRole == "Coordinator")
+                {
+                    <a class="@NavClass("Reports", "Logs")" asp-controller="Reports" asp-action="Logs">
+                        <span class="nav-item__icon"><i class="fa-solid fa-scroll"></i></span>
+                        Event Log
+                    </a>
+                }
+
                 @if (sessionRole == "Admin")
                 {
                     <a class="@NavClass("Reports", "ByTelescope")" asp-controller="Reports" asp-action="ByTelescope">
@@ -134,18 +150,6 @@ else
                     <a class="@NavClass("Reports", "LoanAudit")" asp-controller="Reports" asp-action="LoanAudit">
                         <span class="nav-item__icon"><i class="fa-solid fa-magnifying-glass"></i></span>
                         Loan Audit
-                    </a>
-                    <a class="@NavClass("Reports", "Logs")" asp-controller="Reports" asp-action="Logs">
-                        <span class="nav-item__icon"><i class="fa-solid fa-scroll"></i></span>
-                        Event Log
-                    </a>
-                }
-
-                @if (sessionRole == "Coordinator")
-                {
-                    <a class="@NavClass("Reports", "Logs")" asp-controller="Reports" asp-action="Logs">
-                        <span class="nav-item__icon"><i class="fa-solid fa-scroll"></i></span>
-                        Event Log
                     </a>
                 }
 

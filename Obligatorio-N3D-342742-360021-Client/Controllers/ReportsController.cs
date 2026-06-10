@@ -11,30 +11,24 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         public IActionResult Ranking()
         {
             var token = HttpContext.Session.GetString("Token");
-            var nights = new List<ObservationNightVM>();
+            var ranking = new List<CelestialRankingItem>();
             try
             {
-                nights = _auxiliarHttp.EnviarYDeserializar<List<ObservationNightVM>>(
-                    "api/v1/observationnights", "GET", token: token)
-                    ?? new List<ObservationNightVM>();
+                var objects = _auxiliarHttp.EnviarYDeserializar<List<CelestialObjectVM>>(
+                    "api/v1/celestialobjects/most-asked", "GET", token: token)
+                    ?? new List<CelestialObjectVM>();
+
+                ranking = objects.Select(o => new CelestialRankingItem
+                {
+                    ObjectId = o.Id,
+                    Name = o.Name,
+                    Type = o.Type
+                }).ToList();
             }
             catch (Exception)
             {
                 ViewBag.msg = "Couldn't load the ranking. The stars are shy tonight.";
             }
-
-            var ranking = nights
-                .Where(n => n.CelestialObject != null)
-                .GroupBy(n => n.CelestialObject!.Id)
-                .Select(g => new CelestialRankingItem
-                {
-                    ObjectId = g.Key,
-                    Name = g.First().CelestialObject!.Name,
-                    Type = g.First().CelestialObject!.Type,
-                    Count = g.Count()
-                })
-                .OrderByDescending(r => r.Count)
-                .ToList();
 
             return View(ranking);
         }
@@ -121,14 +115,38 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         }
 
         [AccessFilter("Admin, Coordinator")]
-        public IActionResult Logs()
+        public IActionResult Logs(int? coordinatorId = null)
         {
             var token = HttpContext.Session.GetString("Token");
-            var logs  = new List<LogEventDto>();
+            string? role = HttpContext.Session.GetString("UserRole");
+
+            if (role == "Admin")
+            {
+                var users = new List<UserVM>();
+                try
+                {
+                    users = _auxiliarHttp.EnviarYDeserializar<List<UserVM>>(
+                        "api/v1/users", "GET", token: token)
+                        ?? new List<UserVM>();
+                }
+                catch { }
+
+                ViewBag.Coordinators = users
+                    .Where(u => u.role == "Coordinator" || u.role == "Admin")
+                    .OrderBy(u => u.fullName)
+                    .ToList();
+                ViewBag.SelectedCoordinatorId = coordinatorId;
+            }
+
+            var logs = new List<LogEventDto>();
             try
             {
+                string url = (role == "Admin" && coordinatorId.HasValue)
+                    ? $"api/v1/logs/coordinator/{coordinatorId}"
+                    : "api/v1/logs";
+
                 logs = _auxiliarHttp.EnviarYDeserializar<List<LogEventDto>>(
-                    "api/v1/logs", "GET", token: token)
+                    url, "GET", token: token)
                     ?? new List<LogEventDto>();
             }
             catch (Exception)

@@ -133,13 +133,13 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         }
 
         [HttpPost("ObservationNights/Edit/{id}")]
-        public IActionResult Edit(int id, int requestingUserId, int celestialObjectId, string date, string details)
+        public IActionResult Edit(int id, int celestialObjectId, string date, string details)
         {
             var token = HttpContext.Session.GetString("Token");
             try
             {
                 string isoDate = DateTime.TryParse(date, out var d) ? d.ToString("yyyy-MM-ddT00:00:00") : date;
-                var dto = new CreateObservationNightDto(requestingUserId, celestialObjectId, isoDate, details);
+                var dto = new LoanObservationNightDto { CelestialObjectId = celestialObjectId, Date = isoDate, Details = details };
                 _auxiliarHttp.EnviarSolicitud($"api/v1/observationnights/{id}", "PUT", dto, token);
                 TempData["Success"] = "Observation plan updated.";
                 return RedirectToAction("Index");

@@ -51,7 +51,7 @@
 <div class="page-head">
     <div>
         <h1 class="page-head__title">Celestial Ranking</h1>
-        <p class="page-head__sub">Most observed celestial objects across the club, ranked by observation count</p>
+        <p class="page-head__sub">Most requested celestial objects across the club</p>
     </div>
 </div>
 
@@ -79,7 +79,6 @@ else
                     <th style="width:48px; text-align:center;">#</th>
                     <th>Object</th>
                     <th>Type</th>
-                    <th style="text-align:right;">Observations</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,9 +106,6 @@ else
                                          letter-spacing: .04em; color: @GroupColor(item.Type);">
                                 @TypeLabel(item.Type)
                             </span>
-                        </td>
-                        <td style="text-align:right; font-variant-numeric: tabular-nums; font-weight:600; color: var(--color-accent);">
-                            @item.Count
                         </td>
                     </tr>
                 }

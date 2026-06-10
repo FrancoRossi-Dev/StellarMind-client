@@ -52,7 +52,7 @@
                         <option value="">— Select a planned night —</option>
                         @foreach (var night in nights)
                         {
-                            <option value="@night.Id" @(night.Id == selectedNightId ? "selected" : "")>
+                            <option value="@night.Id" selected="@(night.Id == selectedNightId ? "selected" : null)">
                                 @FmtDate(night.Date) — @(night.CelestialObject?.Name ?? "Unknown object")
                             </option>
                         }

@@ -15,7 +15,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 var token    = HttpContext.Session.GetString("Token");
                 var requests = _auxiliarHttp
-                    .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loanrequests", "GET", token: token)
+                    .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loanrequests/pending", "GET", token: token)
                     ?? new List<PendingLoanRequestVM>();
 
                 try
@@ -247,6 +247,34 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             catch (Exception)
             {
                 ViewBag.msg = "The request couldn't be removed. Something got in the way.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost("Loans/DirectIssue/{requestId}")]
+        [AccessFilter("Admin, Coordinator")]
+        public IActionResult DirectIssue(int requestId, string startDate, string endDate)
+        {
+            try
+            {
+                var token = HttpContext.Session.GetString("Token");
+                int coordinatorId = HttpContext.Session.GetInt32("UserId") ?? 0;
+                string isoStart = DateTime.TryParse(startDate, out var ds) ? ds.ToString("yyyy-MM-ddTHH:mm:ss") : startDate;
+                string isoEnd   = DateTime.TryParse(endDate, out var de)   ? de.ToString("yyyy-MM-ddTHH:mm:ss") : endDate;
+                var dto = new CreateLoanTicketDto
+                {
+                    LoanRequestId = requestId,
+                    CoordinatorId = coordinatorId,
+                    StartDate     = isoStart,
+                    EndDate       = isoEnd
+                };
+                _auxiliarHttp.EnviarSolicitud("api/v1/loantickets", "POST", dto, token);
+                TempData["Success"] = "Ticket issued directly.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Couldn't issue the ticket. Something drifted off course.";
                 return RedirectToAction("Index");
             }
         }

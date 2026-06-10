@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Event Log";
+    string? sessionRole = Context.Session.GetString("UserRole");
+    var coordinators    = ViewBag.Coordinators as List<Obligatorio_N3D_342742_360021_Client.Models.UserVM> ?? new();
+    int? selectedCoordId = ViewBag.SelectedCoordinatorId as int?;
 
     string FmtDate(string? raw) {
         if (string.IsNullOrWhiteSpace(raw)) return "—";
@@ -27,6 +30,34 @@
         <p class="page-head__sub">All audit events across loan requests and tickets, most recent first</p>
     </div>
 </div>
+
+@if (sessionRole == "Admin")
+{
+    <div class="card" style="margin-bottom: var(--p-space-5);">
+        <form method="get" asp-controller="Reports" asp-action="Logs"
+              style="display:flex; gap: var(--p-space-3); align-items:flex-end; flex-wrap:wrap;">
+            <div class="field" style="flex:1; min-width:200px;">
+                <label class="field__label" for="coordinatorId">Filter by coordinator</label>
+                <select id="coordinatorId" name="coordinatorId" class="input select">
+                    <option value="">— All coordinators —</option>
+                    @foreach (var c in coordinators)
+                    {
+                        <option value="@c.UserId" selected="@(c.UserId == selectedCoordId ? "selected" : null)">
+                            @c.fullName (@c.role)
+                        </option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn--primary">
+                <i class="fa-solid fa-filter" style="margin-right: var(--p-space-1);"></i>Filter
+            </button>
+            @if (selectedCoordId.HasValue)
+            {
+                <a class="btn btn--ghost" asp-controller="Reports" asp-action="Logs">Clear</a>
+            }
+        </form>
+    </div>
+}
 
 @if (!string.IsNullOrEmpty(ViewBag.msg as string))
 {
@@ -91,7 +122,7 @@ else
                             @log.Message
                         </td>
                         <td style="text-align:right;">
-                            @if (log.LoanTicketId.HasValue)
+                            @if (log.LoanTicketId.HasValue && sessionRole == "Admin")
                             {
                                 <a class="btn btn--ghost btn--sm"
                                    asp-controller="Reports"

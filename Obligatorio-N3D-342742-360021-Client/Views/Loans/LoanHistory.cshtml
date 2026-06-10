@@ -46,7 +46,7 @@
                 <option value="">— Month —</option>
                 @for (int m = 1; m <= 12; m++)
                 {
-                    <option value="@m" @(m == selectedMonth ? "selected" : "")>@monthNames[m - 1]</option>
+                    <option value="@m" selected="@(m == selectedMonth ? "selected" : null)">@monthNames[m - 1]</option>
                 }
             </select>
         </div>
@@ -56,7 +56,7 @@
                 <option value="">— Year —</option>
                 @foreach (var y in years)
                 {
-                    <option value="@y" @(y == selectedYear ? "selected" : "")>@y</option>
+                    <option value="@y" selected="@(y == selectedYear ? "selected" : null)">@y</option>
                 }
             </select>
         </div>
