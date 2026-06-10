@@ -23,9 +23,13 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 ViewBag.Type = type ?? "All";
                 return View(equipment);
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
-                Console.WriteLine($"Error fetching equipment list: {ex.Message}");
+                ViewBag.msg = ex.Message;
+                return View(new List<EquipmentVM>());
+            }
+            catch (Exception)
+            {
                 ViewBag.msg = "The equipment list drifted off. Give it another moment.";
                 return View(new List<EquipmentVM>());
             }
@@ -53,23 +57,28 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     Type = type,
                     Quantity = quantity,
                     AvailableQuantity = quantity,
-                    Aperture = aperture,
-                    FocalRatio = focalRatio,
-                    FocalLenght = focalLenght,
-                    Weight = weight,
-                    Resolution = resolution,
-                    SensorType = sensorType,
-                    PixelSize = pixelSize,
-                    Diameter = diameter,
-                    FieldOfView = fieldOfView,
-                    MountType = mountType,
-                    WeightSupport = weightSupport,
+                    Aperture      = WithUnit(aperture, "mm"),
+                    FocalRatio    = WithPrefix(focalRatio, "f/"),
+                    FocalLenght   = WithUnit(focalLenght, "mm"),
+                    Weight        = WithUnit(weight, "kg"),
+                    Resolution    = resolution,
+                    SensorType    = sensorType,
+                    PixelSize     = pixelSize,
+                    Diameter      = WithUnit(diameter, "mm"),
+                    FieldOfView   = WithUnit(fieldOfView, "°"),
+                    MountType     = mountType,
+                    WeightSupport = WithUnit(weightSupport, "kg"),
                     IsGoTo = isGoTo
                 };
                 var token = HttpContext.Session.GetString("Token");
                 _auxiliarHttp.EnviarSolicitud("api/v1/equipment", "POST", dto, token);
                 TempData["Success"] = "Item added to the inventory.";
                 return RedirectToAction("Index");
+            }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+                return View();
             }
             catch (Exception)
             {
@@ -92,6 +101,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     return RedirectToAction("Index");
                 }
                 return View(item);
+            }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
             }
             catch (Exception)
             {
@@ -117,17 +131,17 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     EquipmentType = equipmentType,
                     Quantity = quantity,
                     AvailableQuantity = availableQuantity,
-                    Aperture = aperture,
-                    FocalRatio = focalRatio,
-                    FocalLenght = focalLenght,
-                    Weight = weight,
-                    Resolution = resolution,
-                    SensorType = sensorType,
-                    PixelSize = pixelSize,
-                    Diameter = diameter,
-                    FieldOfView = fieldOfView,
-                    MountType = mountType,
-                    WeightSupport = weightSupport,
+                    Aperture      = WithUnit(aperture, "mm"),
+                    FocalRatio    = WithPrefix(focalRatio, "f/"),
+                    FocalLenght   = WithUnit(focalLenght, "mm"),
+                    Weight        = WithUnit(weight, "kg"),
+                    Resolution    = resolution,
+                    SensorType    = sensorType,
+                    PixelSize     = pixelSize,
+                    Diameter      = WithUnit(diameter, "mm"),
+                    FieldOfView   = WithUnit(fieldOfView, "°"),
+                    MountType     = mountType,
+                    WeightSupport = WithUnit(weightSupport, "kg"),
                     IsGoTo = isGoTo
                 };
                 var token = HttpContext.Session.GetString("Token");
@@ -135,10 +149,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Equipment updated successfully.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Edit", new { id });
+            }
             catch (Exception)
             {
-                ViewBag.msg = "The update got lost out there. Please try again.";
-                return View();
+                TempData["Error"] = "The update got lost out there. Please try again.";
+                return RedirectToAction("Edit", new { id });
             }
         }
 
@@ -152,12 +171,22 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Item removed from inventory.";
                 return RedirectToAction("Index");
             }
-            catch (Exception e)
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
             {
                 TempData["Error"] = "Couldn't remove that item. Something crossed our path.";
-                Console.WriteLine(e.Message);
                 return RedirectToAction("Index");
             }
         }
+
+        private static string WithUnit(string? value, string suffix) =>
+            string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim() + suffix;
+
+        private static string WithPrefix(string? value, string prefix) =>
+            string.IsNullOrWhiteSpace(value) ? string.Empty : prefix + value.Trim();
     }
 }

@@ -52,9 +52,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
 
                 return View(nights);
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 ViewBag.msg = ex.Message;
+                return View(new List<ObservationNightVM>());
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "The observation nights drifted out of range. Try again in a moment.";
                 return View(new List<ObservationNightVM>());
             }
         }
@@ -70,9 +75,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
 
                 return View(night);
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Couldn't load that observation night. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }
@@ -89,9 +99,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
 
                 return View("Index", nights);
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 ViewBag.msg = ex.Message;
+                return View("Index", new List<ObservationNightVM>());
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "Couldn't load the nights for that member. Something drifted off.";
                 return View("Index", new List<ObservationNightVM>());
             }
         }
@@ -116,9 +131,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Observation plan created successfully.";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 ViewBag.msg = ex.Message;
+                ViewBag.CelestialObjects = FetchCelestialObjects(token);
+                return View();
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "The plan couldn't be saved. Something got in the way.";
                 ViewBag.CelestialObjects = FetchCelestialObjects(token);
                 return View();
             }
@@ -136,9 +157,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 ViewBag.CelestialObjects = FetchCelestialObjects(token);
                 return View(night);
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Couldn't load that observation night. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }
@@ -155,11 +181,15 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Observation plan updated.";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
-                ViewBag.msg = ex.Message;
-                ViewBag.CelestialObjects = FetchCelestialObjects(token);
-                return View();
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Edit", new { id });
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "The update couldn't be saved. Something drifted off course.";
+                return RedirectToAction("Edit", new { id });
             }
         }
 
@@ -179,9 +209,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Equipment request canceled. Your night is back in planning.";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Couldn't cancel that request. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }
@@ -196,9 +231,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Observation plan removed.";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Couldn't remove that plan. Something got in the way.";
                 return RedirectToAction("Index");
             }
         }

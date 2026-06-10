@@ -11,23 +11,23 @@ namespace Obligatorio_N3D_342742_360021_Client.Models
         public int AvailableQuantity { get; set; }
 
         // Telescope
-        public string? Aperture { get; set; }
-        public string? FocalRatio { get; set; }
-        public string? FocalLenght { get; set; }   // API typo — keep exact spelling
-        public string? Weight { get; set; }
+        public string Aperture { get; set; } = string.Empty;
+        public string FocalRatio { get; set; } = string.Empty;
+        public string FocalLenght { get; set; } = string.Empty;   // API typo — keep exact spelling
+        public string Weight { get; set; } = string.Empty;
 
-        // Camera
+        // Camera (not [Required] on the API — keep nullable)
         public string? Resolution { get; set; }
         public string? SensorType { get; set; }
         public string? PixelSize { get; set; }
 
         // Eyepiece
-        public string? Diameter { get; set; }
-        public string? FieldOfView { get; set; }
+        public string Diameter { get; set; } = string.Empty;
+        public string FieldOfView { get; set; } = string.Empty;
 
         // Mount
-        public string? MountType { get; set; }
-        public string? WeightSupport { get; set; }
+        public string MountType { get; set; } = string.Empty;
+        public string WeightSupport { get; set; } = string.Empty;
         public bool IsGoTo { get; set; }
     }
 }

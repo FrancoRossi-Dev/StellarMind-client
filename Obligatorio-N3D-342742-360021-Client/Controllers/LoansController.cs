@@ -32,6 +32,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
 
                 return View(requests);
             }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+                return View(new List<PendingLoanRequestVM>());
+            }
             catch (Exception)
             {
                 ViewBag.msg = "The loan list seems to be orbiting somewhere else. Try again.";
@@ -120,19 +125,19 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     CameraId = cameraId
                 };
                 var token = HttpContext.Session.GetString("Token");
-                var result = _auxiliarHttp.EnviarYDeserializar<PendingLoanRequestVM>("api/v1/loanrequests", "POST", dto, token);
+                _auxiliarHttp.EnviarSolicitud("api/v1/loanrequests", "POST", dto, token);
                 TempData["Success"] = "Loan request submitted.";
-                if (result?.AiIndicator is not null)
-                {
-                    TempData["AiIndicator"] = result.AiIndicator;
-                    TempData["AiDetail"]    = result.AiDetail;
-                }
                 return RedirectToAction("MyLoans");
+            }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Create");
             }
             catch (Exception)
             {
-                ViewBag.msg = "The request got lost in the void. Please try again.";
-                return View();
+                TempData["Error"] = "The request got lost in the void. Please try again.";
+                return RedirectToAction("Create");
             }
         }
 
@@ -159,6 +164,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Error"] = "This request couldn't be approved — the equipment may have been claimed or the request has already moved on.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
             catch (Exception)
             {
                 TempData["Error"] = "Couldn't approve that loan. Something drifted off course.";
@@ -174,6 +184,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var token = HttpContext.Session.GetString("Token");
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loanrequests/{id}/reject", "PUT", token: token);
                 TempData["Success"] = "Loan request rejected.";
+                return RedirectToAction("Index");
+            }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -193,9 +208,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Loan marked as returned.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
             catch (Exception)
             {
-                ViewBag.msg = "The return couldn't be logged. Something crossed our path.";
+                TempData["Error"] = "The return couldn't be logged. Something crossed our path.";
                 return RedirectToAction("Index");
             }
         }
@@ -210,9 +230,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Loan canceled.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
             catch (Exception)
             {
-                ViewBag.msg = "Couldn't cancel that loan. Try again in a moment.";
+                TempData["Error"] = "Couldn't cancel that loan. Try again in a moment.";
                 return RedirectToAction("Index");
             }
         }
@@ -227,9 +252,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Request canceled.";
                 return RedirectToAction("MyLoans");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("MyLoans");
+            }
             catch (Exception)
             {
-                ViewBag.msg = "Couldn't cancel that request. Try again in a moment.";
+                TempData["Error"] = "Couldn't cancel that request. Try again in a moment.";
                 return RedirectToAction("MyLoans");
             }
         }
@@ -278,9 +308,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Loan request removed.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
             catch (Exception)
             {
-                ViewBag.msg = "The request couldn't be removed. Something got in the way.";
+                TempData["Error"] = "The request couldn't be removed. Something got in the way.";
                 return RedirectToAction("Index");
             }
         }
@@ -306,6 +341,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Ticket issued directly.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
             catch (Exception)
             {
                 TempData["Error"] = "Couldn't issue the ticket. Something drifted off course.";
@@ -321,6 +361,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var token = HttpContext.Session.GetString("Token");
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loantickets/{id}", "DELETE", token: token);
                 TempData["Success"] = "Approval undone. The request is back to pending.";
+                return RedirectToAction("Index");
+            }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -350,6 +395,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ?? new List<LoanTicketVM>();
 
                 return View(loans);
+            }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+                return View(new List<LoanTicketVM>());
             }
             catch (Exception)
             {

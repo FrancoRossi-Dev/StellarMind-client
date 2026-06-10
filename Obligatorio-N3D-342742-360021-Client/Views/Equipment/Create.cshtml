@@ -48,21 +48,33 @@
                 <div class="field-row">
                     <div class="field">
                         <label class="field__label" for="aperture">Aperture</label>
-                        <input id="aperture" name="aperture" type="text" class="input" placeholder="e.g. 356mm" />
+                        <div class="input-unit">
+                            <input id="aperture" name="aperture" type="text" class="input" placeholder="356" />
+                            <span class="input-unit__badge">mm</span>
+                        </div>
                     </div>
                     <div class="field">
                         <label class="field__label" for="focalRatio">Focal Ratio</label>
-                        <input id="focalRatio" name="focalRatio" type="text" class="input" placeholder="e.g. f/11" />
+                        <div class="input-unit input-unit--prefix">
+                            <span class="input-unit__badge">f/</span>
+                            <input id="focalRatio" name="focalRatio" type="text" class="input" placeholder="11" />
+                        </div>
                     </div>
                 </div>
                 <div class="field-row">
                     <div class="field">
                         <label class="field__label" for="focalLenght">Focal Length</label>
-                        <input id="focalLenght" name="focalLenght" type="text" class="input" placeholder="e.g. 3910mm" />
+                        <div class="input-unit">
+                            <input id="focalLenght" name="focalLenght" type="text" class="input" placeholder="3910" />
+                            <span class="input-unit__badge">mm</span>
+                        </div>
                     </div>
                     <div class="field">
                         <label class="field__label" for="weight">Weight</label>
-                        <input id="weight" name="weight" type="text" class="input" placeholder="e.g. 12kg" />
+                        <div class="input-unit">
+                            <input id="weight" name="weight" type="text" class="input" placeholder="12" />
+                            <span class="input-unit__badge">kg</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -96,11 +108,17 @@
                 <div class="field-row">
                     <div class="field">
                         <label class="field__label" for="diameter">Barrel Diameter</label>
-                        <input id="diameter" name="diameter" type="text" class="input" placeholder="e.g. 31.7mm" />
+                        <div class="input-unit">
+                            <input id="diameter" name="diameter" type="text" class="input" placeholder="31.7" />
+                            <span class="input-unit__badge">mm</span>
+                        </div>
                     </div>
                     <div class="field">
                         <label class="field__label" for="fieldOfView">Field of View</label>
-                        <input id="fieldOfView" name="fieldOfView" type="text" class="input" placeholder="e.g. 52°" />
+                        <div class="input-unit">
+                            <input id="fieldOfView" name="fieldOfView" type="text" class="input" placeholder="52" />
+                            <span class="input-unit__badge">°</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,14 +131,17 @@
                         <label class="field__label" for="mountType">Mount Type</label>
                         <select id="mountType" name="mountType" class="select">
                             <option value="">— Select —</option>
-                            <option value="Ecuatorial">Ecuatorial</option>
-                            <option value="AltAzimutal">AltAzimutal</option>
-                            <option value="Híbrida">Híbrida</option>
+                            <option value="Equatorial">Equatorial</option>
+                            <option value="AltAzimuth">Alt-Azimuth</option>
+                            <option value="Hybrid">Hybrid</option>
                         </select>
                     </div>
                     <div class="field">
                         <label class="field__label" for="weightSupport">Weight Support</label>
-                        <input id="weightSupport" name="weightSupport" type="text" class="input" placeholder="e.g. 20kg" />
+                        <div class="input-unit">
+                            <input id="weightSupport" name="weightSupport" type="text" class="input" placeholder="20" />
+                            <span class="input-unit__badge">kg</span>
+                        </div>
                     </div>
                 </div>
                 <div class="field">

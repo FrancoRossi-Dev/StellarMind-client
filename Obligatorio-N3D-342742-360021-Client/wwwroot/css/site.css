@@ -277,6 +277,46 @@ a:hover { color: var(--color-accent-hover); }
 }
 .input-wrap__toggle:hover { color: var(--color-text); }
 
+.input-unit {
+  display: flex;
+  align-items: stretch;
+}
+.input-unit .input {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.input-unit__badge {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--p-space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: none;
+  border-top-right-radius: var(--radius-input);
+  border-bottom-right-radius: var(--radius-input);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+.input-unit--prefix .input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: var(--radius-input);
+  border-bottom-right-radius: var(--radius-input);
+}
+.input-unit--prefix .input-unit__badge {
+  order: -1;
+  border-left: 1px solid var(--color-border);
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: var(--radius-input);
+  border-bottom-left-radius: var(--radius-input);
+}
+
 .input:focus,
 .select:focus,
 .textarea:focus {

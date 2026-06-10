@@ -31,6 +31,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
 
                 return View(users);
             }
+            catch (ApiException ex)
+            {
+                ViewBag.message = ex.Message;
+                return View(new List<UserVM>());
+            }
             catch (Exception)
             {
                 ViewBag.message = "The member list seems to have wandered off. Try again in a moment.";
@@ -57,6 +62,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 _auxiliarHttp.EnviarSolicitud("api/v1/Users/create", "POST", user, token);
                 TempData["Success"] = "Member added to the observatory.";
                 return RedirectToAction("Index");
+            }
+            catch (ApiException ex)
+            {
+                ViewBag.message = ex.Message;
+                return View();
             }
             catch (Exception)
             {
@@ -85,6 +95,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 }
 
                 return View(user);
+            }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
             }
             catch (Exception)
             {
@@ -132,6 +147,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 TempData["Success"] = "Member details updated successfully.";
                 return RedirectToAction("Index");
             }
+            catch (ApiException ex)
+            {
+                ViewBag.message = ex.Message;
+                return View(user);
+            }
             catch (Exception)
             {
                 ViewBag.message = "The update got lost between the stars. Please try again.";
@@ -154,6 +174,11 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var token = HttpContext.Session.GetString("Token");
                 _auxiliarHttp.EnviarSolicitud($"api/v1/Users/delete/{id}", "POST", token: token);
                 TempData["Success"] = "Member removed from the roster.";
+                return RedirectToAction("Index");
+            }
+            catch (ApiException ex)
+            {
+                TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -188,7 +213,12 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ? RedirectToAction("Index", "Loans")
                     : RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
+            catch (ApiException ex)
+            {
+                ViewBag.message = ex.Message;
+                return View();
+            }
+            catch (Exception)
             {
                 ViewBag.message = "Hmm, the stars didn't align. Check your credentials and try again.";
                 return View();

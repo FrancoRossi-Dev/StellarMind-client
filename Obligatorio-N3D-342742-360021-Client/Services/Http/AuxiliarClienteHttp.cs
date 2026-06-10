@@ -80,11 +80,16 @@ namespace Obligatorio_N3D_342742_360021_Client.Services.Http
             }
         }
 
+        private static readonly JsonSerializerOptions _sendOpts = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         private static HttpContent? CreateJsonContent(object? obj)
         {
             if (obj == null)
                 return null;
-            var json = JsonSerializer.Serialize(obj);
+            var json = JsonSerializer.Serialize(obj, _sendOpts);
             return new StringContent(json, Encoding.UTF8, "application/json");
         }
     }

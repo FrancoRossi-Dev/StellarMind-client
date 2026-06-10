@@ -4,6 +4,17 @@
     ViewData["Title"] = "Edit Equipment";
 }
 
+@functions {
+    static string StripSuffix(string? val, string suffix) {
+        if (string.IsNullOrEmpty(val)) return string.Empty;
+        return val.EndsWith(suffix, StringComparison.OrdinalIgnoreCase) ? val[..^suffix.Length] : val;
+    }
+    static string StripPrefix(string? val, string prefix) {
+        if (string.IsNullOrEmpty(val)) return string.Empty;
+        return val.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ? val[prefix.Length..] : val;
+    }
+}
+
 <div class="page-head">
     <div>
         <h1 class="page-head__title">Edit Equipment</h1>
@@ -54,21 +65,33 @@
                 <div class="field-row">
                     <div class="field">
                         <label class="field__label" for="aperture">Aperture</label>
-                        <input id="aperture" name="aperture" type="text" class="input" value="@Model?.Aperture" placeholder="e.g. 356mm" />
+                        <div class="input-unit">
+                            <input id="aperture" name="aperture" type="text" class="input" value="@StripSuffix(Model?.Aperture, "mm")" placeholder="356" />
+                            <span class="input-unit__badge">mm</span>
+                        </div>
                     </div>
                     <div class="field">
                         <label class="field__label" for="focalRatio">Focal Ratio</label>
-                        <input id="focalRatio" name="focalRatio" type="text" class="input" value="@Model?.FocalRatio" placeholder="e.g. f/11" />
+                        <div class="input-unit input-unit--prefix">
+                            <span class="input-unit__badge">f/</span>
+                            <input id="focalRatio" name="focalRatio" type="text" class="input" value="@StripPrefix(Model?.FocalRatio, "f/")" placeholder="11" />
+                        </div>
                     </div>
                 </div>
                 <div class="field-row">
                     <div class="field">
                         <label class="field__label" for="focalLenght">Focal Length</label>
-                        <input id="focalLenght" name="focalLenght" type="text" class="input" value="@Model?.FocalLenght" placeholder="e.g. 3910mm" />
+                        <div class="input-unit">
+                            <input id="focalLenght" name="focalLenght" type="text" class="input" value="@StripSuffix(Model?.FocalLenght, "mm")" placeholder="3910" />
+                            <span class="input-unit__badge">mm</span>
+                        </div>
                     </div>
                     <div class="field">
                         <label class="field__label" for="weight">Weight</label>
-                        <input id="weight" name="weight" type="text" class="input" value="@Model?.Weight" placeholder="e.g. 12kg" />
+                        <div class="input-unit">
+                            <input id="weight" name="weight" type="text" class="input" value="@StripSuffix(Model?.Weight, "kg")" placeholder="12" />
+                            <span class="input-unit__badge">kg</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,11 +125,17 @@
                 <div class="field-row">
                     <div class="field">
                         <label class="field__label" for="diameter">Barrel Diameter</label>
-                        <input id="diameter" name="diameter" type="text" class="input" value="@Model?.Diameter" placeholder="e.g. 31.7mm" />
+                        <div class="input-unit">
+                            <input id="diameter" name="diameter" type="text" class="input" value="@StripSuffix(Model?.Diameter, "mm")" placeholder="31.7" />
+                            <span class="input-unit__badge">mm</span>
+                        </div>
                     </div>
                     <div class="field">
                         <label class="field__label" for="fieldOfView">Field of View</label>
-                        <input id="fieldOfView" name="fieldOfView" type="text" class="input" value="@Model?.FieldOfView" placeholder="e.g. 52°" />
+                        <div class="input-unit">
+                            <input id="fieldOfView" name="fieldOfView" type="text" class="input" value="@StripSuffix(Model?.FieldOfView, "°")" placeholder="52" />
+                            <span class="input-unit__badge">°</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,14 +148,17 @@
                         <label class="field__label" for="mountType">Mount Type</label>
                         <select id="mountType" name="mountType" class="select">
                             <option value="">— Select —</option>
-                            <option value="Ecuatorial">Ecuatorial</option>
-                            <option value="AltAzimutal">AltAzimutal</option>
-                            <option value="Híbrida">Híbrida</option>
+                            <option value="Equatorial">Equatorial</option>
+                            <option value="AltAzimuth">Alt-Azimuth</option>
+                            <option value="Hybrid">Hybrid</option>
                         </select>
                     </div>
                     <div class="field">
                         <label class="field__label" for="weightSupport">Weight Support</label>
-                        <input id="weightSupport" name="weightSupport" type="text" class="input" value="@Model?.WeightSupport" placeholder="e.g. 20kg" />
+                        <div class="input-unit">
+                            <input id="weightSupport" name="weightSupport" type="text" class="input" value="@StripSuffix(Model?.WeightSupport, "kg")" placeholder="20" />
+                            <span class="input-unit__badge">kg</span>
+                        </div>
                     </div>
                 </div>
                 <div class="field">

@@ -25,6 +25,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     Type = o.Type
                 }).ToList();
             }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+            }
             catch (Exception)
             {
                 ViewBag.msg = "Couldn't load the ranking. The stars are shy tonight.";
@@ -58,6 +62,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     members = _auxiliarHttp.EnviarYDeserializar<List<UserVM>>(
                         $"api/v1/users/list/{telescopeId}/telescope", "GET", token: token)
                         ?? new List<UserVM>();
+                }
+                catch (ApiException ex)
+                {
+                    ViewBag.msg = ex.Message;
                 }
                 catch (Exception)
                 {
@@ -104,6 +112,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                         ?? new List<LoanTicketVM>();
                 }
             }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+            }
             catch (Exception)
             {
                 ViewBag.msg = "The audit log drifted out of range. Try again.";
@@ -149,6 +161,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     url, "GET", token: token)
                     ?? new List<LogEventDto>();
             }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+            }
             catch (Exception)
             {
                 ViewBag.msg = "Couldn't load the event log. Something drifted out of range.";
@@ -169,6 +185,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 ticket = _auxiliarHttp.EnviarYDeserializar<LoanTicketVM>(
                     $"api/v1/loantickets/{id}", "GET", token: token);
             }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+            }
             catch (Exception)
             {
                 ViewBag.msg = "Couldn't retrieve the ticket. It may have wandered off.";
@@ -180,9 +200,13 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     $"api/v1/logs/loanticket/{id}", "GET", token: token)
                     ?? new List<LogEventDto>();
             }
-            catch (Exception ex)
+            catch (ApiException ex)
             {
                 ViewBag.LogError = ex.Message;
+            }
+            catch (Exception)
+            {
+                ViewBag.LogError = "Couldn't load the event log for this ticket.";
             }
 
             ViewBag.Ticket = ticket;
