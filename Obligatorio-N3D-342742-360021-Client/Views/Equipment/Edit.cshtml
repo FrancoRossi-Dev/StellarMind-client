@@ -170,7 +170,7 @@
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Save changes</button>
+                <button id="edit-submit" type="submit" class="btn btn--primary">Save changes</button>
                 <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index">Cancel</a>
             </div>
 
@@ -198,6 +198,22 @@ function updateFields(type) {
     if (mount)  document.getElementById('mountType').value  = mount;
     if (isGoTo) document.getElementById('isGoTo').checked   = true;
     updateFields(type);
+})();
+
+(function () {
+    const btn = document.getElementById('edit-submit');
+    function check() {
+        const brand = document.getElementById('brand').value.trim();
+        const model = document.getElementById('model').value.trim();
+        const type  = document.getElementById('equipmentType').value;
+        const qty   = document.getElementById('quantity').value;
+        const avail = document.getElementById('availableQuantity').value;
+        btn.disabled = !(brand && model && type && qty && avail !== '');
+    }
+    ['brand', 'model', 'quantity', 'availableQuantity'].forEach(id => {
+        document.getElementById(id).addEventListener('input', check);
+    });
+    document.getElementById('equipmentType').addEventListener('change', check);
 })();
 </script>
 }

@@ -300,9 +300,6 @@
                         }
                     </div>
 
-                    <p id="co-error" style="display:none; margin: 0; font-size: var(--text-caption); color: var(--color-danger);">
-                        <i class="fa-solid fa-circle-exclamation" style="margin-right: var(--p-space-1);"></i>Every great night starts with a target — pick one from the list.
-                    </p>
                 </div>
 
                 <!-- Right: date, details, actions -->
@@ -312,9 +309,6 @@
                             <i class="fa-solid fa-calendar-days" style="margin-right: var(--p-space-1);"></i>Date
                         </label>
                         <div id="date-cal"></div>
-                        <p id="date-error" style="display:none; margin-top: var(--p-space-1); font-size: var(--text-caption); color: var(--color-danger);">
-                            <i class="fa-solid fa-circle-exclamation" style="margin-right: var(--p-space-1);"></i>Choose when to aim at the stars — a date and time are needed.
-                        </p>
                     </div>
 
                     <div class="field" style="margin: 0;">
@@ -324,7 +318,7 @@
                     </div>
 
                     <div class="form-actions" style="display: flex; gap: var(--p-space-3);">
-                        <button type="submit" class="btn btn--primary">
+                        <button id="submit-btn" type="submit" class="btn btn--primary" disabled>
                             <i class="fa-solid fa-moon" style="margin-right: var(--p-space-2);"></i>Log session
                         </button>
                         <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
@@ -351,30 +345,33 @@ document.querySelectorAll('.co-item__badge[data-type-id]').forEach(el => {
     el.textContent = CO_TYPE[el.dataset.typeId] || '—';
 });
 
+const hiddenId   = document.getElementById('celestialObjectId');
+const hiddenDate = document.getElementById('date');
+const submitBtn  = document.getElementById('submit-btn');
+const tooltip    = document.getElementById('co-tooltip');
+
+function updateSubmitBtn() {
+    submitBtn.disabled = !(hiddenId.value && hiddenDate.value);
+}
+
 // Calendar
 flatpickr("#date-cal", {
     inline: true,
     enableTime: false,
     dateFormat: "Y-m-d",
     onChange: function(selectedDates, dateStr) {
-        document.getElementById('date').value = dateStr;
-        document.getElementById('date-error').style.display = 'none';
+        hiddenDate.value = dateStr;
+        updateSubmitBtn();
     }
 });
-
-const hiddenId  = document.getElementById('celestialObjectId');
-const coError   = document.getElementById('co-error');
-const tooltip   = document.getElementById('co-tooltip');
 
 // Tooltip positioning
 function positionTooltip(e) {
     let x = e.clientX + 18;
     let y = e.clientY - 10;
-    // Flip left if near right edge
     if (x + tooltip.offsetWidth > window.innerWidth - 16) {
         x = e.clientX - tooltip.offsetWidth - 18;
     }
-    // Clamp to bottom edge
     if (y + tooltip.offsetHeight > window.innerHeight - 16) {
         y = window.innerHeight - tooltip.offsetHeight - 16;
     }
@@ -383,15 +380,13 @@ function positionTooltip(e) {
 }
 
 document.querySelectorAll('.co-item').forEach(btn => {
-    // Select
     btn.addEventListener('click', () => {
         document.querySelectorAll('.co-item').forEach(b => b.classList.remove('co-item--selected'));
         btn.classList.add('co-item--selected');
         hiddenId.value = btn.dataset.id;
-        coError.style.display = 'none';
+        updateSubmitBtn();
     });
 
-    // Tooltip show
     btn.addEventListener('mouseenter', e => {
         const typeName  = CO_TYPE[btn.dataset.type] || '—';
         const rawMag    = parseFloat(btn.dataset.magnitude);
@@ -408,7 +403,6 @@ document.querySelectorAll('.co-item').forEach(btn => {
 
     btn.addEventListener('mousemove', positionTooltip);
 
-    // Tooltip hide
     btn.addEventListener('mouseleave', () => {
         tooltip.style.display = 'none';
     });
@@ -420,20 +414,6 @@ document.getElementById('co-search').addEventListener('input', function () {
     document.querySelectorAll('.co-item').forEach(btn => {
         btn.style.display = btn.dataset.name.toLowerCase().includes(q) ? '' : 'none';
     });
-});
-
-// Submit validation
-document.getElementById('create-form').addEventListener('submit', function (e) {
-    let ok = true;
-    if (!hiddenId.value) {
-        coError.style.display = '';
-        ok = false;
-    }
-    if (!document.getElementById('date').value) {
-        document.getElementById('date-error').style.display = '';
-        ok = false;
-    }
-    if (!ok) e.preventDefault();
 });
 </script>
 }

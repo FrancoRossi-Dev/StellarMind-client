@@ -91,7 +91,7 @@ else
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Save changes</button>
+                <button id="edit-submit" type="submit" class="btn btn--primary">Save changes</button>
                 <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
             </div>
 
@@ -113,14 +113,27 @@ const CO_TYPE = {
 
 const CO_OBJECTS = @Html.Raw(coJson);
 
+const editSubmitBtn = document.getElementById('edit-submit');
+function checkEditSubmit() {
+    const dateVal = document.getElementById('date').value;
+    const coVal   = document.getElementById('celestialObjectId').value;
+    editSubmitBtn.disabled = !(dateVal && coVal);
+}
+
 flatpickr("#date", {
     enableTime: false,
     dateFormat: "Y-m-d",
     altInput: true,
     altFormat: "F j, Y",
     altInputClass: "input",
-    defaultDate: "@existingDate"
+    defaultDate: "@existingDate",
+    onChange: function(_, dateStr) {
+        document.getElementById('date').value = dateStr;
+        checkEditSubmit();
+    }
 });
+
+document.getElementById('celestialObjectId').addEventListener('change', checkEditSubmit);
 
 (function () {
     const sel    = document.getElementById('celestialObjectId');

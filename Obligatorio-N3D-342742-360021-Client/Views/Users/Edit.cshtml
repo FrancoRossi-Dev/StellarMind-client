@@ -78,7 +78,7 @@
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Save changes</button>
+                <button id="edit-submit" type="submit" class="btn btn--primary">Save changes</button>
                 <a asp-controller="Users" asp-action="Index" class="btn btn--secondary">Cancel</a>
             </div>
         </form>
@@ -116,5 +116,20 @@ function togglePw() {
         icon.className = 'fa-solid fa-eye';
     }
 }
+
+(function () {
+    const btn      = document.getElementById('edit-submit');
+    const required = ['fullName', 'username', 'email', 'role'];
+    function check() {
+        btn.disabled = required.some(n => {
+            const el = document.querySelector(`[name="${n}"]`);
+            return !el || !el.value.trim();
+        });
+    }
+    required.forEach(n => {
+        const el = document.querySelector(`[name="${n}"]`);
+        if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', check);
+    });
+})();
 </script>
 }

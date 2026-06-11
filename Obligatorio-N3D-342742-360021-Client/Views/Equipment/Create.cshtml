@@ -153,7 +153,7 @@
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Add to inventory</button>
+                <button id="create-submit" type="submit" class="btn btn--primary" disabled>Add to inventory</button>
                 <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index">Cancel</a>
             </div>
 
@@ -168,6 +168,23 @@ function updateFields(type) {
     document.getElementById('group-camera').style.display    = type === 'Camera'    ? '' : 'none';
     document.getElementById('group-eyepiece').style.display  = type === 'Eyepiece'  ? '' : 'none';
     document.getElementById('group-mount').style.display     = type === 'Mount'     ? '' : 'none';
+    checkSubmit();
 }
+
+(function () {
+    const btn = document.getElementById('create-submit');
+    function checkSubmit() {
+        const brand = document.getElementById('brand').value.trim();
+        const model = document.getElementById('model').value.trim();
+        const type  = document.getElementById('type').value;
+        const qty   = document.getElementById('quantity').value;
+        btn.disabled = !(brand && model && type && qty);
+    }
+    window.checkSubmit = checkSubmit;
+    ['brand', 'model', 'quantity'].forEach(id => {
+        document.getElementById(id).addEventListener('input', checkSubmit);
+    });
+    document.getElementById('type').addEventListener('change', checkSubmit);
+})();
 </script>
 }

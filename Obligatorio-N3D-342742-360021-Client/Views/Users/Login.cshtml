@@ -49,7 +49,7 @@
                             })(this)"><i class="fa-regular fa-eye"></i></button>
                 </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--full" style="margin-top: 0.5rem;">
+            <button id="login-submit" type="submit" class="btn btn--primary btn--full" style="margin-top: 0.5rem;" disabled>
                 Sign in
             </button>
         </form>
@@ -57,3 +57,16 @@
         @await Html.PartialAsync("_DevCredentials")
     </div>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    const btn  = document.getElementById('login-submit');
+    const user = document.querySelector('input[name="username"]');
+    const pass = document.querySelector('input[name="password"]');
+    function check() { btn.disabled = !(user.value.trim() && pass.value); }
+    user.addEventListener('input', check);
+    pass.addEventListener('input', check);
+})();
+</script>
+}

@@ -126,7 +126,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 .ToList());
         }
 
-        [AccessFilter("Admin, Coordinator")]
+        [AccessFilter("Admin")]
         public IActionResult Logs(int? coordinatorId = null)
         {
             var token = HttpContext.Session.GetString("Token");

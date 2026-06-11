@@ -87,7 +87,7 @@
             </div>
 
             <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                <button type="submit" class="btn btn--primary">Create member</button>
+                <button id="create-submit" type="submit" class="btn btn--primary" disabled>Create member</button>
                 <a asp-controller="Users" asp-action="Index" class="btn btn--secondary">Cancel</a>
             </div>
         </form>
@@ -128,5 +128,20 @@ document.getElementById('create-member-form').addEventListener('submit', functio
     const local = document.getElementById('phone-local').value.trim();
     document.getElementById('phone-combined').value = local ? code + local : '';
 });
+
+(function () {
+    const btn      = document.getElementById('create-submit');
+    const required = ['fullName', 'username', 'email', 'role', 'password'];
+    function check() {
+        btn.disabled = required.some(n => {
+            const el = document.querySelector(`[name="${n}"]`);
+            return !el || !el.value.trim();
+        });
+    }
+    required.forEach(n => {
+        const el = document.querySelector(`[name="${n}"]`);
+        if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', check);
+    });
+})();
 </script>
 }
