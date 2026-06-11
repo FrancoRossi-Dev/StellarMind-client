@@ -217,11 +217,10 @@ function validateCompatibility() {
         if (!isNaN(telW) && !isNaN(mountW) && mountW < telW) {
             mountCompat = 'This mount may not support the weight of that telescope — things could drift off balance.';
         }
-    }
-
-    if (cameraVal && mountData) {
-        const mt = (mountData.mountType ?? '').toLowerCase();
-        if (mt && mt !== 'ecuatorial' && mt !== 'híbrida') {
+       }
+    if (cameraVal && mountData && mountData.mountType) {
+        const mt = (mountData.mountType ?? '').toLowerCase().trim();
+        if (mt && mt !== 'equatorial' && mt !== 'hybrid') {
             cameraMount = 'Astrophotography needs an equatorial or hybrid mount to track the sky — the stars won\'t wait.';
         }
     }
