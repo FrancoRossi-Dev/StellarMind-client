@@ -83,15 +83,11 @@ else
                         <span class="nav-item__icon"><i class="fa-solid fa-binoculars"></i></span>
                         Equipment
                     </a>
-                    <a class="@NavClass("Loans")" asp-controller="Loans" asp-action="Index">
-                        <span class="nav-item__icon"><i class="fa-solid fa-inbox"></i></span>
-                        Loan Requests
-                    </a>
                 }
 
                 @if (sessionRole == "Coordinator")
                 {
-                    <p class="nav-section-label">Coordinator</p>
+                    <p class="nav-section-label">Management</p>
                     <a class="@NavClass("Loans")" asp-controller="Loans" asp-action="Index">
                         <span class="nav-item__icon"><i class="fa-solid fa-inbox"></i></span>
                         Loan Requests

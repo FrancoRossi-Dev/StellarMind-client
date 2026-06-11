@@ -45,12 +45,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Services.Http
                 Error? error = JsonSerializer.Deserialize<Error>(content, opts);
                 if (error != null && !string.IsNullOrWhiteSpace(error.Message))
                     throw new ApiException(statusCode, error.Message);
-                throw new ApiException(statusCode, content);
             }
-            catch (JsonException)
-            {
-                throw new ApiException(statusCode, content);
-            }
+            catch (JsonException) { }
+
+            throw new ApiException(statusCode, FriendlyMessage(statusCode));
         }
 
         public string ObtenerBody(HttpResponseMessage respuesta)
@@ -79,6 +77,18 @@ namespace Obligatorio_N3D_342742_360021_Client.Services.Http
                 throw;
             }
         }
+
+        private static string FriendlyMessage(int statusCode) => statusCode switch
+        {
+            400 => "Something looks off with the details you entered. Please review and try again.",
+            401 => "Your session has expired or you're not authorised. Please log in again.",
+            403 => "You don't have permission to perform that action.",
+            404 => "We couldn't find what you were looking for — it may have moved or been removed.",
+            409 => "That action conflicts with existing data. Please check the details and try again.",
+            422 => "Some of the information provided wasn't accepted. Please review and try again.",
+            _ when statusCode >= 500 => "Something went wrong on our end. Please try again in a moment.",
+            _ => "An unexpected error occurred. Please try again."
+        };
 
         private static readonly JsonSerializerOptions _sendOpts = new()
         {

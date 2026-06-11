@@ -44,7 +44,7 @@
                             <option value="+1">US +1</option>
                             <option value="+44">GB +44</option>
                         </select>
-                        <input type="tel" id="phone-local" class="input" placeholder="99 123 456" style="flex:1;" />
+                        <input type="tel" id="phone-local" class="input" placeholder="99 123 456" style="flex:1;" required />
                     </div>
                     <input asp-for="phoneNumber" type="hidden" id="phone-combined" />
                 </div>
@@ -132,16 +132,21 @@ document.getElementById('create-member-form').addEventListener('submit', functio
 (function () {
     const btn      = document.getElementById('create-submit');
     const required = ['fullName', 'username', 'email', 'role', 'password'];
+    function getEl(n) {
+        return document.querySelector(`[name="${n}"]`) || document.getElementById(n);
+    }
     function check() {
-        btn.disabled = required.some(n => {
-            const el = document.querySelector(`[name="${n}"]`);
+        const phoneOk = (document.getElementById('phone-local')?.value.trim() ?? '') !== '';
+        btn.disabled = !phoneOk || required.some(n => {
+            const el = getEl(n);
             return !el || !el.value.trim();
         });
     }
     required.forEach(n => {
-        const el = document.querySelector(`[name="${n}"]`);
+        const el = getEl(n);
         if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', check);
     });
+    document.getElementById('phone-local')?.addEventListener('input', check);
 })();
 </script>
 }
