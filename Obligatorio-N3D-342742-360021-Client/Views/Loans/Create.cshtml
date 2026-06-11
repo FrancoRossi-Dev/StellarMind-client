@@ -16,10 +16,35 @@
         return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy  HH:mm") : raw;
     }
 
-    string OptionLabel(EquipmentVM e) =>
-        !e.IsAvailable
-            ? $"[out of stock] {e.Brand} {e.Model}"
-            : $"{e.Brand} {e.Model}";
+    string StockPrefix(EquipmentVM e) => !e.IsAvailable ? "[out of stock] " : "";
+    string TelescopeLabel(EquipmentVM e) {
+        var p = new List<string>();
+        if (!string.IsNullOrWhiteSpace(e.Aperture))   p.Add(e.Aperture + " mm");
+        if (!string.IsNullOrWhiteSpace(e.FocalRatio)) p.Add("f/" + e.FocalRatio);
+        if (!string.IsNullOrWhiteSpace(e.Weight))     p.Add(e.Weight + " kg");
+        return StockPrefix(e) + e.Brand + " " + e.Model + (p.Any() ? " — " + string.Join(", ", p) : "");
+    }
+    string MountLabel(EquipmentVM e) {
+        var p = new List<string>();
+        if (!string.IsNullOrWhiteSpace(e.MountType)) {
+            var mt = e.MountType == "AltAzimuth" ? "Alt-Az" : e.MountType;
+            p.Add(mt);
+        }
+        if (!string.IsNullOrWhiteSpace(e.WeightSupport)) p.Add("up to " + e.WeightSupport + " lbs");
+        return StockPrefix(e) + e.Brand + " " + e.Model + (p.Any() ? " — " + string.Join(", ", p) : "");
+    }
+    string EyepieceLabel(EquipmentVM e) {
+        var p = new List<string>();
+        if (!string.IsNullOrWhiteSpace(e.Diameter))    p.Add(e.Diameter + " mm");
+        if (!string.IsNullOrWhiteSpace(e.FieldOfView)) p.Add(e.FieldOfView + "°");
+        return StockPrefix(e) + e.Brand + " " + e.Model + (p.Any() ? " — " + string.Join(", ", p) : "");
+    }
+    string CameraLabel(EquipmentVM e) {
+        var p = new List<string>();
+        if (!string.IsNullOrWhiteSpace(e.SensorType)) p.Add(e.SensorType);
+        if (!string.IsNullOrWhiteSpace(e.Resolution)) p.Add(e.Resolution);
+        return StockPrefix(e) + e.Brand + " " + e.Model + (p.Any() ? " — " + string.Join(", ", p) : "");
+    }
 }
 
 <div class="page-head">
@@ -73,7 +98,7 @@
                                 {
                                     <option value="@e.Id"
                                             data-is-available="@(e.IsAvailable ? "true" : "false")"
-                                            data-weight="@e.Weight">@OptionLabel(e)</option>
+                                            data-weight="@e.Weight">@TelescopeLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-telescope" class="fa-solid fa-triangle-exclamation"
@@ -94,7 +119,7 @@
                                     <option value="@e.Id"
                                             data-is-available="@(e.IsAvailable ? "true" : "false")"
                                             data-weight-support="@e.WeightSupport"
-                                            data-mount-type="@e.MountType">@OptionLabel(e)</option>
+                                            data-mount-type="@e.MountType">@MountLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-mount" class="fa-solid fa-triangle-exclamation"
@@ -118,7 +143,7 @@
                                 @foreach (var e in eyepieces)
                                 {
                                     <option value="@e.Id"
-                                            data-is-available="@(e.IsAvailable ? "true" : "false")">@OptionLabel(e)</option>
+                                            data-is-available="@(e.IsAvailable ? "true" : "false")">@EyepieceLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-eyepiece" class="fa-solid fa-triangle-exclamation"
@@ -139,7 +164,7 @@
                                 @foreach (var e in cameras)
                                 {
                                     <option value="@e.Id"
-                                            data-is-available="@(e.IsAvailable ? "true" : "false")">@OptionLabel(e)</option>
+                                            data-is-available="@(e.IsAvailable ? "true" : "false")">@CameraLabel(e)</option>
                                 }
                             </select>
                             <i id="warn-camera" class="fa-solid fa-triangle-exclamation"
@@ -170,9 +195,13 @@
                 </div>
 
                 <div style="display:flex; gap: var(--p-space-3); margin-top: var(--p-space-2);">
-                    <button type="submit" class="btn btn--primary" id="submitBtn" disabled>Submit request</button>
+                    <button type="submit" class="btn btn--primary" id="submitBtn" disabled
+                            style="opacity:0.5; cursor:not-allowed;">Submit request</button>
                     <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index">Cancel</a>
                 </div>
+                <p id="submit-hint" style="font-size:var(--text-xs); color:var(--color-text-muted); margin-top:var(--p-space-2);">
+                    <i class="fa-solid fa-circle-info" style="margin-right:var(--p-space-1);"></i>Select a night, telescope, mount, and at least an eyepiece or camera.
+                </p>
 
             </form>
         }
@@ -221,7 +250,7 @@ function validateCompatibility() {
 
     if (cameraVal && mountData) {
         const mt = (mountData.mountType ?? '').toLowerCase();
-        if (mt && mt !== 'ecuatorial' && mt !== 'híbrida') {
+        if (mt && mt !== 'equatorial' && mt !== 'hybrid') {
             cameraMount = 'Astrophotography needs an equatorial or hybrid mount to track the sky — the stars won\'t wait.';
         }
     }
@@ -238,16 +267,41 @@ function validateCompatibility() {
 }
 
 function validateButtons() {
-    const nightOk = !!document.getElementById('nightSelector').value;
-    const telOk   = !!document.getElementById('telescopeId').value;
-    const mountOk = !!document.getElementById('mountId').value;
-    const eyeVal  = document.getElementById('eyepieceId').value;
-    const camVal  = document.getElementById('cameraId').value;
-    const optOk   = !!(eyeVal || camVal);
+    const nightOk    = !!document.getElementById('nightSelector').value;
+    const telOk      = !!document.getElementById('telescopeId').value;
+    const mountOk    = !!document.getElementById('mountId').value;
+    const eyeVal     = document.getElementById('eyepieceId').value;
+    const camVal     = document.getElementById('cameraId').value;
+    const optOk      = !!(eyeVal || camVal);
     const compatible = validateCompatibility();
+    const canSubmit  = nightOk && telOk && mountOk && optOk && compatible;
 
-    document.getElementById('submitBtn').disabled = !(nightOk && telOk && mountOk && optOk && compatible);
-    document.getElementById('assessBtn').disabled = !(nightOk && telOk && mountOk);
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled      = !canSubmit;
+    submitBtn.style.opacity = canSubmit ? '' : '0.5';
+    submitBtn.style.cursor  = canSubmit ? '' : 'not-allowed';
+
+    const assessOk  = nightOk && telOk && mountOk;
+    const assessBtn = document.getElementById('assessBtn');
+    assessBtn.disabled      = !assessOk;
+    assessBtn.style.opacity = assessOk ? '' : '0.5';
+    assessBtn.style.cursor  = assessOk ? '' : 'not-allowed';
+
+    let hint = '';
+    if (!canSubmit) {
+        if (!nightOk)      hint = 'Select an observation night to continue.';
+        else if (!telOk)   hint = 'Choose a telescope.';
+        else if (!mountOk) hint = 'Choose a mount.';
+        else if (!optOk)   hint = 'Add at least an eyepiece or a camera.';
+        else               hint = 'Resolve the compatibility issues above to continue.';
+    }
+    const hintEl = document.getElementById('submit-hint');
+    if (hintEl) {
+        hintEl.style.display = hint ? '' : 'none';
+        hintEl.innerHTML = hint
+            ? '<i class="fa-solid fa-circle-info" style="margin-right:var(--p-space-1);"></i>' + hint
+            : '';
+    }
 }
 
 function checkStock(type, select) {
