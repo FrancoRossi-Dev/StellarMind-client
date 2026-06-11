@@ -22,7 +22,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 {
                     ObjectId = o.Id,
                     Name = o.Name,
-                    Type = o.Type
+                    Type = o.Type,
+                    Count = o.ObservationCount
                 }).ToList();
             }
             catch (ApiException ex)

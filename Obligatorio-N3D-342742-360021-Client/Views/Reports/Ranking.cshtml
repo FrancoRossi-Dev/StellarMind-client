@@ -74,6 +74,7 @@ else
                     <th style="width:48px; text-align:center;">#</th>
                     <th>Object</th>
                     <th>Type</th>
+                    <th style="text-align:center;">Observations</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +102,12 @@ else
                                          letter-spacing: .04em; color: @GroupColor(item.Type);">
                                 @TypeLabel(item.Type)
                             </span>
+                        </td>
+                        <td style="text-align:center; font-variant-numeric: tabular-nums; color: var(--color-text-secondary);">
+                            @if (item.Count.HasValue)
+                            {
+                                @item.Count.Value
+                            }
                         </td>
                     </tr>
                 }
