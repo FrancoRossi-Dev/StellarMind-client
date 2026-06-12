@@ -191,6 +191,7 @@ else
                     <th>Return By</th>
                     <th>Status</th>
                     <th style="text-align:right;">Equipment</th>
+                    <th style="text-align:right;">Return</th>
                 </tr>
             </thead>
             <tbody>
@@ -222,7 +223,9 @@ else
                                          letter-spacing: .04em; color: @TicketStatusColor(ticket.Status);">
                                 @ticket.Status
                             </span>
+                            
                         </td>
+                        
                         <td style="text-align:right;">
                             @if (eqSet != null)
                             {
@@ -232,6 +235,24 @@ else
                                 </button>
                             }
                             else { <span style="color: var(--color-text-muted);">—</span> }
+                        </td>
+                        <td style="text-align:right;">
+                            @if (ticket.Status == "Loaned")
+                            {
+                                <form method="post"
+                                      asp-controller="Loans"
+                                      asp-action="Return"
+                                      asp-route-id="@ticket.Id"
+                                      onsubmit="return confirm('Mark this loan as returned?');">
+                                    <button type="submit" class="btn btn--success btn--sm">
+                                        <i class="fa-solid fa-rotate-left" style="margin-right: var(--p-space-1);"></i>Return
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span style="color: var(--color-text-muted);">—</span>
+                            }
                         </td>
                     </tr>
                 }

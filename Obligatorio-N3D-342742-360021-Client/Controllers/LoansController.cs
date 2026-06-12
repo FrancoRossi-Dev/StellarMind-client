@@ -23,12 +23,22 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     var tickets = _auxiliarHttp
                         .EnviarYDeserializar<List<LoanTicketVM>>("api/v1/loantickets", "GET", token: token)
                         ?? new List<LoanTicketVM>();
+
                     ViewBag.RequestTicketMap = tickets
                         .Where(t => t.LoanRequest != null)
                         .GroupBy(t => t.LoanRequest!.RequestId)
                         .ToDictionary(g => g.Key, g => g.First().Id);
+
+                    ViewBag.ActiveTickets = tickets
+                        .Where(t => string.Equals(t.Status, "Loaned", StringComparison.OrdinalIgnoreCase)
+                                 || string.Equals(t.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
                 }
-                catch { ViewBag.RequestTicketMap = new Dictionary<int, int>(); }
+                catch
+                {
+                    ViewBag.RequestTicketMap = new Dictionary<int, int>();
+                    ViewBag.ActiveTickets = new List<LoanTicketVM>();
+                }
 
                 return View(requests);
             }
@@ -296,6 +306,46 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             ViewBag.Requests = requests;
             ViewBag.Tickets  = tickets;
             return View();
+        }
+
+        [HttpGet("Loans/ApprovedLoans")]
+        [AccessFilter("Admin, Coordinator")]
+        public IActionResult ApprovedLoans()
+        {
+            var token = HttpContext.Session.GetString("Token");
+            int? coordinatorId = HttpContext.Session.GetInt32("UserId");
+            var tickets = new List<LoanTicketVM>();
+
+            try
+            {
+                if (coordinatorId.HasValue)
+                {
+                    tickets = _auxiliarHttp.EnviarYDeserializar<List<LoanTicketVM>>(
+                        $"api/v1/loantickets/coordinator/{coordinatorId}", "GET", token: token)
+                        ?? new List<LoanTicketVM>();
+                }
+                else
+                {
+                    tickets = _auxiliarHttp.EnviarYDeserializar<List<LoanTicketVM>>(
+                        "api/v1/loantickets", "GET", token: token)
+                        ?? new List<LoanTicketVM>();
+                }
+
+                tickets = tickets
+                    .Where(t => string.Equals(t.Status, "Loaned", StringComparison.OrdinalIgnoreCase)
+                             || string.Equals(t.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "Couldn't load the approved loans. Something drifted out of orbit.";
+            }
+
+            return View(tickets);
         }
 
         [HttpPost("Loans/Delete/{id}")]
