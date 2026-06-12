@@ -41,7 +41,7 @@
         .ThenBy(r => DateTime.TryParse(r.ObservationNight?.Date, out var d) ? d : DateTime.MaxValue)
         .ToList() ?? new List<Obligatorio_N3D_342742_360021_Client.Models.PendingLoanRequestVM>();
 
-    var ticketMap = ViewBag.RequestTicketMap as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var ticketMap = ViewBag.RequestTicketMap as Dictionary<int, LoanTicketVM> ?? new Dictionary<int, LoanTicketVM>();
 }
 
 <div class="page-head">
@@ -277,15 +277,28 @@ else
                     {
                         <div class="modal-footer" style="flex-direction:column; align-items:stretch; gap: var(--p-space-3);">
                             <div style="display:flex; gap: var(--p-space-2);">
-                                @if (req.Status == "Approved" && ticketMap.TryGetValue(req.RequestId, out int ticketId))
+                                @if (req.Status == "Approved" && ticketMap.TryGetValue(req.RequestId, out LoanTicketVM? ticket))
                                 {
-                                    <form method="post" asp-controller="Loans" asp-action="DeleteTicket"
-                                          asp-route-id="@ticketId"
-                                          onsubmit="return confirm('Undo this approval? The request will return to pending.');">
-                                        <button type="submit" class="btn btn--danger btn--sm">
-                                            <i class="fa-solid fa-rotate-left" style="margin-right: var(--p-space-1);"></i>Undo Approval
-                                        </button>
-                                    </form>
+                                    @if (ticket!.Status == "Loaned")
+                                    {
+                                        <form method="post" asp-controller="Loans" asp-action="Return"
+                                              asp-route-id="@ticket.Id"
+                                              onsubmit="return confirm('Mark this loan as returned?');">
+                                            <button type="submit" class="btn btn--secondary btn--sm">
+                                                <i class="fa-solid fa-box-archive" style="margin-right: var(--p-space-1);"></i>Mark Returned
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-controller="Loans" asp-action="DeleteTicket"
+                                              asp-route-id="@ticket.Id"
+                                              onsubmit="return confirm('Undo this approval? The request will return to pending.');">
+                                            <button type="submit" class="btn btn--danger btn--sm">
+                                                <i class="fa-solid fa-rotate-left" style="margin-right: var(--p-space-1);"></i>Undo Approval
+                                            </button>
+                                        </form>
+                                    }
                                 }
                                 <button type="button" class="btn btn--ghost" onclick="closeRequestModal(@req.RequestId)">Close</button>
                             </div>

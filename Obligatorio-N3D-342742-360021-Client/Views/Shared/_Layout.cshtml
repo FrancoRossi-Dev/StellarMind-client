@@ -88,9 +88,13 @@ else
                 @if (sessionRole == "Coordinator")
                 {
                     <p class="nav-section-label">Management</p>
-                    <a class="@NavClass("Loans")" asp-controller="Loans" asp-action="Index">
+                    <a class="@NavClass("Loans", "Index")" asp-controller="Loans" asp-action="Index">
                         <span class="nav-item__icon"><i class="fa-solid fa-inbox"></i></span>
                         Loan Requests
+                    </a>
+                    <a class="@NavClass("Loans", "ActiveLoans")" asp-controller="Loans" asp-action="ActiveLoans">
+                        <span class="nav-item__icon"><i class="fa-solid fa-satellite-dish"></i></span>
+                        Active Loans
                     </a>
                     <a class="@NavClass("Equipment")" asp-controller="Equipment" asp-action="Index">
                         <span class="nav-item__icon"><i class="fa-solid fa-binoculars"></i></span>

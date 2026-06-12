@@ -26,7 +26,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ViewBag.RequestTicketMap = tickets
                         .Where(t => t.LoanRequest != null)
                         .GroupBy(t => t.LoanRequest!.RequestId)
-                        .ToDictionary(g => g.Key, g => g.First().Id);
+                        .ToDictionary(g => g.Key, g => g.First());
                 }
                 catch { ViewBag.RequestTicketMap = new Dictionary<int, int>(); }
 
@@ -198,7 +198,33 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
         }
 
+        [HttpGet("Loans/ActiveLoans")]
+        [AccessFilter("Admin, Coordinator")]
+        public IActionResult ActiveLoans()
+        {
+            var token = HttpContext.Session.GetString("Token");
+            try
+            {
+                var tickets = _auxiliarHttp
+                    .EnviarYDeserializar<List<LoanTicketVM>>("api/v1/loantickets", "GET", token: token)
+                    ?? new List<LoanTicketVM>();
+                var loaned = tickets.Where(t => t.Status == "Loaned").ToList();
+                return View(loaned);
+            }
+            catch (ApiException ex)
+            {
+                ViewBag.msg = ex.Message;
+                return View(new List<LoanTicketVM>());
+            }
+            catch (Exception)
+            {
+                ViewBag.msg = "Couldn't load active loans. Something drifted off course.";
+                return View(new List<LoanTicketVM>());
+            }
+        }
+
         [HttpPost("Loans/Return/{id}")]
+        [AccessFilter("Admin, Coordinator")]
         public IActionResult Return(int id)
         {
             try
@@ -206,17 +232,17 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var token = HttpContext.Session.GetString("Token");
                 _auxiliarHttp.EnviarSolicitud($"api/v1/loantickets/{id}/return", "PUT", token: token);
                 TempData["Success"] = "Loan marked as returned.";
-                return RedirectToAction("Index");
+                return RedirectToAction("ActiveLoans");
             }
             catch (ApiException ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("Index");
+                return RedirectToAction("ActiveLoans");
             }
             catch (Exception)
             {
                 TempData["Error"] = "The return couldn't be logged. Something crossed our path.";
-                return RedirectToAction("Index");
+                return RedirectToAction("ActiveLoans");
             }
         }
 

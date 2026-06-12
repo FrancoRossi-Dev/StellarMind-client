@@ -1,0 +1,108 @@
+@model List<Obligatorio_N3D_342742_360021_Client.Models.LoanTicketVM>
+
+@{
+    ViewData["Title"] = "Active Loans";
+
+    string FmtDate(string? raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "—";
+        return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
+    }
+
+    string TelescopeLabel(LoanTicketVM t) {
+        var scope = t.LoanRequest?.EquipmentSet?.Telescope;
+        return scope != null ? $"{scope.Brand} {scope.Model}" : "—";
+    }
+
+    var overdue  = Model?.Where(t => t.IsOverdue).ToList()  ?? new();
+    var onTime   = Model?.Where(t => !t.IsOverdue).ToList() ?? new();
+    var all      = overdue.Concat(onTime).ToList();
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">Active Loans</h1>
+        <p class="page-head__sub">Equipment currently on loan — mark as returned once the member hands it back</p>
+    </div>
+    @if (overdue.Any())
+    {
+        <span style="font-size: var(--text-sm); font-weight: 600; color: var(--color-danger);">
+            <i class="fa-solid fa-triangle-exclamation" style="margin-right: var(--p-space-1);"></i>@overdue.Count overdue
+        </span>
+    }
+</div>
+
+@if (!all.Any())
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-box-open"></i></div>
+            <p class="empty__title">No active loans</p>
+            <p class="empty__body">All equipment is currently back at base.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Member</th>
+                    <th>Telescope</th>
+                    <th>Night</th>
+                    <th>Issued</th>
+                    <th>Return By</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in all)
+                {
+                    var member = ticket.LoanRequest?.RequestingUser;
+                    var night  = ticket.LoanRequest?.ObservationNight;
+                    <tr>
+                        <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@ticket.Id</td>
+                        <td>
+                            <div class="tbl__name">@(member?.fullName ?? "—")</div>
+                            <div class="tbl__sub">@@@(member?.username ?? "")</div>
+                        </td>
+                        <td style="color: var(--color-text-secondary);">@TelescopeLabel(ticket)</td>
+                        <td style="color: var(--color-text-secondary); white-space:nowrap;">
+                            @FmtDate(night?.Date)
+                            @if (!string.IsNullOrEmpty(night?.CelestialObject?.Name))
+                            {
+                                <div class="tbl__sub">@night.CelestialObject.Name</div>
+                            }
+                        </td>
+                        <td style="color: var(--color-text-secondary); white-space:nowrap; font-variant-numeric: tabular-nums;">
+                            @FmtDate(ticket.StartDate)
+                        </td>
+                        <td style="white-space:nowrap; font-variant-numeric: tabular-nums;">
+                            <span style="color: @(ticket.IsOverdue ? "var(--color-danger)" : "var(--color-text-secondary)");">
+                                @FmtDate(ticket.EndDate)
+                            </span>
+                            @if (ticket.IsOverdue)
+                            {
+                                <span style="color: var(--color-danger); font-size: var(--text-xs); font-weight: 600;
+                                             text-transform: uppercase; letter-spacing: .04em; margin-left: 6px;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Overdue
+                                </span>
+                            }
+                        </td>
+                        <td style="text-align:right;">
+                            <form method="post"
+                                  asp-controller="Loans" asp-action="Return"
+                                  asp-route-id="@ticket.Id"
+                                  onsubmit="return confirm('Mark loan #@ticket.Id as returned?');">
+                                <button type="submit" class="btn btn--secondary btn--sm">
+                                    <i class="fa-solid fa-box-archive" style="margin-right: var(--p-space-1);"></i>Mark Returned
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
