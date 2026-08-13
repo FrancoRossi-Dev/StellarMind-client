@@ -218,6 +218,14 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 ViewBag.message = ex.Message;
                 return View();
             }
+            catch (TaskCanceledException)
+            {
+                // The API on Render was likely asleep and the cold start took longer than
+                // even our extended HttpClient timeout. Ask the user to retry instead of
+                // implying their credentials were wrong.
+                ViewBag.message = "The observatory is still waking up. Please wait a few seconds and try again.";
+                return View();
+            }
             catch (Exception)
             {
                 ViewBag.message = "Hmm, the stars didn't align. Check your credentials and try again.";

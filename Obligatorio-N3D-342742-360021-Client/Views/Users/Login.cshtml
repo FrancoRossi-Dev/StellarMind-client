@@ -1,8 +1,24 @@
 @model Obligatorio_N3D_342742_360021_Client.Models.LogInUserDto
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Sign In";
     ViewData["HideTopbar"] = true;
+    var apiBaseUrl = Configuration["ApiBaseUrl"]?.TrimEnd('/');
+}
+
+@if (!string.IsNullOrEmpty(apiBaseUrl))
+{
+    <script>
+        // Fire-and-forget wake-up ping: Render spins the API down after idle periods,
+        // so this kicks off the cold start as soon as the login page loads instead of
+        // waiting until the user submits the form. Response is ignored on purpose.
+        (function () {
+            try {
+                fetch('@apiBaseUrl/health', { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
+            } catch (e) {}
+        })();
+    </script>
 }
 
 <div class="login-page">
