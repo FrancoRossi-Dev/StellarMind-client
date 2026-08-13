@@ -59,6 +59,27 @@ The MVC app will be available at `https://localhost:7077` (development) and land
 
 ---
 
+## Deployment (Render)
+
+The app ships with a multi-stage `Dockerfile` (`mcr.microsoft.com/dotnet/sdk:10.0` build stage, `mcr.microsoft.com/dotnet/aspnet:10.0` runtime stage) and a `render.yaml` Blueprint for [Render](https://render.com).
+
+**Key points:**
+
+- The container listens on `$PORT` (Render sets this at runtime; falls back to `8080` for local `docker run`), not on a fixed port.
+- `Program.cs` trusts `X-Forwarded-Proto`/`X-Forwarded-For` from Render's edge proxy — required so `UseHttpsRedirection()`/`UseHsts()` don't loop, since Render terminates TLS and forwards plain HTTP internally.
+- `ApiBaseUrl` should be set as an environment variable on the Render service (it falls back to the SOMEE URL baked into `appsettings.json` otherwise).
+
+**Deploy via Blueprint:** connect the repo on Render and point it at `render.yaml`, or create the Web Service manually with runtime "Docker" and the Dockerfile at the repo root. Either way, set `ApiBaseUrl` in the service's environment variables before the first deploy.
+
+**Local Docker test:**
+
+```bash
+docker build -t stellarminds-client .
+docker run -p 8080:8080 -e ApiBaseUrl=https://obligatorio342742360021.somee.com/ stellarminds-client
+```
+
+---
+
 ## Project Structure
 
 ```

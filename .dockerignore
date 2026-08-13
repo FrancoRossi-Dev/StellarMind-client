@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/.git/
+**/.github/
+.claude/
+**/*.user
+**/*.suo
+Client-codeBackup.docx
+README.md
+Dockerfile
+.dockerignore

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: stellarminds-client
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ApiBaseUrl
+        sync: false
