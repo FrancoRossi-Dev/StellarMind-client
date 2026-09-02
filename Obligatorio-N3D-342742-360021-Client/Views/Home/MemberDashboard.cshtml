@@ -121,135 +121,127 @@ else
             }
         </div>
 
-        @* ---- Main two-column area ---- *@
-        <div class="dash-cols">
+        @* ---- Main bento area: 6-col grid, panels paired so every row fills ---- *@
+        <div class="dash-bento">
 
-            <div class="dash-rail">
-
-                <div class="card">
-                    <h2 class="dash-card-title"><i class="fa-solid fa-chart-column"></i> Your sky, over time</h2>
-                    <p class="chart-sub">Observation nights each month, and objects discovered all-time</p>
-                    @if (chartHasData)
-                    {
-                        <div class="chart-wrap chart-wrap--activity">
-                            <canvas id="chart-activity"></canvas>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="empty empty--sm">
-                            <div class="empty__icon"><i class="fa-solid fa-timeline"></i></div>
-                            <p class="empty__title">No timeline yet</p>
-                            <p class="empty__body">Log an observation night and your monthly activity and discoveries chart themselves here.</p>
-                            <a class="btn btn--primary empty__action" asp-controller="ObservationNights" asp-action="Create">
-                                <i class="fa-solid fa-plus"></i> Plan a night
-                            </a>
-                        </div>
-                    }
-                </div>
-
-                <div class="card">
-                    <h2 class="dash-card-title"><i class="fa-solid fa-circle-nodes"></i> Your sky composition</h2>
-                    <p class="chart-sub">The kinds of objects you've been observing</p>
-                    @if (showSky)
-                    {
-                        <div class="sky-split">
-                            <div class="chart-wrap chart-wrap--sky">
-                                <canvas id="chart-sky"></canvas>
-                            </div>
-                            <div class="sky-legend">
-                                @foreach (var slice in Model.SkyComposition)
-                                {
-                                    <span class="sky-legend__item">
-                                        <span class="sky-legend__dot" style="background: var(@slice.ColorVar);"></span>
-                                        @slice.Group
-                                        <span style="color: var(--color-text-muted); margin-left: auto; font-variant-numeric: tabular-nums;">@slice.Count</span>
-                                    </span>
-                                }
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="empty empty--sm">
-                            <div class="empty__icon"><i class="fa-solid fa-circle-nodes"></i></div>
-                            <p class="empty__title">Your sky map is blank</p>
-                            <p class="empty__body">Observe your first object and this fills in with stars, galaxies, nebulae and more.</p>
-                            <a class="btn btn--primary empty__action" asp-controller="ObservationNights" asp-action="Create">
-                                <i class="fa-solid fa-plus"></i> Plan a night
-                            </a>
-                        </div>
-                    }
-                </div>
-
+            <div class="card bento--wide">
+                <h2 class="dash-card-title"><i class="fa-solid fa-chart-column"></i> Your sky, over time</h2>
+                <p class="chart-sub">Observation nights each month, and objects discovered all-time</p>
+                @if (chartHasData)
+                {
+                    <div class="chart-wrap chart-wrap--activity">
+                        <canvas id="chart-activity"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-timeline"></i></div>
+                        <p class="empty__title">No timeline yet</p>
+                        <p class="empty__body">Log an observation night and your monthly activity and discoveries chart themselves here.</p>
+                        <a class="btn btn--primary empty__action" asp-controller="ObservationNights" asp-action="Create">
+                            <i class="fa-solid fa-plus"></i> Plan a night
+                        </a>
+                    </div>
+                }
             </div>
 
-            <div class="dash-rail">
+            <div class="card bento--narrow">
+                <h2 class="dash-card-title"><i class="fa-solid fa-bell"></i> Needs your attention</h2>
+                @if (Model.NeedsAttention.Any())
+                {
+                    <div class="attn-list">
+                        @foreach (var item in Model.NeedsAttention)
+                        {
+                            <a class="attn attn--@item.Severity" href="@item.Url">
+                                <span class="attn__icon"><i class="fa-solid @item.Icon"></i></span>
+                                <span>@item.Text</span>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <p class="empty__title">All clear</p>
+                        <p class="empty__body">Nothing needs chasing. The sky's yours tonight.</p>
+                        <a class="btn btn--ghost empty__action" asp-controller="ObservationNights" asp-action="Create">
+                            <i class="fa-solid fa-plus"></i> Plan your next night
+                        </a>
+                    </div>
+                }
+            </div>
 
-                <div class="card">
-                    <h2 class="dash-card-title"><i class="fa-solid fa-bell"></i> Needs your attention</h2>
-                    @if (Model.NeedsAttention.Any())
-                    {
-                        <div class="attn-list">
-                            @foreach (var item in Model.NeedsAttention)
+            <div class="card bento--wide">
+                <h2 class="dash-card-title"><i class="fa-solid fa-circle-nodes"></i> Your sky composition</h2>
+                <p class="chart-sub">The kinds of objects you've been observing</p>
+                @if (showSky)
+                {
+                    <div class="sky-split">
+                        <div class="chart-wrap chart-wrap--sky">
+                            <canvas id="chart-sky"></canvas>
+                        </div>
+                        <div class="sky-legend">
+                            @foreach (var slice in Model.SkyComposition)
                             {
-                                <a class="attn attn--@item.Severity" href="@item.Url">
-                                    <span class="attn__icon"><i class="fa-solid @item.Icon"></i></span>
-                                    <span>@item.Text</span>
-                                </a>
+                                <span class="sky-legend__item">
+                                    <span class="sky-legend__dot" style="background: var(@slice.ColorVar);"></span>
+                                    @slice.Group
+                                    <span style="color: var(--color-text-muted); margin-left: auto; font-variant-numeric: tabular-nums;">@slice.Count</span>
+                                </span>
                             }
                         </div>
-                    }
-                    else
-                    {
-                        <div class="empty empty--sm">
-                            <div class="empty__icon"><i class="fa-solid fa-circle-check"></i></div>
-                            <p class="empty__title">All clear</p>
-                            <p class="empty__body">Nothing needs chasing. The sky's yours tonight.</p>
-                            <a class="btn btn--ghost empty__action" asp-controller="ObservationNights" asp-action="Create">
-                                <i class="fa-solid fa-plus"></i> Plan your next night
-                            </a>
-                        </div>
-                    }
-                </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-circle-nodes"></i></div>
+                        <p class="empty__title">Your sky map is blank</p>
+                        <p class="empty__body">Observe your first object and this fills in with stars, galaxies, nebulae and more.</p>
+                        <a class="btn btn--primary empty__action" asp-controller="ObservationNights" asp-action="Create">
+                            <i class="fa-solid fa-plus"></i> Plan a night
+                        </a>
+                    </div>
+                }
+            </div>
 
-                <div class="card">
-                    <h2 class="dash-card-title"><i class="fa-solid fa-calendar-day"></i> Next up</h2>
-                    @if (Model.Upcoming.Any())
-                    {
-                        <div class="upcoming-list">
-                            @foreach (var u in Model.Upcoming)
-                            {
-                                <div class="upcoming">
-                                    <span class="upcoming__date">@u.Date</span>
-                                    <span class="upcoming__name">@u.ObjectName</span>
-                                    @if (u.EquipmentSecured)
-                                    {
-                                        <span class="chip chip--success"><i class="fa-solid fa-check"></i> Equipment set</span>
-                                    }
-                                    else
-                                    {
-                                        <a class="chip chip--warning" asp-controller="Loans" asp-action="Create" asp-route-nightId="@u.NightId">
-                                            <i class="fa-solid fa-satellite"></i> Needs gear
-                                        </a>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="empty empty--sm">
-                            <div class="empty__icon"><i class="fa-solid fa-calendar-plus"></i></div>
-                            <p class="empty__title">Nothing on the horizon</p>
-                            <p class="empty__body">Plan an observation night and it'll show up here with its equipment status.</p>
-                            <a class="btn btn--primary empty__action" asp-controller="ObservationNights" asp-action="Create">
-                                <i class="fa-solid fa-plus"></i> Plan a night
-                            </a>
-                        </div>
-                    }
-                </div>
-
+            <div class="card bento--narrow">
+                <h2 class="dash-card-title"><i class="fa-solid fa-calendar-day"></i> Next up</h2>
+                @if (Model.Upcoming.Any())
+                {
+                    <div class="upcoming-list">
+                        @foreach (var u in Model.Upcoming)
+                        {
+                            <div class="upcoming">
+                                <span class="upcoming__date">@u.Date</span>
+                                <span class="upcoming__name">@u.ObjectName</span>
+                                @if (u.EquipmentSecured)
+                                {
+                                    <span class="chip chip--success"><i class="fa-solid fa-check"></i> Equipment set</span>
+                                }
+                                else
+                                {
+                                    <a class="chip chip--warning" asp-controller="Loans" asp-action="Create" asp-route-nightId="@u.NightId">
+                                        <i class="fa-solid fa-satellite"></i> Needs gear
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-calendar-plus"></i></div>
+                        <p class="empty__title">Nothing on the horizon</p>
+                        <p class="empty__body">Plan an observation night and it'll show up here with its equipment status.</p>
+                        <a class="btn btn--primary empty__action" asp-controller="ObservationNights" asp-action="Create">
+                            <i class="fa-solid fa-plus"></i> Plan a night
+                        </a>
+                    </div>
+                }
             </div>
 
         </div>
@@ -298,10 +290,10 @@ else
 
         @* ---- Explore ---- *@
         <div class="dash-actions">
-            <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index"><i class="fa-solid fa-moon"></i> Observation plans</a>
-            <a class="btn btn--ghost" asp-controller="Loans" asp-action="MyLoans"><i class="fa-solid fa-box-open"></i> My loans</a>
-            <a class="btn btn--ghost" asp-controller="Loans" asp-action="LoanHistory"><i class="fa-solid fa-clock-rotate-left"></i> Loan history</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial ranking</a>
+            <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index"><i class="fa-solid fa-moon"></i> Observation Plans</a>
+            <a class="btn btn--ghost" asp-controller="Loans" asp-action="MyLoans"><i class="fa-solid fa-box-open"></i> My Loans</a>
+            <a class="btn btn--ghost" asp-controller="Loans" asp-action="LoanHistory"><i class="fa-solid fa-clock-rotate-left"></i> Loan History</a>
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial Ranking</a>
         </div>
 
     </div>

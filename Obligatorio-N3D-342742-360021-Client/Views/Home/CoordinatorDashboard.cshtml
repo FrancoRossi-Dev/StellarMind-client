@@ -1,0 +1,302 @@
+@model CoordinatorDashboardVM
+@{
+    ViewData["Title"] = "Dashboard";
+
+    string name = Context.Session.GetString("Username") ?? "coordinator";
+    int hr = DateTime.Now.Hour;
+    string greeting = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+
+    // Only chart the queue risk once the AI has actually rated something; an
+    // all-"Unrated" doughnut is just a flat grey ring.
+    bool showRisk     = Model.QueueRisk.Any(a => a.Count > 0 && a.Indicator != "UNRATED");
+    bool chartHasData = Model.ApprovalsByMonth.Any(m => m.Count > 0 || m.Cumulative > 0);
+
+    string AiColorVar(string? ai) => ai switch
+    {
+        "IDEAL"           => "--color-success",
+        "ADECUADO"        => "--color-warning",
+        "NO_RECOMENDABLE" => "--color-danger",
+        _                 => "--color-text-muted"
+    };
+    string AiColor(string? ai) => $"var({AiColorVar(ai)})";
+    string AiIcon(string? ai) => ai switch
+    {
+        "IDEAL"           => "fa-circle-check",
+        "ADECUADO"        => "fa-circle-exclamation",
+        "NO_RECOMENDABLE" => "fa-circle-xmark",
+        _                 => "fa-circle"
+    };
+    string AiLabel(string? ai) => ai switch
+    {
+        "IDEAL"           => "Ideal",
+        "ADECUADO"        => "Adequate",
+        "NO_RECOMENDABLE" => "Not recommended",
+        _                 => "Unrated"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">@greeting, @name</h1>
+        <p class="page-head__sub">Your request queue and the loans you've issued.</p>
+        <div class="page-head__meta">
+            <span class="chip chip--accent" title="Requests waiting on a coordinator">
+                <i class="fa-solid fa-inbox"></i> @Model.QueueNote
+            </span>
+        </div>
+    </div>
+    <div class="page-head__actions">
+        <a class="btn btn--primary" asp-controller="Loans" asp-action="Index">
+            <i class="fa-solid fa-list-check"></i> Review queue
+        </a>
+        <a class="btn btn--ghost" asp-controller="Loans" asp-action="ApprovedLoans">
+            <i class="fa-solid fa-box-open"></i> Approved loans
+        </a>
+    </div>
+</div>
+
+@if (!Model.HasAnyData)
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-mug-hot"></i></div>
+            <p class="empty__title">Nothing on your desk yet</p>
+            <p class="empty__body">When members start requesting equipment, the queue and the loans you issue will show up here.</p>
+            <a class="btn btn--primary" asp-controller="Loans" asp-action="Index" style="margin-top: var(--p-space-4);">
+                <i class="fa-solid fa-list-check"></i> Open the queue
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dash-stack">
+
+        @if (Model.PartialLoad)
+        {
+            <div class="alert alert--error">
+                <i class="fa-solid fa-cloud" style="margin-right: var(--p-space-2);"></i>
+                A few panels are missing some stars right now. Refresh in a moment for the full picture.
+            </div>
+        }
+
+        @* ---- KPI strip: a zero shows a short worded state, never a lonely "0" ---- *@
+        @{
+            var kpis = new[]
+            {
+                (Value: Model.PendingRequests, Label: "Pending requests",   Zero: "Queue clear",   Mod: "kpi--warning"),
+                (Value: Model.FlaggedByAi,     Label: "Flagged by AI",       Zero: "None flagged",  Mod: "kpi--danger"),
+                (Value: Model.OnLoanNow,       Label: "On loan now",         Zero: "None active",   Mod: ""),
+                (Value: Model.DueThisWeek,     Label: "Due back this week",   Zero: "Nothing due",   Mod: "kpi--warning"),
+                (Value: Model.IssuedAllTime,   Label: "Tickets issued",      Zero: "None yet",      Mod: ""),
+            };
+        }
+        <div class="kpi-row">
+            @foreach (var k in kpis)
+            {
+                <div class="kpi @(k.Value > 0 ? k.Mod : "kpi--zero")">
+                    @if (k.Value > 0)
+                    {
+                        <span class="kpi__value">@k.Value</span>
+                    }
+                    else
+                    {
+                        <span class="kpi__value kpi__value--empty">@k.Zero</span>
+                    }
+                    <span class="kpi__label">@k.Label</span>
+                </div>
+            }
+            @if (Model.OverdueLoans > 0)
+            {
+                <div class="kpi kpi--danger">
+                    <span class="kpi__value">@Model.OverdueLoans</span>
+                    <span class="kpi__label">Overdue</span>
+                </div>
+            }
+        </div>
+
+        @* ---- Main bento area: 6-col grid. The pending queue is the coordinator's
+             actual job, so it leads; the history chart sits at the foot. ---- *@
+        <div class="dash-bento">
+
+            <div class="card bento--wide">
+                <h2 class="dash-card-title"><i class="fa-solid fa-inbox"></i> Request queue</h2>
+                @if (Model.RequestQueue.Any())
+                {
+                    <div class="upcoming-list">
+                        @foreach (var q in Model.RequestQueue)
+                        {
+                            <a class="upcoming" href="@q.Url" style="text-decoration: none;">
+                                <span class="upcoming__date">@q.NightDate</span>
+                                <span class="upcoming__name">@q.ObjectName <span style="color: var(--color-text-muted);">· @q.Requester</span></span>
+                                @if (!string.IsNullOrEmpty(q.AiIndicator))
+                                {
+                                    <span class="chip chip--plain" style="color: @AiColor(q.AiIndicator);">
+                                        <i class="fa-solid @AiIcon(q.AiIndicator)"></i> @AiLabel(q.AiIndicator)
+                                    </span>
+                                }
+                            </a>
+                        }
+                    </div>
+                    <div style="margin-top: var(--p-space-3);">
+                        <a class="btn btn--ghost btn--sm" asp-controller="Loans" asp-action="Index">
+                            <i class="fa-solid fa-list-check"></i> Review all requests
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-check-double"></i></div>
+                        <p class="empty__title">The queue is clear</p>
+                        <p class="empty__body">No equipment requests are waiting on a coordinator right now.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--narrow">
+                <h2 class="dash-card-title"><i class="fa-solid fa-bell"></i> Needs attention</h2>
+                @if (Model.NeedsAttention.Any())
+                {
+                    <div class="attn-list">
+                        @foreach (var item in Model.NeedsAttention)
+                        {
+                            <a class="attn attn--@item.Severity" href="@item.Url">
+                                <span class="attn__icon"><i class="fa-solid @item.Icon"></i></span>
+                                <span>@item.Text</span>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <p class="empty__title">Your desk is clear</p>
+                        <p class="empty__body">No overdue loans, no flagged requests, nothing due in the next couple of days.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--half">
+                <h2 class="dash-card-title"><i class="fa-solid fa-calendar-day"></i> Returns due soon</h2>
+                @if (Model.ReturnsDue.Any())
+                {
+                    <div class="upcoming-list">
+                        @foreach (var r in Model.ReturnsDue)
+                        {
+                            <a class="upcoming" href="@r.Url" style="text-decoration: none;">
+                                <span class="upcoming__date">@r.DueDate</span>
+                                <span class="upcoming__name">@r.ObjectName <span style="color: var(--color-text-muted);">· @r.Member</span></span>
+                                @if (r.IsOverdue)
+                                {
+                                    <span class="chip chip--danger"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</span>
+                                }
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <p class="empty__title">Nothing to chase</p>
+                        <p class="empty__body">None of the loans you've issued are close to their return date.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--half">
+                <h2 class="dash-card-title"><i class="fa-solid fa-robot"></i> Queue risk</h2>
+                <p class="chart-sub">How the AI rates the requests currently waiting</p>
+                @if (showRisk)
+                {
+                    <div class="sky-split">
+                        <div class="chart-wrap chart-wrap--sky">
+                            <canvas id="chart-queue-risk"></canvas>
+                        </div>
+                        <div class="sky-legend">
+                            @foreach (var slice in Model.QueueRisk.Where(s => s.Count > 0))
+                            {
+                                <span class="sky-legend__item">
+                                    <span class="sky-legend__dot" style="background: @AiColor(slice.Indicator);"></span>
+                                    @AiLabel(slice.Indicator)
+                                    <span style="color: var(--color-text-muted); margin-left: auto; font-variant-numeric: tabular-nums;">@slice.Count</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+                else if (Model.HasQueue)
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-robot"></i></div>
+                        <p class="empty__title">No AI ratings yet</p>
+                        <p class="empty__body">The requests in the queue haven't been assessed by the AI. Open one to run the check.</p>
+                        <a class="btn btn--ghost empty__action" asp-controller="Loans" asp-action="Index">
+                            <i class="fa-solid fa-list-check"></i> Open the queue
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-robot"></i></div>
+                        <p class="empty__title">Nothing to weigh up</p>
+                        <p class="empty__body">When there are pending requests, the AI's read on each one is summarised here.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--full">
+                <h2 class="dash-card-title"><i class="fa-solid fa-chart-column"></i> Approvals over time</h2>
+                <p class="chart-sub">Loan tickets you've issued each month, and your all-time total</p>
+                @if (chartHasData)
+                {
+                    <div class="chart-wrap chart-wrap--activity">
+                        <canvas id="chart-approvals"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-timeline"></i></div>
+                        <p class="empty__title">No approvals yet</p>
+                        <p class="empty__body">Once you start issuing loan tickets from the queue, your monthly throughput charts itself here.</p>
+                        <a class="btn btn--primary empty__action" asp-controller="Loans" asp-action="Index">
+                            <i class="fa-solid fa-list-check"></i> Open the queue
+                        </a>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        @* ---- Explore ---- *@
+        <div class="dash-actions">
+            <a class="btn btn--ghost" asp-controller="Loans" asp-action="Index"><i class="fa-solid fa-inbox"></i> Loan Requests</a>
+            <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index"><i class="fa-solid fa-binoculars"></i> Equipment</a>
+            <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index"><i class="fa-solid fa-moon"></i> Observation Nights</a>
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial Ranking</a>
+        </div>
+
+    </div>
+
+    <script id="coordinator-dashboard-data" type="application/json">
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            approvals = Model.ApprovalsByMonth.Select(m => new { label = m.Label, count = m.Count, cumulative = m.Cumulative }),
+            queueRisk = Model.QueueRisk.Where(s => s.Count > 0).Select(s => new
+            {
+                label = AiLabel(s.Indicator),
+                count = s.Count,
+                colorVar = AiColorVar(s.Indicator)
+            })
+        }))
+    </script>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="~/js/coordinator-dashboard.js" asp-append-version="true"></script>
+}

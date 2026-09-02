@@ -1446,25 +1446,35 @@ span.flatpickr-weekday {
   padding-top: var(--p-space-1);
 }
 
-/* ---- Two-column dashboard rows ---- */
-.dash-cols {
+/* ---- Bento grid ---------------------------------------------------------------
+   Every panel is a direct child of one 6-column grid, so card edges line up
+   across the whole section and the row height is shared — no ragged bottom, no
+   dead space opening up between a tall chart column and a short list column.
+   Panels declare a span; pair them so each grid row adds up to 6.            */
+.dash-bento {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--p-space-5);
-  align-items: start;
+  align-items: stretch;
 }
-.dash-cols--even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-
-@media (max-width: 900px) {
-  .dash-cols,
-  .dash-cols--even { grid-template-columns: 1fr; }
-}
-
-/* Right rail: stacked cards that balance the tall chart card beside them */
-.dash-rail {
+.dash-bento > .card {
+  margin: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--p-space-5);
+}
+/* When a stretched card holds only an empty state, let it sit centred in the
+   height its taller row-mate forces, instead of clinging to the top edge. */
+.dash-bento > .card > .empty--sm:last-child { margin-block: auto; }
+
+.bento--wide   { grid-column: span 4; }
+.bento--half   { grid-column: span 3; }
+.bento--narrow { grid-column: span 2; }
+.bento--full   { grid-column: 1 / -1; }
+
+@media (max-width: 900px) {
+  .dash-bento { grid-template-columns: 1fr; }
+  .dash-bento > .card { grid-column: 1 / -1; }
 }
 
 .dash-card-title {
@@ -1489,7 +1499,7 @@ span.flatpickr-weekday {
   width: 100%;
 }
 .chart-wrap--activity { height: 260px; }
-.chart-wrap--sky      { height: 230px; }
+.chart-wrap--sky      { height: 220px; }
 
 .chart-divider {
   border: 0;
@@ -1497,12 +1507,19 @@ span.flatpickr-weekday {
   margin: var(--p-space-5) 0;
 }
 
-/* ---- Sky composition: doughnut + legend side by side ---- */
+/* ---- Sky composition: doughnut + legend side by side ----
+   The doughnut sits in an elastic column but its wrapper is width-capped: a
+   Chart.js canvas with maintainAspectRatio:false would otherwise keep growing
+   into the 1fr track and shove the legend off the (overflow:hidden) card edge. */
 .sky-split {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
   gap: var(--p-space-5);
   align-items: center;
+}
+.sky-split .chart-wrap {
+  max-width: 240px;
+  margin-inline: auto;
 }
 @media (max-width: 560px) {
   .sky-split { grid-template-columns: 1fr; }
@@ -1627,4 +1644,26 @@ span.flatpickr-weekday {
   display: flex;
   gap: var(--p-space-2);
   flex-wrap: wrap;
+}
+
+/* ============================================================================
+   Admin dashboard (Home/AdminDashboard) — extends the member dashboard system
+   ============================================================================ */
+.chart-wrap--util { height: 220px; }
+
+/* Thin proportional bar in the coordinator-throughput table's all-time cell */
+.coord-meter {
+  display: inline-block;
+  width: 96px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-border-soft);
+  vertical-align: middle;
+  overflow: hidden;
+}
+.coord-meter__bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-accent);
 }
