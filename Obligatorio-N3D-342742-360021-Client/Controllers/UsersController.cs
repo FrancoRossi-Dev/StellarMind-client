@@ -209,9 +209,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 HttpContext.Session.SetString("UserRole", user.UserRole);
                 HttpContext.Session.SetString("Email", user.Email);
                 HttpContext.Session.SetString("Token", payload.Token!);
-                return user.UserRole == "Coordinator"
-                    ? RedirectToAction("Index", "Loans")
-                    : RedirectToAction("Index", "Home");
+                // Every role lands on their dashboard; HomeController.Index picks the view.
+                return RedirectToAction("Index", "Home");
             }
             catch (ApiException ex)
             {

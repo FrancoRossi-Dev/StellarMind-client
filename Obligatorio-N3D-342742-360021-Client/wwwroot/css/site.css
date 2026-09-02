@@ -655,6 +655,19 @@ a:hover { color: var(--color-accent-hover); }
 .empty__body {
   font-size: var(--text-body);
   color: var(--color-text-muted);
+  max-width: 46ch;
+}
+
+/* Compact empty state for inside dashboard cards */
+.empty--sm {
+  padding: var(--p-space-6) var(--p-space-3);
+}
+.empty--sm .empty__icon {
+  font-size: 30px;
+  margin-bottom: 0;
+}
+.empty__action {
+  margin-top: var(--p-space-4);
 }
 
 /* ---- Login page ----------------------------------------------------------- */
@@ -1355,4 +1368,302 @@ span.flatpickr-weekday {
   border-top: 1px solid var(--color-border);
   flex-shrink: 0;
   flex-wrap: wrap;
+}
+
+/* ============================================================================
+   Member dashboard (Home/MemberDashboard)
+   ============================================================================ */
+.dash-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-5);
+}
+
+/* ---- Page head: stargazer meta + primary actions ---- */
+.page-head__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-3);
+  margin-top: var(--p-space-3);
+  flex-wrap: wrap;
+}
+.page-head__meta-note {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+.page-head__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-2);
+  flex-wrap: wrap;
+}
+
+/* ---- KPI tiles ---- */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--p-space-3);
+}
+
+.kpi {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--p-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-1);
+}
+
+.kpi__value {
+  font-size: var(--text-stat);
+  font-weight: var(--weight-strong);
+  color: var(--color-text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi__label {
+  font-size: var(--text-label);
+  font-weight: var(--weight-label);
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.kpi--danger  { border-color: var(--color-danger-border); }
+.kpi--warning { border-color: var(--color-warning-border); }
+.kpi--danger  .kpi__value { color: var(--color-danger); }
+.kpi--warning .kpi__value { color: var(--color-warning); }
+.kpi--zero { opacity: 0.8; }
+
+/* Worded "empty" value in place of a bare 0 */
+.kpi__value--empty {
+  font-size: var(--text-body);
+  font-weight: var(--weight-label);
+  color: var(--color-text-muted);
+  padding-top: var(--p-space-1);
+}
+
+/* ---- Bento grid ---------------------------------------------------------------
+   Every panel is a direct child of one 6-column grid, so card edges line up
+   across the whole section and the row height is shared — no ragged bottom, no
+   dead space opening up between a tall chart column and a short list column.
+   Panels declare a span; pair them so each grid row adds up to 6.            */
+.dash-bento {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--p-space-5);
+  align-items: stretch;
+}
+.dash-bento > .card {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* When a stretched card holds only an empty state, let it sit centred in the
+   height its taller row-mate forces, instead of clinging to the top edge. */
+.dash-bento > .card > .empty--sm:last-child { margin-block: auto; }
+
+.bento--wide   { grid-column: span 4; }
+.bento--half   { grid-column: span 3; }
+.bento--narrow { grid-column: span 2; }
+.bento--full   { grid-column: 1 / -1; }
+
+@media (max-width: 900px) {
+  .dash-bento { grid-template-columns: 1fr; }
+  .dash-bento > .card { grid-column: 1 / -1; }
+}
+
+.dash-card-title {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-heading);
+  color: var(--color-text);
+  margin: 0 0 var(--p-space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-2);
+}
+.dash-card-title i { color: var(--color-text-muted); }
+
+.chart-sub {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--p-space-3);
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+}
+.chart-wrap--activity { height: 260px; }
+.chart-wrap--sky      { height: 220px; }
+
+.chart-divider {
+  border: 0;
+  border-top: 1px solid var(--color-border-soft);
+  margin: var(--p-space-5) 0;
+}
+
+/* ---- Sky composition: doughnut + legend side by side ----
+   The doughnut sits in an elastic column but its wrapper is width-capped: a
+   Chart.js canvas with maintainAspectRatio:false would otherwise keep growing
+   into the 1fr track and shove the legend off the (overflow:hidden) card edge. */
+.sky-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: var(--p-space-5);
+  align-items: center;
+}
+.sky-split .chart-wrap {
+  max-width: 240px;
+  margin-inline: auto;
+}
+@media (max-width: 560px) {
+  .sky-split { grid-template-columns: 1fr; }
+}
+
+/* ---- Sky legend (server-rendered, accessible pair for the doughnut) ---- */
+.sky-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-2);
+  margin-top: var(--p-space-3);
+}
+.sky-legend__item {
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-2);
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+.sky-legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.sky-split .sky-legend { margin-top: 0; min-width: 160px; }
+
+/* ---- Needs attention ---- */
+.attn-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-2);
+}
+.attn {
+  display: flex;
+  gap: var(--p-space-3);
+  align-items: flex-start;
+  padding: var(--p-space-3);
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border-soft);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-size: var(--text-body);
+  text-decoration: none;
+  transition: border-color var(--motion-hover), background var(--motion-hover), color var(--motion-hover);
+}
+.attn:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+.attn__icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 16px;
+  text-align: center;
+}
+.attn--danger  .attn__icon { color: var(--color-danger); }
+.attn--warning .attn__icon { color: var(--color-warning); }
+.attn--info    .attn__icon { color: var(--color-info); }
+
+/* ---- Next up ---- */
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+}
+.upcoming {
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-3);
+  padding: var(--p-space-3) 0;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+.upcoming:last-child { border-bottom: 0; }
+.upcoming__date {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  font-size: var(--text-caption);
+  white-space: nowrap;
+}
+.upcoming__name {
+  color: var(--color-text);
+  font-weight: var(--weight-label);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- AI planning strip ---- */
+.ai-strip {
+  display: flex;
+  gap: var(--p-space-3);
+  flex-wrap: wrap;
+}
+.ai-stat {
+  flex: 1;
+  min-width: 110px;
+  padding: var(--p-space-3);
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border-soft);
+  background: var(--color-surface-raised);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-1);
+}
+.ai-stat__value {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-strong);
+  font-variant-numeric: tabular-nums;
+}
+.ai-stat__label {
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-muted);
+}
+
+/* ---- Quick actions ---- */
+.dash-actions {
+  display: flex;
+  gap: var(--p-space-2);
+  flex-wrap: wrap;
+}
+
+/* ============================================================================
+   Admin dashboard (Home/AdminDashboard) — extends the member dashboard system
+   ============================================================================ */
+.chart-wrap--util { height: 220px; }
+
+/* Thin proportional bar in the coordinator-throughput table's all-time cell */
+.coord-meter {
+  display: inline-block;
+  width: 96px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-border-soft);
+  vertical-align: middle;
+  overflow: hidden;
+}
+.coord-meter__bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-accent);
 }
