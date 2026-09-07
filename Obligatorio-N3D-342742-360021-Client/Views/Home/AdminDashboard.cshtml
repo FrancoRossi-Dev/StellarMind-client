@@ -1,0 +1,403 @@
+@model AdminDashboardVM
+@{
+    ViewData["Title"] = "Dashboard";
+
+    string name = Context.Session.GetString("Username") ?? "admin";
+    int hr = DateTime.Now.Hour;
+    string greeting = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+
+    bool showUtil  = Model.EquipmentUtilization.Any();
+    bool showRoles = Model.RoleMix.Any();
+    bool showAi    = Model.AiBreakdown.Any(a => a.Count > 0);
+    bool chartHasData = Model.ActivityByMonth.Any(m => m.Count > 0 || m.Cumulative > 0);
+
+    int coordMax = Model.CoordinatorThroughput.Any() ? Model.CoordinatorThroughput.Max(c => c.AllTime) : 1;
+    if (coordMax < 1) { coordMax = 1; }
+
+    string AiColor(string? ai) => ai switch
+    {
+        "IDEAL"           => "var(--color-success)",
+        "ADECUADO"        => "var(--color-warning)",
+        "NO_RECOMENDABLE" => "var(--color-danger)",
+        _                 => "var(--color-text-muted)"
+    };
+    string AiIcon(string? ai) => ai switch
+    {
+        "IDEAL"           => "fa-circle-check",
+        "ADECUADO"        => "fa-circle-exclamation",
+        "NO_RECOMENDABLE" => "fa-circle-xmark",
+        _                 => "fa-circle"
+    };
+    string AiLabel(string? ai) => ai switch
+    {
+        "IDEAL"           => "Ideal",
+        "ADECUADO"        => "Adequate",
+        "NO_RECOMENDABLE" => "Not recommended",
+        _                 => "Unrated"
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-head__title">@greeting, @name</h1>
+        <p class="page-head__sub">A club-wide read on people, gear and loans.</p>
+        <div class="page-head__meta">
+            <span class="chip chip--accent" title="Club headcount">
+                <i class="fa-solid fa-users"></i> @Model.ClubSizeNote
+            </span>
+        </div>
+    </div>
+    <div class="page-head__actions">
+        <a class="btn btn--primary" asp-controller="Users" asp-action="Create">
+            <i class="fa-solid fa-user-plus"></i> Add member
+        </a>
+        <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Create">
+            <i class="fa-solid fa-binoculars"></i> Add equipment
+        </a>
+    </div>
+</div>
+
+@if (!Model.HasAnyData)
+{
+    <div class="card">
+        <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-satellite-dish"></i></div>
+            <p class="empty__title">The observatory is quiet</p>
+            <p class="empty__body">Once there are members, equipment and loan activity, this page fills in with the club's pulse.</p>
+            <div class="dash-actions" style="margin-top: var(--p-space-4); justify-content: center;">
+                <a class="btn btn--primary" asp-controller="Users" asp-action="Create">
+                    <i class="fa-solid fa-user-plus"></i> Add member
+                </a>
+                <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Create">
+                    <i class="fa-solid fa-binoculars"></i> Add equipment
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dash-stack">
+
+        @if (Model.PartialLoad)
+        {
+            <div class="alert alert--error">
+                <i class="fa-solid fa-cloud" style="margin-right: var(--p-space-2);"></i>
+                A few panels are missing some stars right now. Refresh in a moment for the full picture.
+            </div>
+        }
+
+        @* ---- KPI strip: a zero shows a short worded state, never a lonely "0" ---- *@
+        @{
+            var kpis = new[]
+            {
+                (Value: Model.MemberCount,        Label: "Members",             Zero: "None yet",       Mod: ""),
+                (Value: Model.CoordinatorCount,   Label: "Coordinators",        Zero: "None yet",       Mod: ""),
+                (Value: Model.EquipmentAvailable, Label: $"of {Model.EquipmentUnits} units free", Zero: "None free", Mod: ""),
+                (Value: Model.OnLoanNow,          Label: "Loans in progress",   Zero: "None active",    Mod: ""),
+                (Value: Model.PendingRequests,    Label: "Pending requests",    Zero: "Queue clear",    Mod: "kpi--warning"),
+            };
+        }
+        <div class="kpi-row">
+            @foreach (var k in kpis)
+            {
+                <div class="kpi @(k.Value > 0 ? k.Mod : "kpi--zero")">
+                    @if (k.Value > 0)
+                    {
+                        <span class="kpi__value">@k.Value</span>
+                    }
+                    else
+                    {
+                        <span class="kpi__value kpi__value--empty">@k.Zero</span>
+                    }
+                    <span class="kpi__label">@k.Label</span>
+                </div>
+            }
+            <div class="kpi @(Model.ErrorsThisWeek > 0 ? "kpi--danger" : "kpi--zero")">
+                @if (Model.ErrorsThisWeek > 0)
+                {
+                    <span class="kpi__value">@Model.ErrorsThisWeek</span>
+                }
+                else
+                {
+                    <span class="kpi__value kpi__value--empty">All quiet</span>
+                }
+                <span class="kpi__label">Errors this week</span>
+            </div>
+            @if (Model.OverdueLoans > 0)
+            {
+                <div class="kpi kpi--danger">
+                    <span class="kpi__value">@Model.OverdueLoans</span>
+                    <span class="kpi__label">Overdue</span>
+                </div>
+            }
+        </div>
+
+        @* ---- Main bento area: 6-col grid, panels paired so every row fills ---- *@
+        <div class="dash-bento">
+
+            <div class="card bento--wide">
+                <h2 class="dash-card-title"><i class="fa-solid fa-chart-column"></i> Club activity over time</h2>
+                <p class="chart-sub">Observation nights logged each month, and the club's all-time total</p>
+                @if (chartHasData)
+                {
+                    <div class="chart-wrap chart-wrap--activity">
+                        <canvas id="chart-activity"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-timeline"></i></div>
+                        <p class="empty__title">No activity yet</p>
+                        <p class="empty__body">When members start logging observation nights, the club's trend charts itself here.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--narrow">
+                <h2 class="dash-card-title"><i class="fa-solid fa-bell"></i> Needs attention</h2>
+                @if (Model.NeedsAttention.Any())
+                {
+                    <div class="attn-list">
+                        @foreach (var item in Model.NeedsAttention)
+                        {
+                            <a class="attn attn--@item.Severity" href="@item.Url">
+                                <span class="attn__icon"><i class="fa-solid @item.Icon"></i></span>
+                                <span>@item.Text</span>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <p class="empty__title">All systems nominal</p>
+                        <p class="empty__body">No overdue loans, no stalled requests, nothing in the error log. The observatory hums.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--half">
+                <h2 class="dash-card-title"><i class="fa-solid fa-binoculars"></i> Equipment utilization</h2>
+                <p class="chart-sub">Units in use versus available, by type</p>
+                @if (showUtil)
+                {
+                    <div class="chart-wrap chart-wrap--util">
+                        <canvas id="chart-utilization"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-binoculars"></i></div>
+                        <p class="empty__title">No equipment on the books</p>
+                        <p class="empty__body">Add telescopes, mounts, cameras and eyepieces and their usage shows up here.</p>
+                        <a class="btn btn--primary empty__action" asp-controller="Equipment" asp-action="Create">
+                            <i class="fa-solid fa-plus"></i> Add equipment
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--half">
+                <h2 class="dash-card-title"><i class="fa-solid fa-circle-nodes"></i> Who's in the club</h2>
+                <p class="chart-sub">Accounts by role</p>
+                @if (showRoles)
+                {
+                    <div class="sky-split">
+                        <div class="chart-wrap chart-wrap--sky">
+                            <canvas id="chart-roles"></canvas>
+                        </div>
+                        <div class="sky-legend">
+                            @foreach (var slice in Model.RoleMix)
+                            {
+                                <span class="sky-legend__item">
+                                    <span class="sky-legend__dot" style="background: var(@slice.ColorVar);"></span>
+                                    @slice.Role
+                                    <span style="color: var(--color-text-muted); margin-left: auto; font-variant-numeric: tabular-nums;">@slice.Count</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-user-group"></i></div>
+                        <p class="empty__title">No accounts yet</p>
+                        <p class="empty__body">Add your first members and coordinators to see the club's makeup.</p>
+                        <a class="btn btn--primary empty__action" asp-controller="Users" asp-action="Create">
+                            <i class="fa-solid fa-user-plus"></i> Add member
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div class="card bento--full">
+                <h2 class="dash-card-title"><i class="fa-solid fa-inbox"></i> Request queue</h2>
+                @if (Model.RequestQueue.Any())
+                {
+                    <div class="upcoming-list">
+                        @foreach (var q in Model.RequestQueue)
+                        {
+                            <div class="upcoming">
+                                <span class="upcoming__date">@q.NightDate</span>
+                                <span class="upcoming__name">@q.ObjectName <span style="color: var(--color-text-muted);">· @q.Requester</span></span>
+                                @if (!string.IsNullOrEmpty(q.AiIndicator))
+                                {
+                                    <span class="chip chip--plain" style="color: @AiColor(q.AiIndicator);">
+                                        <i class="fa-solid @AiIcon(q.AiIndicator)"></i> @AiLabel(q.AiIndicator)
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div style="margin-top: var(--p-space-3);">
+                        <a class="btn btn--ghost btn--sm" asp-controller="Loans" asp-action="Index">
+                            <i class="fa-solid fa-list-check"></i> Review all requests
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty empty--sm">
+                        <div class="empty__icon"><i class="fa-solid fa-check-double"></i></div>
+                        <p class="empty__title">The queue is clear</p>
+                        <p class="empty__body">No equipment requests are waiting on a coordinator right now.</p>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        @* ---- AI risk of the current queue (only when the AI has rated something) ---- *@
+        @if (showAi)
+        {
+            <div class="card">
+                <h2 class="dash-card-title"><i class="fa-solid fa-robot"></i> Queue risk</h2>
+                <p class="chart-sub">How the AI rates the equipment requests currently waiting</p>
+                <div class="ai-strip">
+                    @foreach (var ai in Model.AiBreakdown)
+                    {
+                        <div class="ai-stat">
+                            <span class="ai-stat__value" style="color: @AiColor(ai.Indicator);">
+                                <i class="fa-solid @AiIcon(ai.Indicator)" style="font-size: .8em; margin-right: 4px;"></i>@ai.Count
+                            </span>
+                            <span class="ai-stat__label">@AiLabel(ai.Indicator)</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ---- Coordinator throughput ---- *@
+        <div class="card">
+            <h2 class="dash-card-title"><i class="fa-solid fa-user-shield"></i> Coordinator throughput</h2>
+            <p class="chart-sub">Loan tickets issued, this month and all-time</p>
+            @if (Model.CoordinatorThroughput.Any())
+            {
+                <div class="table-wrap">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Coordinator</th>
+                                <th>This month</th>
+                                <th>All-time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in Model.CoordinatorThroughput)
+                            {
+                                <tr>
+                                    <td class="tbl__name">@c.Name</td>
+                                    <td style="font-variant-numeric: tabular-nums;">@c.ThisMonth</td>
+                                    <td>
+                                        <span class="coord-meter">
+                                            <span class="coord-meter__bar" style="width: @(Math.Round(100.0 * c.AllTime / coordMax))%;"></span>
+                                        </span>
+                                        <span style="font-variant-numeric: tabular-nums; margin-left: var(--p-space-2);">@c.AllTime</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty empty--sm">
+                    <div class="empty__icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <p class="empty__title">No approvals logged yet</p>
+                    <p class="empty__body">Once coordinators start issuing loan tickets, their activity lands here.</p>
+                </div>
+            }
+        </div>
+
+        @* ---- Recent activity ---- *@
+        <div class="card">
+            <h2 class="dash-card-title"><i class="fa-solid fa-scroll"></i> Recent activity</h2>
+            <p class="chart-sub">The latest events from the audit log</p>
+            @if (Model.RecentActivity.Any())
+            {
+                <div class="upcoming-list">
+                    @foreach (var e in Model.RecentActivity)
+                    {
+                        <a class="upcoming" href="@e.Url" style="text-decoration: none;">
+                            <span class="attn__icon">
+                                <i class="fa-solid @e.Icon" style="color: @(e.IsError ? "var(--color-danger)" : "var(--color-text-muted)");"></i>
+                            </span>
+                            <span class="upcoming__name" style="flex: 1;">
+                                @e.Text
+                                @if (!string.IsNullOrWhiteSpace(e.Actor))
+                                {
+                                    <span style="color: var(--color-text-muted);"> · @e.Actor</span>
+                                }
+                            </span>
+                            <span class="upcoming__date">@e.When</span>
+                        </a>
+                    }
+                </div>
+                <div style="margin-top: var(--p-space-3);">
+                    <a class="btn btn--ghost btn--sm" asp-controller="Reports" asp-action="Logs">
+                        <i class="fa-solid fa-scroll"></i> Open the event log
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="empty empty--sm">
+                    <div class="empty__icon"><i class="fa-solid fa-scroll"></i></div>
+                    <p class="empty__title">Nothing in the log yet</p>
+                    <p class="empty__body">Loan and request activity will show up here as it happens.</p>
+                </div>
+            }
+        </div>
+
+        @* ---- Explore ---- *@
+        <div class="dash-actions">
+            <a class="btn btn--ghost" asp-controller="Users" asp-action="Index"><i class="fa-solid fa-users"></i> Members</a>
+            <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index"><i class="fa-solid fa-binoculars"></i> Equipment</a>
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Logs"><i class="fa-solid fa-scroll"></i> Event Log</a>
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="ByTelescope"><i class="fa-solid fa-clipboard-list"></i> Members by Telescope</a>
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="LoanAudit"><i class="fa-solid fa-magnifying-glass"></i> Loan Audit</a>
+            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial Ranking</a>
+        </div>
+
+    </div>
+
+    <script id="admin-dashboard-data" type="application/json">
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            activity = Model.ActivityByMonth.Select(m => new { label = m.Label, count = m.Count, cumulative = m.Cumulative }),
+            utilization = Model.EquipmentUtilization.Select(u => new { label = u.Type, onLoan = u.OnLoan, available = u.Available }),
+            roles = Model.RoleMix.Select(r => new { label = r.Role, count = r.Count, colorVar = r.ColorVar })
+        }))
+    </script>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="~/js/admin-dashboard.js" asp-append-version="true"></script>
+}
