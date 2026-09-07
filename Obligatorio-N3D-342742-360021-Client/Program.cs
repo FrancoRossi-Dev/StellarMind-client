@@ -15,6 +15,14 @@ builder.Services.AddHttpClient("Api", c =>
     c.Timeout = TimeSpan.FromSeconds(150);
 });
 
+// Dedicated client for the wake-up / status probe. Short timeout so each poll from
+// the browser returns quickly while the API is still cold-starting on Render.
+builder.Services.AddHttpClient("Health", c =>
+{
+    c.BaseAddress = new Uri(apiBaseUrl);
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

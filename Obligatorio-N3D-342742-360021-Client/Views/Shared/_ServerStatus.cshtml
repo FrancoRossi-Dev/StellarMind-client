@@ -1,0 +1,142 @@
+@*
+    Server wake-up status card.
+
+    Renders on every page. On the first visit of a browser session it pings the API
+    (via /Health/Check, a same-origin proxy) and, if the API is still asleep, shows a
+    small card in the bottom-right corner that keeps polling until the server responds.
+    Once the server is confirmed awake the result is cached in sessionStorage, so the
+    card stays silent for the rest of the session.
+*@
+
+<div id="serverStatus" class="server-status" hidden aria-live="polite">
+    <button type="button" class="server-status__close" aria-label="Dismiss">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="server-status__row">
+        <span class="server-status__icon" data-state-icon>
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+        <span class="server-status__title" data-state-title>Waking the server up</span>
+    </div>
+
+    <p class="server-status__body" data-state-body>
+        This is a portfolio project hosted on a free tier that goes to sleep when
+        nobody's around. The first visit can take up to a minute while it powers
+        back on; everything works normally once it's awake.
+    </p>
+</div>
+
+<script>
+(function () {
+    var AWAKE_KEY = 'sm_server_awake';
+    var POLL_MS = 4000;        // gap between polls once we know it's cold
+    var MAX_ATTEMPTS = 75;     // ~5 min ceiling, then we stop nagging
+
+    try {
+        if (sessionStorage.getItem(AWAKE_KEY) === '1') return;
+    } catch (e) { /* private mode — just proceed */ }
+
+    var card, iconEl, titleEl, bodyEl, attempts = 0, shown = false;
+
+    var COPY = {
+        waking: {
+            icon: '<i class="fa-solid fa-circle-notch fa-spin"></i>',
+            cls: 'is-waking',
+            title: 'Waking the server up',
+            body: "This is a portfolio project hosted on a free tier that goes to sleep " +
+                  "when nobody's around. The first visit can take up to a minute while it " +
+                  "powers back on; everything works normally once it's awake."
+        },
+        slow: {
+            icon: '<i class="fa-solid fa-circle-notch fa-spin"></i>',
+            cls: 'is-waking',
+            title: 'Still warming up',
+            body: "This one's taking a little longer than usual. Thanks for your " +
+                  "patience; hang tight, it should be ready any moment now."
+        },
+        awake: {
+            icon: '<i class="fa-solid fa-circle-check"></i>',
+            cls: 'is-awake',
+            title: 'Server is awake',
+            body: "Everything's connected. Thanks for waiting!"
+        }
+    };
+
+    function render(state) {
+        card.classList.remove('is-waking', 'is-awake');
+        card.classList.add(state.cls);
+        iconEl.innerHTML = state.icon;
+        titleEl.textContent = state.title;
+        bodyEl.textContent = state.body;
+    }
+
+    function showCard(state) {
+        if (!shown) {
+            card.hidden = false;
+            // next frame so the transition runs
+            requestAnimationFrame(function () { card.classList.add('is-visible'); });
+            shown = true;
+        }
+        render(state);
+    }
+
+    function hideCard() {
+        card.classList.remove('is-visible');
+        setTimeout(function () { card.hidden = true; }, 250);
+    }
+
+    function markAwake() {
+        try { sessionStorage.setItem(AWAKE_KEY, '1'); } catch (e) {}
+    }
+
+    function check() {
+        attempts++;
+        var ctrl = new AbortController();
+        var killer = setTimeout(function () { ctrl.abort(); }, 12000);
+
+        fetch('/Health/Check', { cache: 'no-store', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : { awake: false }; })
+            .catch(function () { return { awake: false }; })
+            .then(function (data) {
+                clearTimeout(killer);
+
+                if (data && data.awake) {
+                    markAwake();
+                    if (shown) {
+                        showCard(COPY.awake);
+                        setTimeout(hideCard, 6000);
+                    }
+                    return;
+                }
+
+                // Not ready yet.
+                if (attempts >= MAX_ATTEMPTS) {
+                    if (shown) hideCard();
+                    return;
+                }
+                showCard(attempts >= 6 ? COPY.slow : COPY.waking);
+                setTimeout(check, POLL_MS);
+            });
+    }
+
+    function init() {
+        card = document.getElementById('serverStatus');
+        if (!card) return;
+        iconEl = card.querySelector('[data-state-icon]');
+        titleEl = card.querySelector('[data-state-title]');
+        bodyEl = card.querySelector('[data-state-body]');
+        card.querySelector('.server-status__close').addEventListener('click', function () {
+            hideCard();
+            attempts = MAX_ATTEMPTS; // stop the loop if the user dismisses
+        });
+        check();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>

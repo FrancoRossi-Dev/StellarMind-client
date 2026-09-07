@@ -1,24 +1,10 @@
 @model Obligatorio_N3D_342742_360021_Client.Models.LogInUserDto
-@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Sign In";
     ViewData["HideTopbar"] = true;
-    var apiBaseUrl = Configuration["ApiBaseUrl"]?.TrimEnd('/');
-}
-
-@if (!string.IsNullOrEmpty(apiBaseUrl))
-{
-    <script>
-        // Fire-and-forget wake-up ping: Render spins the API down after idle periods,
-        // so this kicks off the cold start as soon as the login page loads instead of
-        // waiting until the user submits the form. Response is ignored on purpose.
-        (function () {
-            try {
-                fetch('@apiBaseUrl/health', { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
-            } catch (e) {}
-        })();
-    </script>
+    // The API wake-up ping + status card now live in _ServerStatus (rendered by _Layout),
+    // which fires on the first page of the session — including this one.
 }
 
 <div class="login-page">
@@ -68,9 +54,48 @@
             <button id="login-submit" type="submit" class="btn btn--primary btn--full" style="margin-top: 0.5rem;">
                 Sign in
             </button>
+
+            <p id="login-progress" class="login-progress" role="status" aria-live="polite" hidden>
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span data-progress-text></span>
+            </p>
         </form>
 
         @await Html.PartialAsync("_DevCredentials")
     </div>
 </div>
+
+<script>
+(function () {
+    var form = document.getElementById('login-submit').closest('form');
+    var hint = document.getElementById('login-progress');
+    var text = hint.querySelector('[data-progress-text]');
+    var timers = [];
+
+    // Render's free tier sleeps the API when idle; the first login can wait on a
+    // cold start well past a few seconds. Reassure the user instead of leaving
+    // them staring at a silent spinner.
+    var STAGES = [
+        { after: 5000,  msg: "Almost there; the server may be waking up from sleep." },
+        { after: 15000, msg: "Still working on it; the first connection can take up to a minute." }
+    ];
+
+    form.addEventListener('submit', function () {
+        STAGES.forEach(function (stage) {
+            timers.push(setTimeout(function () {
+                text.textContent = stage.msg;
+                hint.hidden = false;
+                requestAnimationFrame(function () { hint.classList.add('is-visible'); });
+            }, stage.after));
+        });
+    });
+
+    // If the browser restores this page from bfcache after a failed/back nav,
+    // clear any pending timers so a stale message can't flash.
+    window.addEventListener('pageshow', function () {
+        timers.forEach(clearTimeout);
+        timers = [];
+    });
+})();
+</script>
 
