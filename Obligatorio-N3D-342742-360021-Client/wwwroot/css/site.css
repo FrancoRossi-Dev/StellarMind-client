@@ -1417,6 +1417,9 @@ span.flatpickr-weekday {
 .server-status.is-awake {
   border-left-color: var(--color-success);
 }
+.server-status.is-stuck {
+  border-left-color: var(--color-danger);
+}
 
 .server-status__row {
   display: flex;
@@ -1431,6 +1434,9 @@ span.flatpickr-weekday {
 .server-status.is-awake .server-status__icon {
   color: var(--color-success);
 }
+.server-status.is-stuck .server-status__icon {
+  color: var(--color-danger);
+}
 .server-status__title {
   font-size: var(--text-base);
   font-weight: var(--weight-heading);
@@ -1441,6 +1447,22 @@ span.flatpickr-weekday {
   font-size: var(--text-sm);
   line-height: var(--leading-body);
   color: var(--color-text-secondary);
+}
+
+.server-status__manual-link {
+  display: inline-block;
+  margin-top: var(--p-space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-heading);
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.server-status__manual-link:hover {
+  color: var(--color-accent-hover);
+}
+.server-status__manual-link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .server-status__close {

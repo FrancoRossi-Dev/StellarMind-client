@@ -1,3 +1,6 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 @*
     Server wake-up status card.
 
@@ -6,7 +9,16 @@
     small card in the bottom-right corner that keeps polling until the server responds.
     Once the server is confirmed awake the result is cached in sessionStorage, so the
     card stays silent for the rest of the session.
+
+    If the wake-up is taking a while (or never completes — Render's free tier can
+    occasionally hang or fail on cold start) a link to the API's Swagger page is shown,
+    since simply opening it is enough to start the API manually.
 *@
+
+@{
+    var apiBaseUrl = Configuration["ApiBaseUrl"] ?? "http://localhost:5074/";
+    var swaggerUrl = apiBaseUrl.TrimEnd('/') + "/swagger/index.html";
+}
 
 <div id="serverStatus" class="server-status" hidden aria-live="polite">
     <button type="button" class="server-status__close" aria-label="Dismiss">
@@ -25,6 +37,10 @@
         nobody's around. The first visit can take up to a minute while it powers
         back on; everything works normally once it's awake.
     </p>
+
+    <a href="@swaggerUrl" target="_blank" rel="noopener" class="server-status__manual-link" data-manual-link hidden>
+        Taking too long? Use this link to start the server manually
+    </a>
 </div>
 
 <script>
@@ -37,7 +53,7 @@
         if (sessionStorage.getItem(AWAKE_KEY) === '1') return;
     } catch (e) { /* private mode — just proceed */ }
 
-    var card, iconEl, titleEl, bodyEl, attempts = 0, shown = false;
+    var card, iconEl, titleEl, bodyEl, linkEl, attempts = 0, shown = false, dismissed = false;
 
     var COPY = {
         waking: {
@@ -46,29 +62,41 @@
             title: 'Waking the server up',
             body: "This is a portfolio project hosted on a free tier that goes to sleep " +
                   "when nobody's around. The first visit can take up to a minute while it " +
-                  "powers back on; everything works normally once it's awake."
+                  "powers back on; everything works normally once it's awake.",
+            manualLink: true
         },
         slow: {
             icon: '<i class="fa-solid fa-circle-notch fa-spin"></i>',
             cls: 'is-waking',
             title: 'Still warming up',
             body: "This one's taking a little longer than usual. Thanks for your " +
-                  "patience; hang tight, it should be ready any moment now."
+                  "patience; hang tight, it should be ready any moment now.",
+            manualLink: true
+        },
+        stuck: {
+            icon: '<i class="fa-solid fa-triangle-exclamation"></i>',
+            cls: 'is-stuck',
+            title: "Still not responding",
+            body: "The automatic wake-up gave up after a few minutes. The link below " +
+                  "opens the API directly, which is enough to start it manually.",
+            manualLink: true
         },
         awake: {
             icon: '<i class="fa-solid fa-circle-check"></i>',
             cls: 'is-awake',
             title: 'Server is awake',
-            body: "Everything's connected. Thanks for waiting!"
+            body: "Everything's connected. Thanks for waiting!",
+            manualLink: false
         }
     };
 
     function render(state) {
-        card.classList.remove('is-waking', 'is-awake');
+        card.classList.remove('is-waking', 'is-awake', 'is-stuck');
         card.classList.add(state.cls);
         iconEl.innerHTML = state.icon;
         titleEl.textContent = state.title;
         bodyEl.textContent = state.body;
+        linkEl.hidden = !state.manualLink;
     }
 
     function showCard(state) {
@@ -100,6 +128,7 @@
             .catch(function () { return { awake: false }; })
             .then(function (data) {
                 clearTimeout(killer);
+                if (dismissed) return;
 
                 if (data && data.awake) {
                     markAwake();
@@ -112,7 +141,7 @@
 
                 // Not ready yet.
                 if (attempts >= MAX_ATTEMPTS) {
-                    if (shown) hideCard();
+                    showCard(COPY.stuck);
                     return;
                 }
                 showCard(attempts >= 6 ? COPY.slow : COPY.waking);
@@ -126,9 +155,10 @@
         iconEl = card.querySelector('[data-state-icon]');
         titleEl = card.querySelector('[data-state-title]');
         bodyEl = card.querySelector('[data-state-body]');
+        linkEl = card.querySelector('[data-manual-link]');
         card.querySelector('.server-status__close').addEventListener('click', function () {
             hideCard();
-            attempts = MAX_ATTEMPTS; // stop the loop if the user dismisses
+            dismissed = true; // stop the loop and suppress any in-flight response
         });
         check();
     }
