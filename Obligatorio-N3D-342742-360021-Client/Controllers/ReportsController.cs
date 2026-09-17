@@ -128,7 +128,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         }
 
         [AccessFilter("Admin")]
-        public IActionResult Logs(int? coordinatorId = null)
+        public IActionResult Logs(int? coordinatorId = null, string view = "important")
         {
             var token = HttpContext.Session.GetString("Token");
             string? role = HttpContext.Session.GetString("UserRole");
@@ -170,7 +170,31 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             {
                 ViewBag.msg = "Couldn't load the event log. Something drifted out of range.";
             }
-            return View(logs);
+
+            bool showFull = string.Equals(view, "full", StringComparison.OrdinalIgnoreCase);
+            ViewBag.View = showFull ? "full" : "important";
+            ViewBag.FullCount = logs.Count;
+            ViewBag.ImportantCount = logs.Count(l => !IsNoise(l));
+
+            var visibleLogs = showFull ? logs : logs.Where(l => !IsNoise(l)).ToList();
+            return View(visibleLogs);
+        }
+
+        // Noise = good for audit, not interesting for a quick activity overview:
+        // failed operations and routine user-account creations.
+        // The API logs user-account events under two shapes ("Users"/CREATE for
+        // some, "User"/POST for others), so match loosely on both table name and message.
+        private static bool IsNoise(LogEventDto log)
+        {
+            if (log.IsError) return true;
+
+            bool isUserTable = log.TableName?.TrimEnd('s')
+                .Equals("User", StringComparison.OrdinalIgnoreCase) ?? false;
+            if (!isUserTable) return false;
+
+            bool isCreate = string.Equals(log.Operation, "CREATE", StringComparison.OrdinalIgnoreCase)
+                || (log.Message?.Contains("created", StringComparison.OrdinalIgnoreCase) ?? false);
+            return isCreate;
         }
 
         [AccessFilter("Admin")]

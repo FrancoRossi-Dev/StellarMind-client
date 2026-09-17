@@ -5,6 +5,15 @@
     string? sessionRole = Context.Session.GetString("UserRole");
     var coordinators    = ViewBag.Coordinators as List<Obligatorio_N3D_342742_360021_Client.Models.UserVM> ?? new();
     int? selectedCoordId = ViewBag.SelectedCoordinatorId as int?;
+    string currentView   = ViewBag.View as string ?? "important";
+    int fullCount         = ViewBag.FullCount is int fc ? fc : 0;
+    int importantCount    = ViewBag.ImportantCount is int ic ? ic : 0;
+
+    string coordQs = selectedCoordId.HasValue ? $"&coordinatorId={selectedCoordId}" : "";
+    string TabClass(string tab) =>
+        string.Equals(tab, currentView, StringComparison.OrdinalIgnoreCase)
+            ? "seg-filter__btn active"
+            : "seg-filter__btn";
 
     string FmtDate(string? raw) {
         if (string.IsNullOrWhiteSpace(raw)) return "—";
@@ -20,14 +29,37 @@
     string TableColor(string? t) => t switch {
         "LoanTickets"  => "var(--color-info, var(--color-accent))",
         "LoanRequests" => "var(--color-warning)",
+        "Users"        => "var(--color-text-secondary)",
         _              => "var(--color-text-muted)"
+    };
+
+    string TableLabel(string? t) => t switch {
+        "LoanTickets"  => "Tickets",
+        "LoanRequests" => "Requests",
+        "Users"        => "Users",
+        _              => t ?? "—"
     };
 }
 
 <div class="page-head">
     <div>
         <h1 class="page-head__title">Event Log</h1>
-        <p class="page-head__sub">All audit events across loan requests and tickets, most recent first</p>
+        <p class="page-head__sub">
+            @(currentView == "full"
+                ? "Every audit event across loan requests and tickets, most recent first"
+                : "Notable activity, most recent first — failed requests and user creations are hidden here")
+        </p>
+    </div>
+</div>
+
+<div style="margin-bottom: var(--p-space-4);">
+    <div class="seg-filter">
+        <a href="@("?view=important" + coordQs)" class="@TabClass("important")">
+            <i class="fa-solid fa-bolt" style="margin-right: var(--p-space-1);"></i>Activity overview (@importantCount)
+        </a>
+        <a href="@("?view=full" + coordQs)" class="@TabClass("full")">
+            <i class="fa-solid fa-scroll" style="margin-right: var(--p-space-1);"></i>Full log (@fullCount)
+        </a>
     </div>
 </div>
 
@@ -36,6 +68,7 @@
     <div class="card" style="margin-bottom: var(--p-space-5);">
         <form method="get" asp-controller="Reports" asp-action="Logs"
               style="display:flex; gap: var(--p-space-3); align-items:flex-end; flex-wrap:wrap;">
+            <input type="hidden" name="view" value="@currentView" />
             <div class="field" style="flex:1; min-width:200px;">
                 <label class="field__label" for="coordinatorId">Filter by coordinator</label>
                 <select id="coordinatorId" name="coordinatorId" class="input select">
@@ -53,7 +86,7 @@
             </button>
             @if (selectedCoordId.HasValue)
             {
-                <a class="btn btn--ghost" asp-controller="Reports" asp-action="Logs">Clear</a>
+                <a class="btn btn--ghost" href="?view=@currentView">Clear</a>
             }
         </form>
     </div>
@@ -64,8 +97,19 @@
     <div class="card">
         <div class="empty">
             <div class="empty__icon"><i class="fa-solid fa-scroll"></i></div>
-            <p class="empty__title">No events recorded</p>
-            <p class="empty__body">No audit events have been logged yet.</p>
+            @if (fullCount == 0)
+            {
+                <p class="empty__title">No events recorded</p>
+                <p class="empty__body">No audit events have been logged yet.</p>
+            }
+            else
+            {
+                <p class="empty__title">All quiet on the important front</p>
+                <p class="empty__body">
+                    Everything right now is routine audit noise (failed requests, user creations).
+                    <a href="@("?view=full" + coordQs)">Check the full log</a> if you need it.
+                </p>
+            }
         </div>
     </div>
 }
@@ -96,11 +140,7 @@ else
                         <td>
                             <span style="font-size: var(--text-xs); font-weight:600; text-transform:uppercase;
                                          letter-spacing:.04em; color: @TableColor(log.TableName);">
-                                @(log.TableName switch {
-                                    "LoanTickets"  => "Tickets",
-                                    "LoanRequests" => "Requests",
-                                    _              => log.TableName ?? "—"
-                                })
+                                @TableLabel(log.TableName)
                             </span>
                         </td>
                         <td>
