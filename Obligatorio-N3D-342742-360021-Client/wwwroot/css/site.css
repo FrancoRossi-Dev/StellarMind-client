@@ -558,7 +558,7 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .seg-filter__btn.active {
-  background: var(--color-accent-soft);
+  background: var(--color-surface-raised);
   color: var(--color-accent);
 }
 
@@ -576,8 +576,7 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .tbl thead tr {
-  background: var(--color-surface-raised);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-soft);
 }
 
 .tbl th {
@@ -592,13 +591,12 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .tbl tbody tr {
-  border-bottom: 1px solid var(--color-border-soft);
   transition: background var(--motion-hover);
 }
 
-.tbl tbody tr:last-child { border-bottom: none; }
+.tbl tbody tr:nth-child(even) { background: var(--color-surface-raised); }
 
-.tbl tbody tr:hover { background: var(--color-surface-raised); }
+.tbl tbody tr:hover { background: var(--color-border-soft); }
 
 .tbl td {
   padding: var(--space-cell-y) var(--space-cell-x);
@@ -955,7 +953,7 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .dev-creds__avatar--admin  { background: var(--color-accent-soft);   color: var(--color-accent);   border: 1px solid var(--color-accent-border); }
-.dev-creds__avatar--coord  { background: var(--color-info-soft);     color: var(--color-info);     border: 1px solid var(--color-info-border); }
+.dev-creds__avatar--coord  { background: var(--color-success-soft);  color: var(--color-success);  border: 1px solid var(--color-success-border); }
 .dev-creds__avatar--member { background: var(--color-surface-raised); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
 
 .dev-creds__info {
@@ -1081,10 +1079,9 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .nav-item.active {
-  background: var(--color-accent-soft);
+  background: var(--color-surface-raised);
   color: var(--color-accent);
   font-weight: var(--weight-label);
-  box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
 .nav-item--signout:hover {

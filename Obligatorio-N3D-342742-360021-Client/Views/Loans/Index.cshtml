@@ -17,6 +17,19 @@
         _          => "var(--color-text-muted)"
     };
 
+    string ReqStatusChip(string s) => s switch {
+        "Pending"  => "chip chip--warning",
+        "Approved" => "chip chip--success",
+        "Rejected" => "chip chip--danger",
+        _          => "chip chip--plain"
+    };
+    string ReqStatusIcon(string s) => s switch {
+        "Pending"  => "fa-clock",
+        "Approved" => "fa-circle-check",
+        "Rejected" => "fa-xmark",
+        _          => "fa-circle"
+    };
+
     string AiColor(string? ai) => ai switch {
         "IDEAL"            => "var(--color-success)",
         "ADECUADO"         => "var(--color-warning)",
@@ -24,9 +37,9 @@
         _                  => "var(--color-text-muted)"
     };
     string AiIcon(string? ai) => ai switch {
-        "IDEAL"            => "fa-circle-check",
-        "ADECUADO"         => "fa-circle-exclamation",
-        "NO_RECOMENDABLE"  => "fa-circle-xmark",
+        "IDEAL"            => "fa-star",
+        "ADECUADO"         => "fa-circle-check",
+        "NO_RECOMENDABLE"  => "fa-triangle-exclamation",
         _                  => "fa-circle"
     };
     string AiLabel(string? ai) => ai switch {
@@ -94,9 +107,8 @@ else
                         </td>
                         <td class="tbl__name">@(req.ObservationNight?.CelestialObject?.Name ?? "—")</td>
                         <td>
-                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
-                                         letter-spacing: .04em; color: @StatusColor(req.Status);">
-                                @req.Status
+                            <span class="@ReqStatusChip(req.Status)">
+                                <i class="fa-solid @ReqStatusIcon(req.Status)"></i> @req.Status
                             </span>
                         </td>
                         @if (isCoord)
@@ -302,9 +314,8 @@ else
                         @* Status badge *@
                         <div>
                             <p class="modal-section__title">Status</p>
-                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
-                                         letter-spacing: .06em; color: @StatusColor(req.Status);">
-                                @req.Status
+                            <span class="@ReqStatusChip(req.Status)">
+                                <i class="fa-solid @ReqStatusIcon(req.Status)"></i> @req.Status
                             </span>
                         </div>
 

@@ -23,9 +23,9 @@
     };
     string AiIcon(string? ai) => ai switch
     {
-        "IDEAL"           => "fa-circle-check",
-        "ADECUADO"        => "fa-circle-exclamation",
-        "NO_RECOMENDABLE" => "fa-circle-xmark",
+        "IDEAL"           => "fa-star",
+        "ADECUADO"        => "fa-circle-check",
+        "NO_RECOMENDABLE" => "fa-triangle-exclamation",
         _                 => "fa-circle"
     };
     string AiLabel(string? ai) => ai switch
@@ -373,16 +373,6 @@ else
                     <p class="empty__body">Loan and request activity will show up here as it happens.</p>
                 </div>
             }
-        </div>
-
-        @* ---- Explore ---- *@
-        <div class="dash-actions">
-            <a class="btn btn--ghost" asp-controller="Users" asp-action="Index"><i class="fa-solid fa-users"></i> Members</a>
-            <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index"><i class="fa-solid fa-binoculars"></i> Equipment</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Logs"><i class="fa-solid fa-scroll"></i> Event Log</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="ByTelescope"><i class="fa-solid fa-clipboard-list"></i> Members by Telescope</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="LoanAudit"><i class="fa-solid fa-magnifying-glass"></i> Loan Audit</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial Ranking</a>
         </div>
 
     </div>

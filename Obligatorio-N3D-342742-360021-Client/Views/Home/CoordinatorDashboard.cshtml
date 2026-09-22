@@ -21,9 +21,9 @@
     string AiColor(string? ai) => $"var({AiColorVar(ai)})";
     string AiIcon(string? ai) => ai switch
     {
-        "IDEAL"           => "fa-circle-check",
-        "ADECUADO"        => "fa-circle-exclamation",
-        "NO_RECOMENDABLE" => "fa-circle-xmark",
+        "IDEAL"           => "fa-star",
+        "ADECUADO"        => "fa-circle-check",
+        "NO_RECOMENDABLE" => "fa-triangle-exclamation",
         _                 => "fa-circle"
     };
     string AiLabel(string? ai) => ai switch
@@ -270,14 +270,6 @@ else
                 }
             </div>
 
-        </div>
-
-        @* ---- Explore ---- *@
-        <div class="dash-actions">
-            <a class="btn btn--ghost" asp-controller="Loans" asp-action="Index"><i class="fa-solid fa-inbox"></i> Loan Requests</a>
-            <a class="btn btn--ghost" asp-controller="Equipment" asp-action="Index"><i class="fa-solid fa-binoculars"></i> Equipment</a>
-            <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index"><i class="fa-solid fa-moon"></i> Observation Nights</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial Ranking</a>
         </div>
 
     </div>

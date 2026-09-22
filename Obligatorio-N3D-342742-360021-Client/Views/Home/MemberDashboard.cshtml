@@ -22,9 +22,9 @@
     };
     string AiIcon(string? ai) => ai switch
     {
-        "IDEAL"           => "fa-circle-check",
-        "ADECUADO"        => "fa-circle-exclamation",
-        "NO_RECOMENDABLE" => "fa-circle-xmark",
+        "IDEAL"           => "fa-star",
+        "ADECUADO"        => "fa-circle-check",
+        "NO_RECOMENDABLE" => "fa-triangle-exclamation",
         _                 => "fa-circle"
     };
     string AiLabel(string? ai) => ai switch
@@ -286,14 +286,6 @@ else
                     </a>
                 </div>
             }
-        </div>
-
-        @* ---- Explore ---- *@
-        <div class="dash-actions">
-            <a class="btn btn--ghost" asp-controller="ObservationNights" asp-action="Index"><i class="fa-solid fa-moon"></i> Observation Plans</a>
-            <a class="btn btn--ghost" asp-controller="Loans" asp-action="MyLoans"><i class="fa-solid fa-box-open"></i> My Loans</a>
-            <a class="btn btn--ghost" asp-controller="Loans" asp-action="LoanHistory"><i class="fa-solid fa-clock-rotate-left"></i> Loan History</a>
-            <a class="btn btn--ghost" asp-controller="Reports" asp-action="Ranking"><i class="fa-solid fa-star"></i> Celestial Ranking</a>
         </div>
 
     </div>

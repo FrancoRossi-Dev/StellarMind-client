@@ -12,11 +12,17 @@
         return DateTime.TryParse(raw, out var d) ? d.ToString("MMM d, yyyy") : raw;
     }
 
-    string ReqStatusColor(string s) => s switch {
-        "Pending"  => "var(--color-warning)",
-        "Approved" => "var(--color-success)",
-        "Rejected" => "var(--color-danger)",
-        _          => "var(--color-text-muted)"
+    string ReqStatusChip(string s) => s switch {
+        "Pending"  => "chip chip--warning",
+        "Approved" => "chip chip--success",
+        "Rejected" => "chip chip--danger",
+        _          => "chip chip--plain"
+    };
+    string ReqStatusIcon(string s) => s switch {
+        "Pending"  => "fa-clock",
+        "Approved" => "fa-circle-check",
+        "Rejected" => "fa-xmark",
+        _          => "fa-circle"
     };
 
     string AiColor(string? ai) => ai switch {
@@ -26,9 +32,9 @@
         _                  => "var(--color-text-muted)"
     };
     string AiIcon(string? ai) => ai switch {
-        "IDEAL"            => "fa-circle-check",
-        "ADECUADO"         => "fa-circle-exclamation",
-        "NO_RECOMENDABLE"  => "fa-circle-xmark",
+        "IDEAL"            => "fa-star",
+        "ADECUADO"         => "fa-circle-check",
+        "NO_RECOMENDABLE"  => "fa-triangle-exclamation",
         _                  => "fa-circle"
     };
     string AiLabel(string? ai) => ai switch {
@@ -136,9 +142,8 @@ else
                             else { <span style="color: var(--color-text-muted);">—</span> }
                         </td>
                         <td>
-                            <span style="font-size: var(--text-xs); font-weight: 600; text-transform: uppercase;
-                                         letter-spacing: .04em; color: @ReqStatusColor(req.Status);">
-                                @req.Status
+                            <span class="@ReqStatusChip(req.Status)">
+                                <i class="fa-solid @ReqStatusIcon(req.Status)"></i> @req.Status
                             </span>
                         </td>
                         <td>
