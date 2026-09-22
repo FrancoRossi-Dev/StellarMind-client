@@ -1,7 +1,7 @@
-using Obligatorio_N3D_342742_360021_Client.Services.Http;
 using Microsoft.AspNetCore.Mvc;
-using Obligatorio_N3D_342742_360021_Client.Models;
 using Obligatorio_N3D_342742_360021_Client.Filters;
+using Obligatorio_N3D_342742_360021_Client.Models;
+using Obligatorio_N3D_342742_360021_Client.Services.Http;
 
 namespace Obligatorio_N3D_342742_360021_Client.Controllers
 {
@@ -13,7 +13,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         {
             try
             {
-                var token    = HttpContext.Session.GetString("Token");
+                var token = HttpContext.Session.GetString("Token");
                 var requests = _auxiliarHttp
                     .EnviarYDeserializar<List<PendingLoanRequestVM>>("api/v1/loanrequests/pending", "GET", token: token)
                     ?? new List<PendingLoanRequestVM>();
@@ -58,8 +58,8 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         public IActionResult Create(int? nightId = null)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            var token   = HttpContext.Session.GetString("Token");
-            var nights  = new List<ObservationNightVM>();
+            var token = HttpContext.Session.GetString("Token");
+            var nights = new List<ObservationNightVM>();
 
             if (userId.HasValue)
             {
@@ -80,16 +80,16 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                     ?? new List<EquipmentVM>();
 
                 ViewBag.Telescopes = allEquip.Where(e => e.Type == "Telescope").ToList();
-                ViewBag.Mounts     = allEquip.Where(e => e.Type == "Mount").ToList();
-                ViewBag.Eyepieces  = allEquip.Where(e => e.Type == "Eyepiece").ToList();
-                ViewBag.Cameras    = allEquip.Where(e => e.Type == "Camera").ToList();
+                ViewBag.Mounts = allEquip.Where(e => e.Type == "Mount").ToList();
+                ViewBag.Eyepieces = allEquip.Where(e => e.Type == "Eyepiece").ToList();
+                ViewBag.Cameras = allEquip.Where(e => e.Type == "Camera").ToList();
             }
             catch
             {
                 ViewBag.Telescopes = new List<EquipmentVM>();
-                ViewBag.Mounts     = new List<EquipmentVM>();
-                ViewBag.Eyepieces  = new List<EquipmentVM>();
-                ViewBag.Cameras    = new List<EquipmentVM>();
+                ViewBag.Mounts = new List<EquipmentVM>();
+                ViewBag.Eyepieces = new List<EquipmentVM>();
+                ViewBag.Cameras = new List<EquipmentVM>();
             }
 
             ViewBag.Nights = nights;
@@ -279,10 +279,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         public IActionResult MyLoans()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            var token   = HttpContext.Session.GetString("Token");
+            var token = HttpContext.Session.GetString("Token");
 
             var requests = new List<PendingLoanRequestVM>();
-            var tickets  = new List<LoanTicketVM>();
+            var tickets = new List<LoanTicketVM>();
 
             if (userId.HasValue)
             {
@@ -304,7 +304,7 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
             }
 
             ViewBag.Requests = requests;
-            ViewBag.Tickets  = tickets;
+            ViewBag.Tickets = tickets;
             return View();
         }
 
@@ -379,13 +379,13 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
                 var token = HttpContext.Session.GetString("Token");
                 int coordinatorId = HttpContext.Session.GetInt32("UserId") ?? 0;
                 string isoStart = DateTime.TryParse(startDate, out var ds) ? ds.ToString("yyyy-MM-ddTHH:mm:ss") : startDate;
-                string isoEnd   = DateTime.TryParse(endDate, out var de)   ? de.ToString("yyyy-MM-ddTHH:mm:ss") : endDate;
+                string isoEnd = DateTime.TryParse(endDate, out var de) ? de.ToString("yyyy-MM-ddTHH:mm:ss") : endDate;
                 var dto = new CreateLoanTicketDto
                 {
                     LoanRequestId = requestId,
                     CoordinatorId = coordinatorId,
-                    StartDate     = isoStart,
-                    EndDate       = isoEnd
+                    StartDate = isoStart,
+                    EndDate = isoEnd
                 };
                 _auxiliarHttp.EnviarSolicitud("api/v1/loantickets", "POST", dto, token);
                 TempData["Success"] = "Ticket issued directly.";
@@ -430,10 +430,10 @@ namespace Obligatorio_N3D_342742_360021_Client.Controllers
         public IActionResult LoanHistory(int? month, int? year)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            var token   = HttpContext.Session.GetString("Token");
+            var token = HttpContext.Session.GetString("Token");
 
             ViewBag.SelectedMonth = month;
-            ViewBag.SelectedYear  = year;
+            ViewBag.SelectedYear = year;
 
             if (!userId.HasValue || !month.HasValue || !year.HasValue)
                 return View(new List<LoanTicketVM>());
