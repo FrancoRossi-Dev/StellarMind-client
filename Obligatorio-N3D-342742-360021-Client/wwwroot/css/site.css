@@ -594,7 +594,9 @@ a:hover { color: var(--color-accent-hover); }
   transition: background var(--motion-hover);
 }
 
-.tbl tbody tr:nth-child(even) { background: var(--color-surface-raised); }
+.tbl tbody tr:nth-child(odd) { background: transparent; }
+.tbl tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
+.tbl tbody tr.tbl__row--pending { background: rgba(108, 140, 255, 0.04) !important; }
 
 .tbl tbody tr:hover { background: var(--color-border-soft); }
 
