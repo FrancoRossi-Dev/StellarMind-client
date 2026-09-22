@@ -96,7 +96,7 @@ else
             <tbody>
                 @foreach (var req in sorted)
                 {
-                    <tr class="@(req.Status == "Pending" ? "tbl__row--pending" : "")">
+                    <tr>
                         <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@req.RequestId</td>
                         <td>
                             <div class="tbl__name">@(req.RequestingUser?.fullName ?? "—")</div>

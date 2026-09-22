@@ -567,6 +567,7 @@ a:hover { color: var(--color-accent-hover); }
   overflow-x: auto;
   border-radius: var(--radius-card);
   border: 1px solid var(--color-border-soft);
+  background: var(--color-surface);
 }
 
 .tbl {
@@ -594,9 +595,7 @@ a:hover { color: var(--color-accent-hover); }
   transition: background var(--motion-hover);
 }
 
-.tbl tbody tr:nth-child(odd) { background: transparent; }
-.tbl tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
-.tbl tbody tr.tbl__row--pending { background: rgba(108, 140, 255, 0.04) !important; }
+.tbl tbody tr:nth-child(even) { background: var(--color-surface-raised); }
 
 .tbl tbody tr:hover { background: var(--color-border-soft); }
 
@@ -1173,8 +1172,22 @@ a:hover { color: var(--color-accent-hover); }
 .detail-list {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: var(--p-space-2) var(--p-space-6);
   font-size: var(--text-body);
+  border-radius: var(--radius-input);
+  overflow: hidden;
+}
+
+.detail-list dt,
+.detail-list dd { padding: var(--p-space-2) var(--space-cell-x); }
+
+/* Striped like .tbl — each dt/dd pair is one row */
+.detail-list dt:nth-of-type(even),
+.detail-list dd:nth-of-type(even) { background: var(--color-surface-raised); }
+
+/* Modals sit on surface-raised — give the list the .table-wrap base so stripes show */
+.modal-body .detail-list {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
 }
 
 .detail-list dt {
@@ -1183,7 +1196,7 @@ a:hover { color: var(--color-accent-hover); }
   color: var(--color-text-muted);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  padding-top: 2px;
+  padding-top: calc(var(--p-space-2) + 2px);
 }
 
 .detail-list dd { color: var(--color-text); margin: 0; }
@@ -1711,15 +1724,18 @@ span.flatpickr-weekday {
 .upcoming-list {
   display: flex;
   flex-direction: column;
+  border-radius: var(--radius-input);
+  overflow: hidden;
 }
 .upcoming {
   display: flex;
   align-items: center;
   gap: var(--p-space-3);
-  padding: var(--p-space-3) 0;
-  border-bottom: 1px solid var(--color-border-soft);
+  padding: var(--p-space-3) var(--space-cell-x);
+  transition: background var(--motion-hover);
 }
-.upcoming:last-child { border-bottom: 0; }
+.upcoming:nth-child(even) { background: var(--color-surface-raised); }
+a.upcoming:hover { background: var(--color-border-soft); }
 .upcoming__date {
   font-variant-numeric: tabular-nums;
   color: var(--color-text-secondary);

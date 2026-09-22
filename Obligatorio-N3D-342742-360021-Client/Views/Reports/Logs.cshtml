@@ -130,7 +130,7 @@ else
             <tbody>
                 @foreach (var log in Model)
                 {
-                    <tr @(log.IsError ? "style=background:color-mix(in srgb,var(--color-danger) 6%,transparent)" : "")>
+                    <tr>
                         <td style="color: var(--color-text-secondary); white-space:nowrap; font-variant-numeric: tabular-nums;">
                             @FmtDate(log.Date)
                         </td>

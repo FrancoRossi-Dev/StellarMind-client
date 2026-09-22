@@ -117,7 +117,7 @@ else
             <tbody>
                 @foreach (var req in requests)
                 {
-                    <tr class="@(req.Status == "Pending" ? "tbl__row--pending" : "")">
+                    <tr>
                         <td style="color: var(--color-text-muted); font-variant-numeric: tabular-nums;">#@req.RequestId</td>
                         <td>
                             <div>@FmtDate(req.ObservationNight?.Date)</div>

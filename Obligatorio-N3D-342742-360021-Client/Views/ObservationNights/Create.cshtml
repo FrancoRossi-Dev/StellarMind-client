@@ -50,13 +50,12 @@
     background: transparent;
     border: none;
     border-left: 3px solid transparent; /* #6: reserve space for accent border */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* #11: subtle divider */
     cursor: pointer;
     text-align: left;
     transition: background 0.12s, border-left-color 0.12s;
 }
-.co-item:last-child { border-bottom: none; }
-.co-item:hover { background: var(--color-surface-raised); }
+.co-item--alt { background: var(--color-surface-raised); } /* striped like .tbl; set by stripeCoList() */
+.co-item:hover { background: var(--color-border-soft); }
 
 /* #6: Clear selected state */
 .co-item--selected {
@@ -408,12 +407,22 @@ document.querySelectorAll('.co-item').forEach(btn => {
     });
 });
 
+// Stripe only the visible rows so filtering keeps the alternation intact
+function stripeCoList() {
+    let i = 0;
+    document.querySelectorAll('.co-item').forEach(btn => {
+        btn.classList.toggle('co-item--alt', btn.style.display !== 'none' && i++ % 2 === 1);
+    });
+}
+stripeCoList();
+
 // Search filter
 document.getElementById('co-search').addEventListener('input', function () {
     const q = this.value.toLowerCase();
     document.querySelectorAll('.co-item').forEach(btn => {
         btn.style.display = btn.dataset.name.toLowerCase().includes(q) ? '' : 'none';
     });
+    stripeCoList();
 });
 </script>
 }
