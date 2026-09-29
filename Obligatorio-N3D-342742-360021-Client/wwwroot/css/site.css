@@ -742,14 +742,9 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .login-card__brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--p-radius-md);
-  background: linear-gradient(135deg, var(--color-nebula-1), var(--color-nebula-2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  display: block;
 }
 
 .login-card__brand-name {
@@ -1001,14 +996,9 @@ a:hover { color: var(--color-accent-hover); }
 }
 
 .sidebar__brand-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--p-radius-sm);
-  background: linear-gradient(135deg, var(--color-nebula-1), var(--color-nebula-2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  display: block;
   flex-shrink: 0;
 }
 
